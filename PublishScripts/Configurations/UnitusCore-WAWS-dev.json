@@ -1,0 +1,21 @@
+{
+    "environmentSettings": {
+        "webSite": {
+            "name": "unitus-core",
+            "location": "Japan East"
+        },
+        "databases": [
+            {
+                "connectionStringName": "DefaultConnection",
+                "databaseName": "unitus-core_db",
+                "serverName": "",
+                "user": "UnitusCore",
+                "password": "",
+                "edition": "",
+                "size": "",
+                "collation": "",
+                "location": "Japan East"
+            }
+        ]
+    }
+}
