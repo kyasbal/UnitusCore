@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -12,7 +13,8 @@ namespace UnitusCore.Models
     {
         public ApplicationUser()
         {
-            AccessableCircles=new HashSet<Circle>();    
+            AccessableCircles=new HashSet<Circle>();   
+            Permissions=new HashSet<UserPermission>(); 
         }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
@@ -25,8 +27,22 @@ namespace UnitusCore.Models
 
         public Person AccessablePerson { get; set; }
 
-        public ICollection<Circle> AccessableCircles { get; set; }  
+        public ICollection<Circle> AccessableCircles { get; set; } 
+        
+        public ICollection<UserPermission> Permissions { get; set; }  
     }
+
+    public class UserPermission : ModelBase
+    {
+        public UserPermission()
+        {
+            AllowedUsers=new HashSet<ApplicationUser>();
+        }
+        public string PermissionName { get; set; }
+
+        public ICollection<ApplicationUser> AllowedUsers { get; set; } 
+    }
+
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -39,5 +55,7 @@ namespace UnitusCore.Models
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<UserPermission> Permissions { get; set; }
     }
 }

@@ -1,0 +1,26 @@
+﻿@using System.Collections.Concurrent
+@{
+    Layout = "/Views/_BaseLayout.cshtml";
+    ViewBag.Title = "アカウントの追加(管理者)";
+}
+
+@section Header{
+    <link href="/Content/Styles/Login.css" rel="stylesheet">
+}
+
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png" />
+            <h1 class="login-header">ログイン</h1>
+            @using (Html.BeginForm("AddAcount", "Account", FormMethod.Post, new { @class = "login-form" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="email" name="UserName" class="form-control" 　placeholder="Eメールアドレス" />
+                <input type="password" name="Password" class="form-control" placeholder="パスワード"/>
+                <input type="checkbox" name="管理者権限"　class="form-control"/>
+                <input type="submit" value="追加" class="form-control btn btn-primary" />
+            }
+        </div>
+    </div>
+</div>

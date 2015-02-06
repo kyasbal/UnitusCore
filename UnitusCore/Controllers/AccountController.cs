@@ -11,6 +11,7 @@ using System.Web.Mvc.Filters;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using UnitusCore.Attributes;
 using UnitusCore.Models;
 
 namespace UnitusCore.Controllers
@@ -33,6 +34,7 @@ namespace UnitusCore.Controllers
         {
             return View();
         }
+
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -57,6 +59,13 @@ namespace UnitusCore.Controllers
             {
                 return loginFailedResult("不正なログイン情報が渡されました。");
             }
+        }
+
+        [RoleRestrict("Administrator")]
+        [HttpGet]
+        public async Task<ActionResult> AddAcount()
+        {
+            return View();
         }
 
         private ActionResult loginFailedResult(string errorMsg)

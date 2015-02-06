@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
@@ -21,13 +23,10 @@ namespace UnitusCore.Migrations
         public static void RunUserSeed(ApplicationDbContext context)
         {
             ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
-            RoleManager<IdentityRole> roleManager=new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            PermissionManager permissionManager=new PermissionManager(context,userManager);
             for (int i = 0; i < seedRoles.Length; i++)
             {
-                if (!roleManager.RoleExists(seedRoles[i]))
-                {
-                    roleManager.Create(new IdentityRole(seedRoles[i]));
-                }
+                permissionManager.SafePermissionGet(seedRoles[i]);
             }
             for (int i = 0; i < seedUsernames.Length; i++)
             {
@@ -38,8 +37,13 @@ namespace UnitusCore.Migrations
                     user.UserName = seedEmails[i];
                     user.Id = Guid.NewGuid().ToString();
                     userManager.Create(user, seedPasswords[i]);
-                    if (seedIsAdmin[i]) userManager.AddToRole(user.Id, GlobalConstants.AdminRoleName);
                 }
+                if (seedIsAdmin[i] && !permissionManager.CheckPermission(GlobalConstants.AdminRoleName, seedEmails[i]))
+                {
+                    permissionManager.ApplyPermissionToUser(GlobalConstants.AdminRoleName, seedEmails[i]);
+                    Debug.WriteLine("Applied administrator permission/target:{0}",seedEmails[i]);
+                }
+
             }
         }
     }
