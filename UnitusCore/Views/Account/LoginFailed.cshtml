@@ -4,6 +4,22 @@
     ViewBag.Title = "Login Failed";
 }
 
-<div class="container">
-    <h1>@Model.Message</h1>
+@section Header
+{
+    <link href="/Content/Styles/Login.css" rel="stylesheet"/>
+    <meta http-equiv="Refresh" content="3;URL=@(Url.Action("Login"))" />
+}
+
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png" />
+            <h1>ログインに失敗しました</h1>
+            <p>@Model.Message</p>
+            <p>3秒後にログイン画面に戻ります。</p>
+            <div class="go-loginpage-link-container">
+                @Html.ActionLink("ログイン画面へ>>", "Login")
+            </div>
+        </div>
+    </div>
 </div>

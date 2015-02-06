@@ -7,10 +7,9 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <meta name="robots" content="noindex,nofollow"/>
     <title>@ViewBag.Title</title>
+    @RenderSection("Header",false)
 </head>
 <body>
-    <div>
         @RenderBody()
-    </div>
 </body>
 </html>

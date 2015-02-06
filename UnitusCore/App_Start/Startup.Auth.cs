@@ -29,8 +29,12 @@ namespace UnitusCore
 
             //// アプリケーションが Cookie を使用して、サインインしたユーザーの情報を格納できるようにします
             //// また、サードパーティのログイン プロバイダーを使用してログインするユーザーに関する情報を、Cookie を使用して一時的に保存できるようにします
-            app.UseCookieAuthentication(new CookieAuthenticationOptions());
-            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/Account/Login")
+            });
+            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ApplicationCookie);
 
             //// OAuth ベースのフローのためのアプリケーションの設定
             PublicClientId = "self";
