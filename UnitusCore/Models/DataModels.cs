@@ -88,6 +88,11 @@ namespace UnitusCore.Models
         public string Notes { get; set; }
 
         public ICollection<Person> Members { get; set; }
+
+        public int Progress { get; set; }
+
+        public DateTime BeginTime { get; set; }
+
         public enum  ProjectType
         {
             EventProject,StandaloneProject

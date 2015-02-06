@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -9,6 +10,11 @@ namespace UnitusCore.Models
     // ApplicationUser クラスにプロパティを追加することでユーザーのプロファイル データを追加できます。詳細については、http://go.microsoft.com/fwlink/?LinkID=317594 を参照してください。
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+        {
+            AccessableCircles=new HashSet<Circle>();    
+        }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
             // authenticationType が CookieAuthenticationOptions.AuthenticationType で定義されているものと一致している必要があります
@@ -16,6 +22,10 @@ namespace UnitusCore.Models
             // ここにカスタム ユーザー クレームを追加します
             return userIdentity;
         }
+
+        public Person AccessablePerson { get; set; }
+
+        public ICollection<Circle> AccessableCircles { get; set; }  
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

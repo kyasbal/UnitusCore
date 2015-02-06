@@ -23,7 +23,7 @@ namespace UnitusCore
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = true
+                RequireUniqueEmail = false
             };
             // パスワードの検証ロジックを設定します
             manager.PasswordValidator = new PasswordValidator

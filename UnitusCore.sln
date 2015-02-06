@@ -18,7 +18,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F46AC2B-5796-404A-83CA-9E417B3E1249}"
 	ProjectSection(SolutionItems) = preProject
+		CommonVariables.ps1 = CommonVariables.ps1
+		Config.json = Config.json
 		.nuget\packages.config = .nuget\packages.config
+		RBD-AddMigration.ps1 = RBD-AddMigration.ps1
+		RemoteEnableMigrationsApplicationContext.ps1 = RemoteEnableMigrationsApplicationContext.ps1
+		RemoteEnableMigrationsBasicContext.ps1 = RemoteEnableMigrationsBasicContext.ps1
 	EndProjectSection
 EndProject
 Global

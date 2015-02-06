@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "/Views/_BaseLayout.cshtml";
+    ViewBag.Title = "ログイン";
+}
+<div class="container">
+    <h1>Unitus-Login</h1>
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken();
+        <input type="text" name="UserName"/>
+        <input type="password" name="Password"/>
+        <input type="submit"/>
+    }
+</div>

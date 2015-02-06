@@ -168,6 +168,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
@@ -175,10 +177,26 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="GlobalConstants.cs" />
+    <Compile Include="Migrations\201502060152514_FirstRemoteMigration.cs" />
+    <Compile Include="Migrations\201502060152514_FirstRemoteMigration.Designer.cs">
+      <DependentUpon>201502060152514_FirstRemoteMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502060155248_Migration2.cs" />
+    <Compile Include="Migrations\201502060155248_Migration2.Designer.cs">
+      <DependentUpon>201502060155248_Migration2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502060201205_Migration3.cs" />
+    <Compile Include="Migrations\201502060201205_Migration3.Designer.cs">
+      <DependentUpon>201502060201205_Migration3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DataModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\SimpleMessageResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
@@ -216,6 +234,10 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\_BaseLayout.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\web.config" />
+    <Content Include="Views\Account\LoginFailed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -226,6 +248,17 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201502060152514_FirstRemoteMigration.resx">
+      <DependentUpon>201502060152514_FirstRemoteMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502060155248_Migration2.resx">
+      <DependentUpon>201502060155248_Migration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502060201205_Migration3.resx">
+      <DependentUpon>201502060201205_Migration3.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
