@@ -1,0 +1,26 @@
+﻿@model UnitusCore.Controllers.SendMailConfirmationResponse
+
+@{
+    ViewBag.Title = "確認メールを送信しました";
+    Layout = "/Views/_BaseLayout.cshtml";
+}
+
+@section Header
+{
+    <link href="/Content/Styles/Login.css" rel="stylesheet" />
+    <meta http-equiv="Refresh" content="3;URL=@(Url.Action("Index","Home"))" />
+}
+
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png" />
+            <h1>@Model.Header</h1>
+            <p class="bg-@(Model.Success?"success" :"error")">@Model.Message</p>
+            <p>3秒後にホームに戻ります。</p>
+            <div class="go-loginpage-link-container">
+                @Html.ActionLink("ホーム", "Index","Home")
+            </div>
+        </div>
+    </div>
+</div>

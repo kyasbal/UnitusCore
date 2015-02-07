@@ -1,4 +1,4 @@
-﻿@using System.Collections.Concurrent
+﻿@model UnitusCore.Controllers.AddAccountInfomationResponse
 @{
     Layout = "/Views/_BaseLayout.cshtml";
     ViewBag.Title = "アカウントの追加(管理者)";
@@ -12,14 +12,20 @@
     <div class="table-cell">
         <div class="login-container">
             <img class="login-logo" src="/Content/logo.png" />
-            <h1 class="login-header">ログイン</h1>
-            @using (Html.BeginForm("AddAcount", "Account", FormMethod.Post, new { @class = "login-form" }))
+            <h1 class="login-header">アカウントの追加</h1>
+            @using (Html.BeginForm("AddAccount", "Account", FormMethod.Post, new { @class = "login-form" }))
             {
                 @Html.AntiForgeryToken()
                 <input type="email" name="UserName" class="form-control" 　placeholder="Eメールアドレス" />
                 <input type="password" name="Password" class="form-control" placeholder="パスワード"/>
-                <input type="checkbox" name="管理者権限"　class="form-control"/>
+                <label>
+                    <input type="checkbox" name="IsAdmin" class="form-control" />管理者権限
+                </label>
                 <input type="submit" value="追加" class="form-control btn btn-primary" />
+            }
+            @if (Model != null)
+            {
+                <p class="bg-@(Model.IsPositiveMessage?"success" :"warning")">@Html.Raw(Model.InfomationMessage)</p>
             }
         </div>
     </div>

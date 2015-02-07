@@ -46,3 +46,6 @@ html {
 .go-loginpage-link-container {
     text-align: right;
 }
+p {
+    padding: 10px 20px;
+}

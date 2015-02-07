@@ -196,6 +196,18 @@
     <Compile Include="Migrations\201502061403448_Migration4.Designer.cs">
       <DependentUpon>201502061403448_Migration4.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502070611048_Migration5.cs" />
+    <Compile Include="Migrations\201502070611048_Migration5.Designer.cs">
+      <DependentUpon>201502070611048_Migration5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502070639147_Migration6.cs" />
+    <Compile Include="Migrations\201502070639147_Migration6.Designer.cs">
+      <DependentUpon>201502070639147_Migration6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502070849359_Migration7.cs" />
+    <Compile Include="Migrations\201502070849359_Migration7.Designer.cs">
+      <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -203,13 +215,23 @@
     <Compile Include="Models\DataModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\PermissionManager.cs" />
+    <Compile Include="Models\SendMailConfirmResponse.cs" />
     <Compile Include="Models\SimpleMessageResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Results\ResultBase.cs" />
+    <Compile Include="SendGridSharp\GenericResult.cs" />
+    <Compile Include="SendGridSharp\SendGridClient.cs" />
+    <Compile Include="SendGridSharp\SendGridException.cs" />
+    <Compile Include="SendGridSharp\SendGridMessage.cs" />
+    <Compile Include="SendGridSharp\SendGridMessageExtensions.cs" />
+    <Compile Include="SendGridSharp\SmtpHeader.cs" />
+    <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
+    <Compile Include="Util\MailConfirmationSender.cs" />
+    <Compile Include="Util\SendGridManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\background.png" />
@@ -234,7 +256,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -249,7 +273,9 @@
     <Content Include="Views\web.config" />
     <Content Include="Views\Account\LoginFailed.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\AddAcount.cshtml" />
+    <Content Include="Views\Account\AddAccount.cshtml" />
+    <Content Include="Views\Account\MailConfirm.cshtml" />
+    <Content Include="Views\Account\SendMailConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -273,6 +299,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502061403448_Migration4.resx">
       <DependentUpon>201502061403448_Migration4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502070611048_Migration5.resx">
+      <DependentUpon>201502070611048_Migration5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502070639147_Migration6.resx">
+      <DependentUpon>201502070639147_Migration6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502070849359_Migration7.resx">
+      <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
