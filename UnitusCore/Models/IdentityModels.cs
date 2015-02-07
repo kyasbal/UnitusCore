@@ -58,6 +58,29 @@ namespace UnitusCore.Models
         public DateTime ExpireTime { get; set; }
     }
 
+    public class PasswordResetConfirmation : ModelBase
+    {
+        public static PasswordResetConfirmation GeneratePasswordResetConfirmation(ApplicationUser user,string confirmationId)
+        {
+            PasswordResetConfirmation confirm=new PasswordResetConfirmation();
+            confirm.GenerateId();
+            confirm.TargetUserIdentifyCode = Guid.Parse(user.Id);
+            confirm.UserInfo = user;
+            confirm.ExpireTime = DateTime.Now + new TimeSpan(0, 0, 30, 0);
+            confirm.ConfirmationId = confirmationId;
+            return confirm;
+        }
+
+        [Index]
+        public Guid TargetUserIdentifyCode { get; set; }
+
+        public string ConfirmationId { get; set; }
+
+        public ApplicationUser UserInfo { get; set; }
+
+        public DateTime ExpireTime { get; set; }
+    }
+
 
     public class UserPermission : ModelBase
     {
@@ -86,6 +109,8 @@ namespace UnitusCore.Models
         public DbSet<UserPermission> Permissions { get; set; }
 
         public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+
+        public DbSet<PasswordResetConfirmation> PasswordResetConfirmations { get; set; }
     }
 
     public static class AccountExtensionMethods

@@ -16,6 +16,7 @@
             <img class="login-logo" src="/Content/logo.png" />
             <h1>ログインに失敗しました</h1>
             <p>@Model.Message</p>
+            @Html.ActionLink("パスワードを忘れた", "ForgotPassword")
             <p>3秒後にログイン画面に戻ります。</p>
             <div class="go-loginpage-link-container">
                 @Html.ActionLink("ログイン画面へ>>", "Login")

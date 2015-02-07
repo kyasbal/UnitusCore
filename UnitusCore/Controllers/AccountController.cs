@@ -161,7 +161,93 @@ namespace UnitusCore.Controllers
             }
         }
 
-         private ActionResult loginFailedResult(string errorMsg)
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult> ForgotPassword(string errorMsg=null)
+        {
+            return View("ForgotPassword",new PasswordForgotResponse() {ErrorMessage = errorMsg});
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ForgotPassword(PasswordForgotRequest req)
+        {
+            var result=PasswordForgotManager.SendPasswordResetMail(req.EmailAddress, this);
+            if (result.Success)
+            {
+                return View("ForgotPasswordMailSent");
+            }
+            else
+            {
+                return await ForgotPassword(result.ErrorMessage);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult> ForgotPasswordConfirm(string confirmId)
+        {
+            return await ForgotPasswordConfirm(new PasswordInputRequest() {confirmId = confirmId});
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult> ForgotPasswordConfirm(PasswordInputRequest req)
+        {
+            var result = PasswordForgotManager.ConfirmConfirmationId(req.confirmId, this,false);
+            if (result.Success)
+            {
+                return View(req);
+            }
+            else
+            {
+                return await ForgotPassword("パスワードリセットトークンの認証に失敗しました。<br>"+result.ErrorMessage);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ForgotPasswordConfirmSave(PasswordForgotConfirmRequest req)
+        {
+            var result = PasswordForgotManager.ConfirmConfirmationId(req.confirmId, this,true);
+            if (result.Success)
+            {
+                var user = UserManager.FindByName(result.UserName);
+                if (user != null)
+                {
+                    IdentityResult resetResult=UserManager.ResetPassword(user.Id, req.confirmId, req.Password);
+                    if (resetResult.Succeeded)
+                    {
+                        SendGridManager.SendUseTemplate(user.UserName,TemplateType.PasswordResetConfirmationCompleted,new Dictionary<string, string>()
+                        {
+                            {"-username-",user.Email}
+                        });
+                        return View("ForgotPasswordComplete");
+                    }
+                    var request = new PasswordInputRequest()
+                    {
+                        confirmId = req.confirmId,
+                        ErrorMessage = resetResult.Errors.FirstOrDefault()
+                    };
+                    if (request.ErrorMessage == null || string.IsNullOrWhiteSpace(request.ErrorMessage))
+                        request.ErrorMessage = "パスワードの更新に失敗しました。";
+                    return RedirectToAction("ForgotPasswordConfirm", request);
+                }
+                else
+                {
+                    return await ForgotPassword("パスワードリセットトークンの認証に失敗しました。<br>" + result.ErrorMessage);
+                }
+            }
+            else
+            {
+                return await ForgotPassword("パスワードリセットトークンの認証に失敗しました。<br>" + result.ErrorMessage);
+            }
+        }
+
+
+        private ActionResult loginFailedResult(string errorMsg)
         {
             return View("LoginFailed", new SimpleMessageResponse(errorMsg));
         }
@@ -181,6 +267,31 @@ namespace UnitusCore.Controllers
             });
         }
 
+
+    }
+
+    public class PasswordForgotRequest
+    {
+        public string EmailAddress { get; set; }
+    }
+
+    public class PasswordForgotResponse
+    {
+        [AllowHtml]
+        public string ErrorMessage { get; set; }
+    }
+
+    public class PasswordInputRequest
+    {
+        public string confirmId { get; set; }
+
+        public string ErrorMessage { get; set; }
+    }
+
+    public class PasswordForgotConfirmRequest
+    {
+        public string confirmId { get; set; }
+        public string Password { get; set; }
     }
 
     public class LoginRequest

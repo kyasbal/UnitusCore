@@ -14,7 +14,9 @@ namespace UnitusCore.Util
         private static readonly Dictionary<TemplateType,string> TypeIdDictionary=new Dictionary<TemplateType, string>()
         {
             {TemplateType.AccountConfirmation,"9a973b47-1d0b-42ec-bde8-126978847c39"} ,
-            {TemplateType.AccountConfirmationCompleted, "0a215a48-69ba-491f-a60b-0079822801ef"}
+            {TemplateType.AccountConfirmationCompleted, "0a215a48-69ba-491f-a60b-0079822801ef"},
+            {TemplateType.PasswordResetConfirmation,"e882a447-7aae-44ea-92d8-9e52b9eeeff4"},
+            {TemplateType.PasswordResetConfirmationCompleted,"64260985-66e7-455c-9dc8-e122906f50b8"}
         };
         public static void SendUseTemplate(string to,TemplateType type,Dictionary<string,string> args)
         {
@@ -38,6 +40,8 @@ namespace UnitusCore.Util
     public enum TemplateType
     {
         AccountConfirmation,
-        AccountConfirmationCompleted
+        AccountConfirmationCompleted,
+        PasswordResetConfirmation,
+        PasswordResetConfirmationCompleted
     }
 }

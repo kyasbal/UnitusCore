@@ -208,6 +208,10 @@
     <Compile Include="Migrations\201502070849359_Migration7.Designer.cs">
       <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502071910069_Migration8.cs" />
+    <Compile Include="Migrations\201502071910069_Migration8.Designer.cs">
+      <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -231,6 +235,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
+    <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -276,6 +281,10 @@
     <Content Include="Views\Account\AddAccount.cshtml" />
     <Content Include="Views\Account\MailConfirm.cshtml" />
     <Content Include="Views\Account\SendMailConfirm.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirm.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordMailSent.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordComplete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -308,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502070849359_Migration7.resx">
       <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502071910069_Migration8.resx">
+      <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

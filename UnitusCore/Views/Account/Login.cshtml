@@ -18,7 +18,8 @@
                     @Html.AntiForgeryToken()
                     <input type="text" name="UserName" class="form-control" />
                     <input type="password" name="Password" class="form-control" />
-                    <input type="submit" value="ログイン" class="form-control btn btn-primary" />
+                    <input type="submit" value="ログイン" class="form-control btn btn-primary"/>
+                   @Html.ActionLink("パスワードを忘れた","ForgotPassword")
                 }
             </div>
         </div>
