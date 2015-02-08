@@ -19,6 +19,8 @@ namespace UnitusCore.Migrations
         {
             //  This method will be called after migrating to the latest version.
             UserSeedConfiguration.RunUserSeed(context);
+
+//
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data. E.g.
             //
@@ -31,4 +33,5 @@ namespace UnitusCore.Migrations
             //
         }
     }
+
 }

@@ -31,7 +31,7 @@ namespace UnitusCore.Models
         }
         public string GithubAccessToken { get; set; }
 
-        public Person AccessablePerson { get; set; }
+        public Person PersonData { get; set; }
 
         public ICollection<Circle> AccessableCircles { get; set; }
 

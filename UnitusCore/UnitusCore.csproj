@@ -168,9 +168,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="bin\RoleRestrictAttribute.cs" />
+    <Compile Include="Attributes\RoleRestrictAttribute.cs" />
     <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CircleController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
@@ -225,10 +226,15 @@
     <Compile Include="Migrations\201502080731228_Migration11.Designer.cs">
       <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502081324120_Migration12.cs" />
+    <Compile Include="Migrations\201502081324120_Migration12.Designer.cs">
+      <DependentUpon>201502081324120_Migration12.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AjaxRequestModelBase.cs" />
     <Compile Include="Models\DataModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\PermissionManager.cs" />
@@ -303,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -344,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502080731228_Migration11.resx">
       <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502081324120_Migration12.resx">
+      <DependentUpon>201502081324120_Migration12.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

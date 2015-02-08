@@ -169,8 +169,8 @@ namespace UnitusCore.Models
         public Person()
         {
             BelongedCircles = new HashSet<Circle>();
-            CommittedProjects=new List<Project>();
-            Skills=new ArraySegment<Skill>();
+            CommittedProjects=new HashSet<Project>();
+            Skills=new HashSet<Skill>();
         }
         public string Name { get; set; }
 

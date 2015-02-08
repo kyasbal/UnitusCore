@@ -166,118 +166,145 @@
         </div>
     </section>
 </div>
-    @if (Model.IsAdministrator)
-    {
-        <!--===============================================================================================
-        管理者用
-        ================================================================================================-->
-        <div id="administrator" class="hidden_panel">
-            <!--========================================================================
-            | 管理者用 > サイドバー |
-            =========================================================================-->
-            <section class="sidebar">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#admin_new_circle" aria-controls="admin_new_circle" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-th"></i><span class="title">新規団体追加</span></a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#admin_mail" aria-controls="admin_mail" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-envelope"></i><span class="title">メール管理</span></a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#admin_profile" aria-controls="admin_profile" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-user"></i><span class="title">プロフィール</span></a>
-                    </li>
-                </ul>
-            </section>
-            <!--========================================================================
-            | 管理者用 > コンテンツ |
-            =========================================================================-->
-            <section class="content admin_content">
-                <div class="tab-content">
-                    <!--============================================================
-                    | 管理者用 > コンテンツ > 団体作成 |
-                    =============================================================-->
-                    <div role="tabpanel" class="tab-pane fade in active" id="admin_new_circle">
-                        <h1>新規団体追加</h1>
-                        <form>
-                            <div class="form-group">
-                                <label for="circle_name">団体名</label>
-                                <input type="text" class="form-control" id="circle_name" placeholder="応用数学研究部">
-                                <label for="circle_description">団体説明</label>
-                                <textarea class="form-control" id="circle_description" placeholder="団体説名を記入"></textarea>
-                                <label for="circle_num">人数</label>
-                                <input type="text" class="form-control" id="circle_num" placeholder="18">
-                                <label for="site_name">ウェブサイト</label>
-                                <input type="text" class="form-control" id="site_name" placeholder="http://unitus-ac.com">
-                                <label for="university">所属大学</label>
-                                <input type="text" class="form-control" id="university" placeholder="東京理科大学">
-                                <label for="remarks">備考</label>
-                                <textarea class="form-control" id="remarks" placeholder="インカレサークルです。"></textarea>
-                                <label for="contact">連絡先</label>
-                                <input type="text" class="form-control" id="contact" placeholder="Tel: 090123456">
-                                <label for="leader">代表者</label>
-                                <input type="text" class="form-control" id="leader" placeholder="代表者ID">
-                                <div class="checkbox">
-                                    <label>
-                                        <input id="isAcceptOutside" type="checkbox"> 外部生のサークル加入可否
-                                    </label>
-                                </div>
-                                <div class="pull-right">
-                                    <button type="submit" class="btn btn-primary">保存する</button>
-                                </div>
+@if (Model.IsAdministrator)
+{
+    <!--===============================================================================================
+    管理者用
+    ================================================================================================-->
+    <div id="administrator" class="hidden_panel">
+        <!--========================================================================
+        | 管理者用 > サイドバー |
+        =========================================================================-->
+        <section class="sidebar">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#admin_new_circle" aria-controls="admin_new_circle" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-th"></i><span class="title">新規団体追加</span></a>
+                </li>
+                <li role="presentation">
+                    <a href="#admin_mail" aria-controls="admin_mail" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-envelope"></i><span class="title">メール管理</span></a>
+                </li>
+                <li role="presentation">
+                    <a href="#admin_profile" aria-controls="admin_profile" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-user"></i><span class="title">プロフィール</span></a>
+                </li>
+            </ul>
+        </section>
+        <!--========================================================================
+        | 管理者用 > コンテンツ |
+        =========================================================================-->
+        <section class="content admin_content">
+            <div class="tab-content">
+                <!--============================================================
+                | 管理者用 > コンテンツ > 団体作成 |
+                =============================================================-->
+                <div role="tabpanel" class="tab-pane fade in active" id="admin_new_circle">
+                    <h1>新規団体追加</h1>
+                    <form>
+                        <div class="form-group">
+                            <label for="circle_name">団体名</label>
+                            <input type="text" class="form-control" id="circle_name" placeholder="応用数学研究部">
+                            <label for="circle_description">団体説明</label>
+                            <textarea class="form-control" id="circle_description" placeholder="団体説名を記入"></textarea>
+                            <label for="circle_num">人数</label>
+                            <input type="text" class="form-control" id="circle_num" placeholder="18">
+                            <label for="site_name">ウェブサイト</label>
+                            <input type="text" class="form-control" id="site_name" placeholder="http://unitus-ac.com">
+                            <label for="university">所属大学</label>
+                            <input type="text" class="form-control" id="university" placeholder="東京理科大学">
+                            <label for="remarks">備考</label>
+                            <textarea class="form-control" id="remarks" placeholder="インカレサークルです。"></textarea>
+                            <label for="contact">連絡先</label>
+                            <input type="text" class="form-control" id="contact" placeholder="Tel: 090123456">
+                            <label for="leader">代表者</label>
+                            <input type="text" class="form-control" id="leader" placeholder="代表者ID">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="isAcceptOutside" type="checkbox"> 外部生のサークル加入可否
+                                </label>
                             </div>
-                        </form>
-                    </div>
-                    <!--============================================================
-                    | 管理者用 > コンテンツ > メール管理 |
-                    =============================================================-->
-                    <div role="tabpanel" class="tab-pane fade" id="admin_mail">
-                        <h1>メール管理</h1>
-                    </div>
-                    <!--============================================================
-                    | 管理者用 > コンテンツ > プロフィール |
-                    =============================================================-->
-                    <!-- Profile tab -->
-                    <div role="tabpanel" class="tab-pane fade" id="admin_profile">
-                        <h1>プロフィール</h1>
-                        <div class="content">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <img class="profile_image" src="/img/profile.png" alt="..."><!--TODO フォルダ修正-->
-                                    <h1 class="profile_name">種市 隼兵</h1>
-                                    <h2 class="profile_id">@@gamerinshaft</h2>
-                                </div>
+                            <div class="pull-right">
+                                <a class="btn btn-primary" id="save_circle">保存する</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!--============================================================
+                | 管理者用 > コンテンツ > メール管理 |
+                =============================================================-->
+                <div role="tabpanel" class="tab-pane fade" id="admin_mail">
+                    <h1>メール管理</h1>
+                </div>
+                <!--============================================================
+                | 管理者用 > コンテンツ > プロフィール |
+                =============================================================-->
+                <!-- Profile tab -->
+                <div role="tabpanel" class="tab-pane fade" id="admin_profile">
+                    <h1>プロフィール</h1>
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <img class="profile_image" src="/img/profile.png" alt="..."><!--TODO フォルダ修正-->
+                                <h1 class="profile_name">種市 隼兵</h1>
+                                <h2 class="profile_id">@@gamerinshaft</h2>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-            <section class="optionbar">
-                <div class="close_btn" data-js="close_admin">
-                    <div class="glyphicon glyphicon-remove"></div>
-                </div>
-            </section>
-        </div>
-    }
+            </div>
+        </section>
+        <section class="optionbar">
+            <div class="close_btn" data-js="close_admin">
+                <div class="glyphicon glyphicon-remove"></div>
+            </div>
+        </section>
+    </div>
+}
 </div>
 </div>
-<script>
-    $(function()
-    {
-        $("[data-js=open_admin]").on("click", function(e)
+@if(Model.IsAdministrator) {
+    <script>
+        $(function()
         {
-            e.stopPropagation();
-            e.preventDefault();
-            $("#administrator").removeClass("hidden_panel");
+            $("#save_circle").on("click", function(e)
+            {
+                var sendData = {
+                    ValidationToken:"@(Model.ValidationAjaxToken)",
+                    CircleName: $("#circle_name").val(),
+                    Description: $("#circle_description").val(),
+                    MemberCount: $("#circle_num").val(),
+                    WebSiteAddress: $("#site_name").val(),
+                    BelongedUniversity: $("#university").val(),
+                    Note: $("#remarks").val(),
+                    Address: $("#contact").val(),
+                    LeaderUserName:$("#leader").val(),
+                    InterColledgeAccepted:$("#isAcceptOutside").val()
+                 };
+                $.ajax(
+                {
+                    type: "POST",
+                    url:"@(Url.Action("AddCircle", "Circle",null,Request.Url.Scheme))",
+                    data: sendData,
+                    success:function(msg)
+                    {
+                        
+                    }
+                });
+            });
+            $("[data-js=open_admin]").on("click", function(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+                $("#administrator").removeClass("hidden_panel");
+            });
+
+            $("[data-js=close_admin]").on("click", function(e)
+            {
+                $("#administrator").addClass("hidden_panel");
+            });
         });
 
-        $("[data-js=close_admin]").on("click", function(e)
-        {
-            $("#administrator").addClass("hidden_panel");
-        });
-    });
-
-</script>
+    </script>
+}

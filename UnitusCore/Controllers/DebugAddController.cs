@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,6 +25,17 @@ namespace UnitusCore.Controllers
             }
         }
 
+        public ApplicationDbContext applicationDbSession
+        {
+            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
+        }
+
+        public ApplicationUserManager userManager
+        {
+            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
+        }
+
+
         [Route("add/circle")]
         [HttpPost]
         public async Task<IHttpActionResult> AddCircle([FromBody]RequestModel req)
@@ -38,6 +51,33 @@ namespace UnitusCore.Controllers
             //DbSession.Circles.Add(c);
             //DbSession.SaveChanges();
             return Json(true);
+        }
+
+        [Route("test")]
+        [HttpGet]
+        public async Task<IHttpActionResult> Test()
+        {
+            try
+            {
+                foreach (ApplicationUser user in applicationDbSession.Users.Include(s => s.PersonData))
+                {
+                    if (user.PersonData == null)
+                    {
+                        Person person = new Person();
+                        person.GenerateId();
+                        person.Email = user.Email;
+                        DbSession.People.Add(person);
+                        user.PersonData = person;
+                    }
+                }
+                applicationDbSession.SaveChanges();
+                DbSession.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return Content(HttpStatusCode.OK, e.ToString());
+            }
+            return Content(HttpStatusCode.OK, "finished");
         }
 
         public class RequestModel
