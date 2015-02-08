@@ -1,0 +1,4 @@
+{
+    "RemoteConnectionString": "Data Source=tcp:cv4qa57efn.database.windows.net,1433;Initial Catalog=unitus-core_db;User ID=UnitusCore@cv4qa57efn;Password=wNTdzCtn%d",
+    "RemoteConnectionProvider": "System.Data.SqlClient"
+}
