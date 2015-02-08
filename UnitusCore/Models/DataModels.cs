@@ -31,6 +31,10 @@ namespace UnitusCore.Models
         public DbSet<Skill> Skills { get; set; }
 
         public DbSet<Statistics> Statisticses { get; set; }
+
+        public DbSet<CircleStatistics> CircleStatisticses { get; set; }
+
+        public DbSet<MemberStatus> MemberStatuses { get; set; }
     }
     public abstract class ModelBase
     {
@@ -50,6 +54,8 @@ namespace UnitusCore.Models
             Events = new HashSet<Event>();
             Projects = new HashSet<Project>();
             Achivements=new HashSet<Achivement>();
+            Members=new HashSet<MemberStatus>();
+            CircleStatistises=new HashSet<CircleStatistics>();
         }
 
         public string Name { get; set; }
@@ -67,12 +73,27 @@ namespace UnitusCore.Models
         public ICollection<Project> Projects { get; set; }
         
         public ICollection<Achivement> Achivements { get; set; }
+
+        public ICollection<MemberStatus> Members { get; set; } 
         
         public string  Notes { get; set; }
 
         public string Contact { get; set; }
 
         public bool CanInterCollege { get; set; }
+
+        public ICollection<CircleStatistics> CircleStatistises { get; set; }
+        
+        public CircleStatistics LastCircleStatistics { get; set; } 
+    }
+
+    public class MemberStatus : ModelBase
+    {
+        public string Occupation { get; set; }
+
+        public bool IsActiveMember { get; set; }
+
+        public Person TargetPerson { get; set; }
     }
 
     public class Project :ModelBase
@@ -193,5 +214,20 @@ namespace UnitusCore.Models
         public int SumCircles { get; set; }
 
         public int SumPeoples { get; set; }
+    }
+
+    public class CircleStatistics : ModelBase
+    {
+        public int GithubUserCount { get; set; }
+
+        public int RepositoryCount { get; set; }
+
+        public int CommitCount { get; set; }
+
+        public double CommitPerUser { get; set; }
+
+        public Circle RelatedCircle { get; set; }
+
+        public DateTime StatDate { get; set; }
     }
 }

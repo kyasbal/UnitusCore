@@ -29,6 +29,7 @@ namespace UnitusCore.Models
             // ここにカスタム ユーザー クレームを追加します
             return userIdentity;
         }
+        public string GithubAccessToken { get; set; }
 
         public Person AccessablePerson { get; set; }
 

@@ -168,13 +168,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Attributes\RoleRestrictAttribute.cs" />
+    <Compile Include="bin\RoleRestrictAttribute.cs" />
     <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
     <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\GithubController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -211,6 +212,18 @@
     <Compile Include="Migrations\201502071910069_Migration8.cs" />
     <Compile Include="Migrations\201502071910069_Migration8.Designer.cs">
       <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502080651134_Migration9.cs" />
+    <Compile Include="Migrations\201502080651134_Migration9.Designer.cs">
+      <DependentUpon>201502080651134_Migration9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502080724346_Migration10.cs" />
+    <Compile Include="Migrations\201502080724346_Migration10.Designer.cs">
+      <DependentUpon>201502080724346_Migration10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502080731228_Migration11.cs" />
+    <Compile Include="Migrations\201502080731228_Migration11.Designer.cs">
+      <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
@@ -320,6 +333,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502071910069_Migration8.resx">
       <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502080651134_Migration9.resx">
+      <DependentUpon>201502080651134_Migration9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502080724346_Migration10.resx">
+      <DependentUpon>201502080724346_Migration10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502080731228_Migration11.resx">
+      <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
