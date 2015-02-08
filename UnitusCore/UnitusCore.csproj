@@ -247,6 +247,7 @@
     <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
+    <Compile Include="Util\GithubAssociationManager.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
@@ -256,6 +257,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\logo.png" />
+    <Content Include="Content\Styles\dashboard.css" />
     <Content Include="Content\Styles\Login.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

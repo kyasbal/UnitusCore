@@ -26,7 +26,8 @@ namespace UnitusCore.Controllers
 
         private Dictionary<string, GithubApplicationKey> ApplicationKeys = new Dictionary<string, GithubApplicationKey>()
         {
-            {"DEBUG", new GithubApplicationKey("90a14fa554f58795c58b", "038426bee3d13ca096fd1a478b5ac5ca86e84a5b")}
+            {"DEBUG", new GithubApplicationKey("90a14fa554f58795c58b", "038426bee3d13ca096fd1a478b5ac5ca86e84a5b")},
+            {"RELEASE",new GithubApplicationKey("9ee00b1085561f4f6ec4","4a72770f6d802a2f451036dc5994e8df4540da07")}
         };
 
 
@@ -52,7 +53,7 @@ namespace UnitusCore.Controllers
             {
 #if DEBUG
                 return ApplicationKeys["DEBUG"];
-#elif RELEASE
+#else
                 return ApplicationKeys["RELEASE"];
 #endif
             }

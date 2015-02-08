@@ -1,0 +1,394 @@
+/*=======================
+        z-index
+=======================*/
+
+section.header{
+  z-index: 50;
+}
+section.sidebar{
+  z-index: 40;
+}
+section.content{
+  z-index: 30;
+}
+
+#administrator{
+  z-index: 10;
+}
+#basic_user{
+  z-index: 5;
+}
+/*=======================
+        default
+=======================*/
+body,html{
+  height: 100%;
+  background-color: white;
+}
+
+
+.main{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0px 0px 64px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.container{
+  height: 100%;
+  width: 1040px;
+}
+#administrator, #basic_user{
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  top: 42px;
+}
+#administrator {
+    -moz-transition: transform 0.5s ease-out;
+    -o-transition: transform 0.5s ease-out;
+    -webkit-transition: transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
+}
+#administrator.hidden_panel{
+  transform: translateX(-1010px);
+}
+/*=======================
+   section header
+=======================*/
+section.header{
+  width: 100%;
+  position: absolute;
+  background-color: rgb(53,63,77);
+}
+section.header h1{
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 24px;
+  padding: 8px;
+  letter-spacing: 8px;
+  color: whitesmoke
+}
+section.header .dropdown{
+  display: inline-block;
+  color: whitesmoke;
+  position: absolute;
+  z-index: 5;
+  top: 0px;
+  right: 0px;
+}
+section.header .dropdown #account{
+  cursor: pointer;
+  padding: 10px 24px;
+}
+
+section.header .dropdown .dropdown-menu{
+  margin: 0px;
+}
+
+section.header .dropdown.open .dropdown-menu{
+  height: 200px;
+}
+
+section.header .dropdown .dropdown-menu .divider{
+  border-top: 1px solid #A1A5B2;
+  border-bottom: 1px solid #152545;
+  height: 0px;
+  margin: 0px;
+}
+section.header .dropdown .dropdown-menu{
+  -webkit-transition: .3s ease-in-out height;
+       -o-transition: .3s ease-in-out height;
+          transition: .3s ease-in-out height;
+  right: 0px;
+  left: auto;
+  background-color: rgb(53,63,77);
+  border-radius: 0px;
+  display: block;
+  height: 0px;
+  overflow: hidden;
+  padding: 0px;
+  border: none;
+}
+section.header .dropdown .dropdown-menu li.menu{
+  padding: 6px 8px;
+  font-size: 10px;
+  color: rgb(174, 197, 216)
+}
+section.header .dropdown .dropdown-menu li.item{
+  font-size: 12px;
+  padding: 4px 16px;
+  cursor: pointer;
+}
+section.header .dropdown .dropdown-menu li.item:hover{
+  background-color: rgb(67, 81, 98);
+}
+/*=======================
+   section sidebar
+=======================*/
+section.sidebar{
+  overflow: scroll;
+  position: absolute;
+  width: 200px;
+  display: inline-block;
+  top: 0px;
+  left: 0px;
+  right: 200px;
+  bottom: 0px;
+  padding: 16px 0px;
+  background-color: rgb(239,242,245);
+  overflow: scroll;
+}
+section.sidebar ul li{
+  width: 100%;
+  margin: 0px;
+}
+section.sidebar ul li a{
+  border: none;
+  border-radius: 0px;
+  color: rgb(183, 185, 193);
+  margin: 0px;
+}
+section.sidebar ul li a .glyphicon{
+  font-size: 24px;
+  vertical-align: top;
+  display: inline-block;
+}
+section.sidebar ul li a .title{
+  vertical-align: top;
+  font-size: 12px;
+  display: inline-block;
+  padding: 2px 8px;
+}
+section.sidebar ul li.active a{
+  border: none !important;
+  margin: 0px;
+  border-radius: 0px;
+  background-color: white;
+  border-color: white;
+  right: 0px;
+}
+section.sidebar ul li a:hover{
+  border: none;
+  margin: 0;
+}
+section.sidebar ul li.active a:hover{
+  margin-top:0px;
+  border: none;
+  border-radius: 0px;
+}
+/*=======================
+   section optionbar
+=======================*/
+section.optionbar{
+  overflow: scroll;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0px;
+  width: 40px;
+  background-color: rgb(119, 142, 173);
+}
+section.optionbar .close_btn{
+  cursor: pointer;
+  position: absolute;
+  right: 0px;
+  padding: 10px 13px;
+  color: white;
+}
+
+/*=======================
+   section content
+=======================*/
+section.content{
+  overflow: scroll;
+  top: 0px;
+  background-color: white;
+  display: inline-block;
+  position: absolute;
+  left: 200px;
+  right: 0px;
+  bottom: 0px;
+  padding: 24px;
+  overflow: scroll;
+}
+section.content.admin_content{
+  right: 40px;
+}
+
+section.content h1{
+  color: rgb(85, 85, 90);
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 1.4px;
+}
+/*=============================================
+       section content admin_new_circle
+=============================================*/
+#admin_new_circle h1{
+  margin-bottom: 32px;
+}
+#admin_new_circle label{
+  color: #555;
+  margin-top: 12px;
+  padding: 0px 2px;
+}
+#admin_new_circle .checkbox label{
+  margin-left: 20px;
+}
+/*=======================
+         circles
+=======================*/
+#circles table{
+  width: 100%;
+  margin-top: 40px;
+}
+
+#circles table thead{
+  border-bottom: solid 3px #ccc;
+}
+#circles table thead tr th{
+  border-right: 1px solid #ccc;
+  padding-left: 8px;
+  font-weight: normal;
+  font-size: 13px;
+}
+#circles table thead tr th.name_w{
+  width: 40%;
+}
+#circles table thead tr th.number_w{
+  width: 10%;
+}
+#circles table thead tr th.university_w{
+  width: 20%;
+}
+#circles table thead tr th.update_w{
+  width: 30%;
+}
+#circles table thead tr th.author_w{
+  width: 10%;
+}
+#circles table tbody{
+  font-size: 12px;
+}
+#circles table tbody tr{
+  border-bottom: solid 1px white;
+}
+#circles table tbody tr td{
+  padding: 8px;
+  position: relative;
+}
+#circles table tbody tr.self .name{
+  background-color: rgb(22, 160, 133);
+  color: white;
+}
+#circles table tbody tr .name{
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: rgba(87, 214, 141, 0.45);
+}
+#circles table tbody tr:hover .name{
+  background-color: rgb(87, 214, 141);
+  color: white;
+}
+#circles table tbody tr:hover .update,#circles table tbody tr:hover .number,#circles table tbody tr:hover .author, #circles table tbody tr:hover .university{
+  background-color: rgba(87, 214, 141, 0.45);
+}
+#circles table tbody tr.self .name:hover{
+  opacity: 0.8;
+}
+#circles table tbody tr.self .update,#circles table tbody tr.self .number,#circles table tbody tr.self .author, #circles table tbody tr.self .university{
+  background-color: rgb(26, 188, 156);
+  color: white;
+}
+
+#circles table tbody:before{
+  content: "";
+  margin-top: 16px;
+  display: block;
+  width: 100%;
+  background-color: transparent;
+}
+#circles table tr i{
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  padding: 7px 0px;
+  display: none;
+  color: white;
+}
+#circles table tr.self i{
+  color: white;
+  display: block;
+}
+#circles table tr:hover i{
+  display: block;
+}
+/*=======================
+         new_circle
+=======================*/
+  section.new_circle{
+    position: absolute;
+    top: 42px;
+    bottom: 0px;
+    background-color: white;
+    width: 810px;
+    padding: 24px;
+    left: -610px;
+  }
+  section.new_circle .optionbar{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding: 12px;
+    background-color: rgb(121, 195, 228);
+  }
+  section.new_circle .optionbar .close_btn{
+    color: white;
+    cursor: pointer;
+  }
+  section.new_circle h1{
+  color: rgb(85, 85, 90);
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 1.4px;
+}
+/*=======================
+         profile
+=======================*/
+#profile .content{
+  margin-top: 40px;
+}
+#profile .content .profile_image{
+  background-color: whitesmoke;
+  width: 100%;
+}
+#profile .content .profile_name{
+  text-align: left;
+  font-size: 24px;
+  font-weight: bold;
+  text-indent: 8px;
+  margin-top: 10px;
+}
+#profile .content .profile_id{
+  text-align: left;
+  text-indent: 8px;
+  font-size: 16px;
+  margin-top: 10px;
+}
+/*ユーザー情報*/
+/*名前*/
+/*主要言語*/
+/*過去に参加したイベント*/
+/*大会の受賞記録*/
+/*所属団体*/
+/*役職*/
+/*備考*/
+/*github.com*/
+
