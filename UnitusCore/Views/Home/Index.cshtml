@@ -285,11 +285,11 @@
                 $.ajax(
                 {
                     type: "POST",
-                    url:"@(Url.Action("AddCircle", "Circle",null,Request.Url.Scheme))",
+                    url:"/Circle",
                     data: sendData,
                     success:function(msg)
                     {
-                        
+                        alert(msg);
                     }
                 });
             });

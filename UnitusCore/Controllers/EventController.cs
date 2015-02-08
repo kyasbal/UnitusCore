@@ -12,16 +12,7 @@ namespace UnitusCore.Controllers
 {
     public class EventController : ApiController
     {
-        private BasicDbContext _dbSession;
 
-        public BasicDbContext DbSession
-        {
-            get
-            {
-                _dbSession = _dbSession ?? Request.GetOwinContext().Get<BasicDbContext>();
-                return _dbSession;
-            }
-        }
 
         //[Route("event/{eventName}")]
         //public Task<IHttpActionResult> Index(string eventName)

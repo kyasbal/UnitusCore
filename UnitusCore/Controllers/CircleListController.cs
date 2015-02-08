@@ -14,13 +14,13 @@ namespace UnitusCore.Controllers
 {
     public class CircleListController : ApiController
     {
-        private BasicDbContext _dbSession;
+        private ApplicationDbContext _dbSession;
 
-        public BasicDbContext DbSession
+        public ApplicationDbContext DbSession
         {
             get
             {
-                _dbSession = _dbSession ?? Request.GetOwinContext().Get<BasicDbContext>();
+                _dbSession = _dbSession ?? Request.GetOwinContext().Get<ApplicationDbContext>();
                 return _dbSession;
             }
         }

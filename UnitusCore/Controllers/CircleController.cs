@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -31,10 +32,6 @@ namespace UnitusCore.Controllers
             get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
         }
 
-        public BasicDbContext BasicDbSession
-        {
-            get { return Request.GetOwinContext().Get<BasicDbContext>(); }
-        }
 
         [HttpPost]
         [Authorize]
@@ -47,29 +44,32 @@ namespace UnitusCore.Controllers
                 try
                 {
                     ApplicationUser user = UserManager.FindByName(req.LeaderUserName);
-                    //MemberStatus memberStatus=new MemberStatus();
-                    //memberStatus.GenerateId();
-                    //memberStatus.IsActiveMember = true;
-                    //memberStatus.Occupation = "代表者";
-                    //memberStatus.TargetPerson = user.AccessablePerson;
-                    //Circle circle = new Circle();
-                    //circle.GenerateId();
-                    //circle.Name = r.CircleName;
-                    //circle.Description = r.Description;
-                    //circle.MemberCount = r.MemberCount;
-                    //circle.WebAddress = r.WebSiteAddress;
-                    //circle.BelongedSchool = r.BelongedUniversity;
-                    //circle.Notes = r.Note;
-                    //circle.Contact = r.Address;
-                    //circle.CanInterCollege = r.InterColledgeAccepted;
-                    //circle.Members.Add(user);
-                    //BasicDbSession.Circles.Add(circle);
-                    //BasicDbSession.SaveChanges();
-                    //return Json(ResultContainer.GenerateSuccessResult());
+                    MemberStatus memberStatus = new MemberStatus();
+                    memberStatus.GenerateId();
+                    memberStatus.IsActiveMember = true;
+                    memberStatus.Occupation = "代表者";
+                    memberStatus.TargertUserKey = Guid.Parse(user.Id);
+                    ApplicationDbSession.MemberStatuses.Add(memberStatus);
+                    ApplicationDbSession.SaveChanges();
+                    Circle circle = new Circle();
+                    circle.GenerateId();
+                    circle.Name = r.CircleName;
+                    circle.Description = r.Description;
+                    circle.MemberCount = r.MemberCount;
+                    circle.WebAddress = r.WebSiteAddress;
+                    circle.BelongedSchool = r.BelongedUniversity;
+                    circle.Notes = r.Note;
+                    circle.Contact = r.Address;
+                    circle.CanInterCollege = r.InterColledgeAccepted;
+                    circle.Members.Add(memberStatus);
+                    ApplicationDbSession.Circles.Add(circle);
+                    ApplicationDbSession.SaveChanges();
+                    return Json(ResultContainer.GenerateSuccessResult());
                 }
                 catch (Exception exe)
                 {
-                    return Json(ResultContainer.GenerateFaultResult("LeaderId notfound"));
+                    Trace.WriteLine(exe.ToString());
+                    return Json(ResultContainer.GenerateFaultResult(exe.ToString()));
                 }
 
                 return Json(true);

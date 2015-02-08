@@ -22,7 +22,6 @@ namespace UnitusCore
         // 認証設定の詳細については、http://go.microsoft.com/fwlink/?LinkId=301864 を参照してください
         public void ConfigureAuth(IAppBuilder app)
         {
-            app.CreatePerOwinContext(BasicDbContext.Create);
             //// リクエストあたり 1 インスタンスのみを使用するように DB コンテキストとユーザー マネージャーを設定します
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
