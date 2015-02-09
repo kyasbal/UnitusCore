@@ -28,9 +28,9 @@ namespace UnitusCore
             // パスワードの検証ロジックを設定します
             manager.PasswordValidator = new PasswordValidator
             {
-                RequiredLength = 6,
-                RequireNonLetterOrDigit = true,
-                RequireDigit = true,
+                RequiredLength = 8,
+                RequireNonLetterOrDigit = false,
+                RequireDigit =false,
                 RequireLowercase = true,
                 RequireUppercase = true,
             };

@@ -1,4 +1,45 @@
 /*=======================
+         noty
+=======================*/
+.animated{
+  height: auto !important;
+  background-color: white !important;
+  border: none !important;
+}
+.animated .noty_title{
+  font-weight: bold;
+  font-size: 16px;
+  padding: 8px;
+}
+.animated .noty_type_info {
+  border: solid 1px rgb(79, 149, 216);
+  color: rgb(0, 148, 255);
+}
+.animated .noty_type_info .noty_title {
+  color: rgba(0, 110, 255, 0.8);
+}
+.animated .noty_type_error {
+  color: rgb(200, 100, 100) !important;
+  border: solid 1px darkred;
+}
+.animated .noty_type_success {
+  color: rgb(114, 187, 114) !important;
+  border: solid 1px rgb(0, 139, 23);
+}
+.animated .noty_title i{
+  margin-right: 8px;
+}
+.animated .noty_type_error .noty_title{
+  color: darkred;
+}
+.animated .noty_type_success .noty_title{
+  color: rgb(65, 147, 65);
+}
+.animated .noty_content{
+  padding-left: 24px;
+}
+
+/*=======================
         z-index
 =======================*/
 
@@ -21,9 +62,10 @@ section.content{
 /*=======================
         default
 =======================*/
-body,html{
-  height: 100%;
+body, html{
   background-color: white;
+  height: 100%;
+  width: 100%;
 }
 
 
@@ -47,10 +89,11 @@ body,html{
   left: 0px;
   top: 42px;
 }
-#administrator {
-    -moz-transition: transform 0.5s ease-out;
-    -o-transition: transform 0.5s ease-out;
-    -webkit-transition: transform 0.5s ease-out;
+#administrator{
+  -webkit-transition: -webkit-transform 0.5s ease-out;
+  -moz-transition: -moz-transform 0.5s ease-out;
+  -ms-transition: -ms-transform 0.5s ease-out;
+  -o-transition: -o-transform 0.5s ease-out;
     transition: transform 0.5s ease-out;
 }
 #administrator.hidden_panel{
@@ -101,9 +144,9 @@ section.header .dropdown .dropdown-menu .divider{
   margin: 0px;
 }
 section.header .dropdown .dropdown-menu{
-  -webkit-transition: .3s ease-in-out height;
-       -o-transition: .3s ease-in-out height;
-          transition: .3s ease-in-out height;
+  -webkit-transition: .2s ease-in-out height;
+       -o-transition: .2s ease-in-out height;
+          transition: .2s ease-in-out height;
   right: 0px;
   left: auto;
   background-color: rgb(53,63,77);
@@ -177,7 +220,7 @@ section.sidebar ul li a:hover{
   margin: 0;
 }
 section.sidebar ul li.active a:hover{
-  margin-top:0px;
+  margin-top: 0px;
   border: none;
   border-radius: 0px;
 }
@@ -314,7 +357,6 @@ section.content h1{
   background-color: transparent;
 }
 #circles table tr i{
-  display: inline-block;
   position: absolute;
   right: 10px;
   font-size: 18px;
@@ -382,13 +424,92 @@ section.content h1{
   font-size: 16px;
   margin-top: 10px;
 }
-/*ユーザー情報*/
-/*名前*/
-/*主要言語*/
-/*過去に参加したイベント*/
-/*大会の受賞記録*/
-/*所属団体*/
-/*役職*/
-/*備考*/
-/*github.com*/
+/*=======================
+     admin_userList
+=======================*/
+#admin_userList table{
+  width: 100%;
+  margin-top: 40px;
+}
+
+#admin_userList table thead{
+  border-bottom: solid 3px #ccc;
+}
+#admin_userList table thead tr th{
+  border-right: 1px solid #ccc;
+  padding-left: 8px;
+  font-weight: normal;
+  font-size: 13px;
+}
+#admin_userList table thead tr th.name_w{
+  width: 20%;
+}
+#admin_userList table thead tr th.number_w{
+  width: 10%;
+}
+#admin_userList table thead tr th.university_w{
+  width: 25%;
+}
+#admin_userList table thead tr th.mail_w{
+  width: 45%;
+}
+#admin_userList table thead tr th.author_w{
+  width: 10%;
+}
+#admin_userList table tbody{
+  font-size: 12px;
+}
+#admin_userList table tbody tr{
+  border-bottom: solid 1px white;
+}
+#admin_userList table tbody tr td{
+  padding: 8px;
+  position: relative;
+}
+#admin_userList table tbody tr.self .name{
+  background-color: rgb(22, 160, 133);
+  color: white;
+}
+#admin_userList table tbody tr .name{
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: rgba(44, 134, 210, 0.45);
+  color: #555;
+}
+#admin_userList table tbody tr:hover .name{
+  background-color: rgba(44, 153, 210, 0.45);
+  color: whitesmoke;
+}
+#admin_userList table tbody tr:hover .mail,#admin_userList table tbody tr:hover .number,#admin_userList table tbody tr:hover .author, #admin_userList table tbody tr:hover .university{
+  background-color: rgba(44, 166, 210, 0.3);
+}
+
+
+#admin_userList table tbody:before{
+  content: "";
+  margin-top: 16px;
+  display: block;
+  width: 100%;
+  background-color: transparent;
+}
+#admin_userList table tr i{
+  display: none;
+  color: rgb(104, 125, 157);
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  padding: 7px 0px;
+  top: 0px;
+}
+#admin_userList table tr i[data-js="copyMail"]{
+  display: block;
+}
+#admin_userList table tr:hover i{
+  display: block;
+  cursor: pointer;
+  color: white;
+}
+#admin_userList table tr:hover i.zeroclipboard-is-hover{
+  cursor: pointer;
+}
 

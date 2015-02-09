@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Description;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -23,33 +24,73 @@ namespace UnitusCore.Controllers
             get { return Request.GetOwinContext().Authentication; }
         }
 
+        public ApplicationDbContext DbContext
+        {
+            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
+        }
+
         [HttpGet]
         [Authorize]
         // GET: Home
-        public ActionResult Index()
+        public ActionResult Index(DashboardRequest req=null)
         {
+            req = req ?? new DashboardRequest(null);
             var permissionManager=Request.GetOwinContext().GetPermissionManager();
             var user=UserManager.FindByName(User.Identity.Name);
-            return View(new DashboardResponse(user,"",permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
+            DbContext.Entry(user).Reference(p => p.PersonData);
+            return View(new DashboardResponse(req.DashboardInformations,user,permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
         }
     }
 
     public class DashboardResponse
     {
-        public DashboardResponse(ApplicationUser targetUser, string information, bool isAdministrator, string validationAjaxToken)
+        public DashboardResponse(DashboardInformation infos, ApplicationUser targetUser,  bool isAdministrator, string validationAjaxToken)
         {
+            Informations = infos;
             TargetUser = targetUser;
-            Information = information;
             IsAdministrator = isAdministrator;
             ValidationAjaxToken = validationAjaxToken;
         }
 
         public bool IsAdministrator;
 
+        public DashboardInformation Informations;
+
         public ApplicationUser TargetUser;
 
-        public string Information;
-
         public string ValidationAjaxToken { get; set; }
+    }
+
+    public class DashboardRequest
+    {
+        public DashboardRequest()
+        {
+            
+        }
+        public DashboardRequest(DashboardInformation dashboardInformations)
+        {
+            DashboardInformations = dashboardInformations;
+        }
+
+        public DashboardInformation DashboardInformations { get; set; }
+    }
+
+    public class DashboardInformation
+    {
+        public DashboardInformation()
+        {
+            
+        }
+        public DashboardInformation(string type, string message, string title)
+        {
+            this.type = type;
+            this.message = message;
+            this.title = title;
+        }
+        public string type { get; set; }
+
+        public string title { get; set; }
+
+        public string message { get; set; }
     }
 }

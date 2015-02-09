@@ -88,7 +88,7 @@ namespace UnitusCore.Controllers
                     var user = UserManager.FindByName(User.Identity.Name);
                     user.GithubAccessToken = GithubAccessTokenModel.FromJson(accessToken).access_token;
                     await ApplicationDbSession.SaveChangesAsync();
-                    return Content(accessToken);
+                    return RedirectToAction("Index", "Home",new DashboardRequest(new DashboardInformation("success","Github連携","Github連携に成功しました。")));
                 }
                 catch (Exception antifogeryError)
                 {
