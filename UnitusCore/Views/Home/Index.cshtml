@@ -1,4 +1,5 @@
-﻿@model UnitusCore.Controllers.DashboardResponse
+﻿@using System.EnterpriseServices.Internal
+@model UnitusCore.Controllers.DashboardResponse
 
 @{
     ViewBag.Title = "ダッシュボード";
@@ -7,7 +8,11 @@
 
 @section Header
 {
-    <link href="/Content/Styles/dashboard.css" rel="stylesheet" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="/Content/Styles/dashboard.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="/Content/Styles/animate.css">
+<script type="text/javascript" src="/Content/Styles/jquery.noty.packaged.min.js"></script>
+<script type="text/javascript" src="/Content/ZeroClipboard.min.js"></script>
 }
 <div class="container">
 <div class="main" role="tabpanel">
@@ -33,7 +38,7 @@
             <li class="author menu">アカウントメニュー</li>
             <li class="item">設定</li>
             <li class="divider"></li>
-            <li class="item">ログアウト</li>
+            <li class="item" data-js="logout">ログアウト</li>
             <li class="divider"></li>
         </ul>
     </div>
@@ -178,18 +183,9 @@
         <section class="sidebar">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
-                    <a href="#admin_new_circle" aria-controls="admin_new_circle" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-th"></i><span class="title">新規団体追加</span></a>
-                </li>
-                <li role="presentation">
-                    <a href="#admin_mail" aria-controls="admin_mail" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-envelope"></i><span class="title">メール管理</span></a>
-                </li>
-                <li role="presentation">
-                    <a href="#admin_profile" aria-controls="admin_profile" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-user"></i><span class="title">プロフィール</span></a>
-                </li>
+                <li role="presentation" class="active"><a href="#admin_new_circle" aria-controls="admin_new_circle" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-plus"></i><span class="title">新規団体追加</span></a></li>
+                <li role="presentation"><a href="#admin_userList" aria-controls="admin_userList" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-th-list"></i><span class="title">ユーザー一覧</span></a></li>
+                <li role="presentation"><a href="#admin_profile" aria-controls="admin_profile" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-user"></i><span class="title">プロフィール</span></a></li>
             </ul>
         </section>
         <!--========================================================================
@@ -198,8 +194,8 @@
         <section class="content admin_content">
             <div class="tab-content">
                 <!--============================================================
-                | 管理者用 > コンテンツ > 団体作成 |
-                =============================================================-->
+            | 管理者用 > コンテンツ > 団体作成 |
+            =============================================================-->
                 <div role="tabpanel" class="tab-pane fade in active" id="admin_new_circle">
                     <h1>新規団体追加</h1>
                     <form>
@@ -232,14 +228,62 @@
                     </form>
                 </div>
                 <!--============================================================
-                | 管理者用 > コンテンツ > メール管理 |
-                =============================================================-->
-                <div role="tabpanel" class="tab-pane fade" id="admin_mail">
-                    <h1>メール管理</h1>
+            | 管理者用 > コンテンツ > メール管理 |
+            =============================================================-->
+                <div role="tabpanel" class="tab-pane fade" id="admin_userList">
+                    <h1>ユーザー一覧</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="name_w">名前</th>
+                                <th class="author_w">権限</th>
+                                <th class="number_w">学年</th>
+                                <th class="university_w">所属大学</th>
+                                <th class="mail_w">メールアドレス</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name name_w">種市隼兵<i data-js="deleteAccount" class="fa fa-times"></i></td>
+                                <td class="author author_w">編集者</td>
+                                <td class="number number_w">28</td>
+                                <td class="university university_w">東京大学</td>
+                                <td class="mail mail_w">gamerinshaft@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="gamerinshaft@gmail.com"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="name name_w">石井翔<i data-js="deleteAccount" class="fa fa-times"></i></td>
+                                <td class="author author_w">閲覧者</td>
+                                <td class="number number_w">44</td>
+                                <td class="university university_w">お茶の水女子大学</td>
+                                <td class="mail mail_w">unitus.tus@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="unitus.tus@gmail.com"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="name name_w">中森祐人<i data-js="deleteAccount" class="fa fa-times"></i></td>
+                                <td class="author author_w">閲覧者</td>
+                                <td class="number number_w">28</td>
+                                <td class="university university_w">青山学院大学</td>
+                                <td class="mail mail_w">taneichi.unitus@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="taneichi.unitus@gmail.com"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="name name_w">セバスチャン<i data-js="deleteAccount" class="fa fa-times"></i></td>
+                                <td class="author author_w">閲覧者</td>
+                                <td class="number number_w">8</td>
+                                <td class="university university_w">芝浦工業大学</td>
+                                <td class="mail mail_w">trytestjapan@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="trytestjapan@gmail.com"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="name name_w">シュガー<i data-js="deleteAccount" class="fa fa-times"></i></td>
+                                <td class="author author_w">閲覧者</td>
+                                <td class="number number_w">128</td>
+                                <td class="university university_w">デジタルハリウッド大学</td>
+                                <td class="mail mail_w">j.tane3ma@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="j.tane3ma@gmail.com"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <!--============================================================
-                | 管理者用 > コンテンツ > プロフィール |
-                =============================================================-->
+            | 管理者用 > コンテンツ > プロフィール |
+            =============================================================-->
                 <!-- Profile tab -->
                 <div role="tabpanel" class="tab-pane fade" id="admin_profile">
                     <h1>プロフィール</h1>
@@ -247,14 +291,21 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <img class="profile_image" src="/img/profile.png" alt="..."><!--TODO フォルダ修正-->
-                                <h1 class="profile_name">種市 隼兵</h1>
-                                <h2 class="profile_id">@@gamerinshaft</h2>
+                                @if (Model.TargetUser.PersonData != null)
+                                {
+                                    <h1 class="profile_name">@(Model.TargetUser.PersonData.Name)</h1>
+                                }
+                                else
+                                {
+                                    <h1 class="profile_name">NaN</h1>
+                                }
+                                    <h2 class="profile_id">@(Model.TargetUser.UserName)</h2>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
         <section class="optionbar">
             <div class="close_btn" data-js="close_admin">
                 <div class="glyphicon glyphicon-remove"></div>
@@ -264,6 +315,60 @@
 }
 </div>
 </div>
+@if (!Model.IsAdministrator)
+{
+    <script>
+        $(function()
+        {
+        });
+    </script>
+}
+
+<!-- notification -->
+<script type="text/javascript">
+        function generate(type, title, content) {
+            var icon = "";
+            if(type=="error"){
+              icon = "fa-bolt";
+            }else if(type=="success"){
+              icon = "fa-thumbs-o-up";
+            }
+            text = '<div class="noty_title"><i class="fa ' + icon + '"></i>' + title + '</div><div class="noty_content">' + content + '</div>'
+            var n = noty({
+                text        : text,
+                type        : type,
+                dismissQueue: true,
+                layout      : 'topLeft',
+                closeWith   : ['click'],
+                theme       : 'relax',
+                maxVisible  : 10,
+                animation   : {
+                    open  : 'animated fadeInLeft',
+                    close : 'animated fadeOutLeft',
+                    easing: 'swing',
+                    speed : 100
+                }
+            });
+        }
+
+        // function generateAll() {
+        //   generate('warning', notification_html[0]);
+        //   generate('error', notification_html[1]);
+        //   generate('information', notification_html[2]);
+        //   generate('success', notification_html[3]);
+        //   generate('notification');
+        //   generate('success');
+        // }
+
+        $(document).ready(function () {
+
+            setTimeout(function() {
+
+            }, 500);
+
+        });
+
+</script>
 @if(Model.IsAdministrator) {
     <script>
         $(function()
@@ -285,11 +390,17 @@
                 $.ajax(
                 {
                     type: "POST",
-                    url:"@(Url.Action("AddCircle", "Circle",null,Request.Url.Scheme))",
+                    url:"/Circle",
                     data: sendData,
                     success:function(msg)
                     {
-                        
+                        if (msg.Success)
+                        {
+                            generate("success", "サークル追加", "正常にサークルの追加が完了しました。");
+                        } else
+                        {
+                            generate("warning", "サークル追加に失敗しました", "正常にサークルの追加ができませんでした。エラーメッセージ「"+msg.ErrorMessage+"」");
+                        }
                     }
                 });
             });
@@ -304,6 +415,25 @@
             {
                 $("#administrator").addClass("hidden_panel");
             });
+            $("[data-js=copyMail]").each(function (index) {
+                var client = new ZeroClipboard($(this));
+            });
+            $("[data-js=deleteAccount]").on("click", function () {
+                if (confirm($(this).parent().text() + "を削除しますか？")) {
+                    generate('info', "削除成功", $(this).parent().text() + "を削除しました");
+                } else {
+                    generate('info', "キャンセル", $(this).parent().text() + "の削除をとりやめました");
+                }
+            }); $("[data-js=logout]").on("click", function () {
+                var date1 = new Date();
+                date1.setTime(o);
+                document.cookie = "counts=;expires=" + date1.toGMTString();
+                location.reload();
+            });
+            @if (Model.Informations != null)
+            {
+                Html.Raw(string.Format("generate('{0}','{1}','{2}');", Model.Informations.type, Model.Informations.title, Model.Informations.message));
+            }
         });
 
     </script>

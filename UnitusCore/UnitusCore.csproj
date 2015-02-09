@@ -43,6 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -182,54 +183,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalConstants.cs" />
-    <Compile Include="Migrations\201502060152514_FirstRemoteMigration.cs" />
-    <Compile Include="Migrations\201502060152514_FirstRemoteMigration.Designer.cs">
-      <DependentUpon>201502060152514_FirstRemoteMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502060155248_Migration2.cs" />
-    <Compile Include="Migrations\201502060155248_Migration2.Designer.cs">
-      <DependentUpon>201502060155248_Migration2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502060201205_Migration3.cs" />
-    <Compile Include="Migrations\201502060201205_Migration3.Designer.cs">
-      <DependentUpon>201502060201205_Migration3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502061403448_Migration4.cs" />
-    <Compile Include="Migrations\201502061403448_Migration4.Designer.cs">
-      <DependentUpon>201502061403448_Migration4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502070611048_Migration5.cs" />
-    <Compile Include="Migrations\201502070611048_Migration5.Designer.cs">
-      <DependentUpon>201502070611048_Migration5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502070639147_Migration6.cs" />
-    <Compile Include="Migrations\201502070639147_Migration6.Designer.cs">
-      <DependentUpon>201502070639147_Migration6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502070849359_Migration7.cs" />
-    <Compile Include="Migrations\201502070849359_Migration7.Designer.cs">
-      <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502071910069_Migration8.cs" />
-    <Compile Include="Migrations\201502071910069_Migration8.Designer.cs">
-      <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502080651134_Migration9.cs" />
-    <Compile Include="Migrations\201502080651134_Migration9.Designer.cs">
-      <DependentUpon>201502080651134_Migration9.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502080724346_Migration10.cs" />
-    <Compile Include="Migrations\201502080724346_Migration10.Designer.cs">
-      <DependentUpon>201502080724346_Migration10.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502080731228_Migration11.cs" />
-    <Compile Include="Migrations\201502080731228_Migration11.Designer.cs">
-      <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502081324120_Migration12.cs" />
-    <Compile Include="Migrations\201502081324120_Migration12.Designer.cs">
-      <DependentUpon>201502081324120_Migration12.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -263,13 +216,22 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\logo.png" />
+    <Content Include="Content\Styles\animate.css" />
     <Content Include="Content\Styles\dashboard.css" />
+    <Content Include="Content\Styles\jquery.noty.packaged.min.js" />
     <Content Include="Content\Styles\Login.css" />
+    <Content Include="Content\ZeroClipboard.Core.js" />
+    <Content Include="Content\ZeroClipboard.Core.min.js" />
+    <Content Include="Content\ZeroClipboard.js" />
+    <Content Include="Content\ZeroClipboard.min.js" />
+    <Content Include="Content\ZeroClipboard.swf" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\ZeroClipboard.Core.min.map" />
+    <Content Include="Content\ZeroClipboard.min.map" />
     <None Include="Properties\PublishProfiles\unitus-core.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -317,44 +279,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201502060152514_FirstRemoteMigration.resx">
-      <DependentUpon>201502060152514_FirstRemoteMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502060155248_Migration2.resx">
-      <DependentUpon>201502060155248_Migration2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502060201205_Migration3.resx">
-      <DependentUpon>201502060201205_Migration3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502061403448_Migration4.resx">
-      <DependentUpon>201502061403448_Migration4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502070611048_Migration5.resx">
-      <DependentUpon>201502070611048_Migration5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502070639147_Migration6.resx">
-      <DependentUpon>201502070639147_Migration6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502070849359_Migration7.resx">
-      <DependentUpon>201502070849359_Migration7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502071910069_Migration8.resx">
-      <DependentUpon>201502071910069_Migration8.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502080651134_Migration9.resx">
-      <DependentUpon>201502080651134_Migration9.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502080724346_Migration10.resx">
-      <DependentUpon>201502080724346_Migration10.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502080731228_Migration11.resx">
-      <DependentUpon>201502080731228_Migration11.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502081324120_Migration12.resx">
-      <DependentUpon>201502081324120_Migration12.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

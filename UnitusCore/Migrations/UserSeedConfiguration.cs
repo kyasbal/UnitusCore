@@ -36,6 +36,12 @@ namespace UnitusCore.Migrations
                     user.Email = seedEmails[i];
                     user.UserName = seedEmails[i];
                     user.Id = Guid.NewGuid().ToString();
+                    Person person=new Person();
+                    person.GenerateId();
+                    person.Email = user.Email;
+                    context.People.Add(person);
+                    context.SaveChanges();
+                    user.PersonData = person;
                     userManager.Create(user, seedPasswords[i]);
                 }
                 if (seedIsAdmin[i] && !permissionManager.CheckPermission(GlobalConstants.AdminRoleName, seedEmails[i]))

@@ -1,6 +1,3 @@
-using Microsoft.AspNet.Identity.EntityFramework;
-using UnitusCore.Models;
-
 namespace UnitusCore.Migrations
 {
     using System;
@@ -12,15 +9,13 @@ namespace UnitusCore.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(UnitusCore.Models.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
             UserSeedConfiguration.RunUserSeed(context);
-
-//
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data. E.g.
             //
@@ -33,5 +28,4 @@ namespace UnitusCore.Migrations
             //
         }
     }
-
 }

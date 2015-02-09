@@ -74,6 +74,7 @@ namespace UnitusCore.Models
         /// <returns></returns>
         public bool CheckPermission(string permission,string userName)
         {
+            
             ApplicationUser user =_userManager.FindByName(userName);
             if (user == null) return false;
             else

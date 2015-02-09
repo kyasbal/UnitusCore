@@ -14,18 +14,9 @@ namespace UnitusCore.Controllers
 {
     public class DebugAddController :ApiController
     {
-        private BasicDbContext _dbSession;
+  
 
-        public BasicDbContext DbSession
-        {
-            get
-            {
-                _dbSession = _dbSession ?? Request.GetOwinContext().Get<BasicDbContext>();
-                return _dbSession;
-            }
-        }
-
-        public ApplicationDbContext applicationDbSession
+        public ApplicationDbContext DbSession
         {
             get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
         }
@@ -59,7 +50,7 @@ namespace UnitusCore.Controllers
         {
             try
             {
-                foreach (ApplicationUser user in applicationDbSession.Users.Include(s => s.PersonData))
+                foreach (ApplicationUser user in DbSession.Users.Include(s => s.PersonData))
                 {
                     if (user.PersonData == null)
                     {
@@ -70,7 +61,7 @@ namespace UnitusCore.Controllers
                         user.PersonData = person;
                     }
                 }
-                applicationDbSession.SaveChanges();
+                DbSession.SaveChanges();
                 DbSession.SaveChanges();
             }
             catch (Exception e)
