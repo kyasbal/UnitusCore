@@ -32,6 +32,28 @@ namespace UnitusCore.Controllers
             get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
         }
 
+        //[AllowCrossSiteAccess(AccessFrom.All)]
+        //[HttpGet]
+        //[Route("Circle")]
+        //[Authorize]
+        //public async Task<IHttpActionResult> GetCircle(string validationToken, int Count=20,int Offset=0)
+        //{
+        //    return await this.OnValidToken(validationToken, () =>
+        //    {
+                
+        //    });
+        //}
+
+        //[HttpGet]
+        //[Route("Circle/Dummy")]
+        //public async Task<IHttpActionResult> GetCircleDummy(string validationToken, int Count,int Offset)
+        //{
+        //    return await this.OnValidToken(validationToken, () =>
+        //    {
+                
+        //    });
+        //}
+
 
         [HttpPost]
         [Authorize]
@@ -106,5 +128,37 @@ namespace UnitusCore.Controllers
         public string LeaderUserName { get; set; }
 
         public bool InterColledgeAccepted { get; set; }
+    }
+
+    public class GetCircleResponse
+    {
+        public GetCircleResponse(GetPersonListPersonEntity[] circle)
+        {
+            Circle = circle;
+        }
+
+        public GetPersonListPersonEntity[] Circle { get; set; }
+
+    }
+
+    public class GetCircleResponseCircleEntity
+    {
+        public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity, string lastUpdateDate, bool isBelonged)
+        {
+            CircleName = circleName;
+            MemberCount = memberCount;
+            BelongedUniversity = belongedUniversity;
+            this.LastUpdateDate = lastUpdateDate;
+            IsBelonged = isBelonged;
+        }
+        public bool IsBelonged { get; set; }
+
+        public string CircleName { get; set; }
+
+        public int MemberCount { get; set; }
+
+        public string BelongedUniversity { get; set; }
+
+        public string LastUpdateDate { get; set; }
     }
 }
