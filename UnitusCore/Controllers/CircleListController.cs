@@ -12,18 +12,8 @@ using UnitusCore.Results;
 
 namespace UnitusCore.Controllers
 {
-    public class CircleListController : ApiController
+    public class CircleListController : UnitusApiController
     {
-        private ApplicationDbContext _dbSession;
-
-        public ApplicationDbContext DbSession
-        {
-            get
-            {
-                _dbSession = _dbSession ?? Request.GetOwinContext().Get<ApplicationDbContext>();
-                return _dbSession;
-            }
-        }
 
         [AllowCrossSiteAccess(AccessFrom.Unitus)]
         [Route("circlelist")]

@@ -11,19 +11,8 @@ using UnitusCore.Models;
 
 namespace UnitusCore.Controllers
 {
-    public class CronJobController : ApiController
+    public class CronJobController : UnitusApiController
     {
-        private ApplicationDbContext _dbSession;
-
-        public ApplicationDbContext DbSession
-        {
-            get
-            {
-                _dbSession = _dbSession ?? Request.GetOwinContext().Get<ApplicationDbContext>();
-                return _dbSession;
-            }
-        }
-
 
         [Route("cron/update/{cronId}")]
         [HttpPost]

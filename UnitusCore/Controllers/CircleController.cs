@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
@@ -15,32 +16,18 @@ using UnitusCore.Results;
 
 namespace UnitusCore.Controllers
 {
-    public class CircleController : ApiController
+    public class CircleController : UnitusApiController
     {
-        public ApplicationUserManager UserManager
-        {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-        }
-
-        public IAuthenticationManager AuthenticationContext
-        {
-            get { return Request.GetOwinContext().Authentication; }
-        }
-
-        public ApplicationDbContext ApplicationDbSession
-        {
-            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
-        }
 
         //[AllowCrossSiteAccess(AccessFrom.All)]
         //[HttpGet]
         //[Route("Circle")]
         //[Authorize]
-        //public async Task<IHttpActionResult> GetCircle(string validationToken, int Count=20,int Offset=0)
+        //public async Task<IHttpActionResult> GetCircle(string validationToken, int Count = 20, int Offset = 0)
         //{
         //    return await this.OnValidToken(validationToken, () =>
         //    {
-                
+               
         //    });
         //}
 
@@ -50,7 +37,7 @@ namespace UnitusCore.Controllers
         //{
         //    return await this.OnValidToken(validationToken, () =>
         //    {
-                
+
         //    });
         //}
 
@@ -71,8 +58,8 @@ namespace UnitusCore.Controllers
                     memberStatus.IsActiveMember = true;
                     memberStatus.Occupation = "代表者";
                     memberStatus.TargertUserKey = Guid.Parse(user.Id);
-                    ApplicationDbSession.MemberStatuses.Add(memberStatus);
-                    ApplicationDbSession.SaveChanges();
+                    DbSession.MemberStatuses.Add(memberStatus);
+                    DbSession.SaveChanges();
                     Circle circle = new Circle();
                     circle.GenerateId();
                     circle.Name = r.CircleName;
@@ -84,8 +71,8 @@ namespace UnitusCore.Controllers
                     circle.Contact = r.Address;
                     circle.CanInterCollege = r.InterColledgeAccepted;
                     circle.Members.Add(memberStatus);
-                    ApplicationDbSession.Circles.Add(circle);
-                    ApplicationDbSession.SaveChanges();
+                    DbSession.Circles.Add(circle);
+                    DbSession.SaveChanges();
                     return Json(ResultContainer.GenerateSuccessResult());
                 }
                 catch (Exception exe)

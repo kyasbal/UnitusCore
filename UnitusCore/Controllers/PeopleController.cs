@@ -14,14 +14,8 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class PeopleController : ApiController
+    public class PeopleController : UnitusApiController
     {
-        public ApplicationDbContext DbSession
-        {
-            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
-        }
-
-
 
         [Route("Person")]
         [Authorize]

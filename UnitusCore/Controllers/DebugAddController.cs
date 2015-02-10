@@ -12,20 +12,9 @@ using UnitusCore.Models;
 
 namespace UnitusCore.Controllers
 {
-    public class DebugAddController :ApiController
+    public class DebugAddController :UnitusApiController
     {
-  
-
-        public ApplicationDbContext DbSession
-        {
-            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
-        }
-
-        public ApplicationUserManager userManager
-        {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-        }
-
+ 
 
         [Route("add/circle")]
         [HttpPost]
