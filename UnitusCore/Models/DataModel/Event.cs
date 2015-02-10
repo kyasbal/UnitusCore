@@ -21,11 +21,11 @@ namespace UnitusCore.Models.DataModel
 
         public DateTime Date { get; set; }
 
-        public ICollection<Circle> Circles { get; set; }
+        public ICollection<Circle> Circles { get; set; }//binded
 
-        public ICollection<Achivement> Achivements { get; set; }
+        public ICollection<Achivement> Achivements { get; set; }//binded
 
-        public ICollection<Project> Projects { get; set; }
+        public ICollection<Project> Projects { get; set; }//binded
 
         public ICollection<Person> Participants { get; set; }
 

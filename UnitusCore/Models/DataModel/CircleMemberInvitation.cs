@@ -5,7 +5,9 @@ namespace UnitusCore.Models.DataModel
 {
     public class CircleMemberInvitation : ModelBase
     {
-        public Guid TargetCircleId { get; set; }
+        public Circle InvitedCircle { get; set; }//binded
+
+        public Person InvitedPerson { get; set; }//binded
 
         public string ConfirmationKey { get; set; }
 

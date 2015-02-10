@@ -7,17 +7,21 @@ namespace UnitusCore.Models.DataModel
     {
         public Person()
         {
-            BelongedCircles = new HashSet<Circle>();
+            BelongedCircles = new HashSet<MemberStatus>();
             CommittedProjects = new HashSet<Project>();
             Skills = new HashSet<Skill>();
+            InvitedPeople=new HashSet<CircleMemberInvitation>();
         }
+
+        public ApplicationUser ApplicationUser { get; set; }//binded
+
         public string Name { get; set; }
 
         public string Email { get; set; }
 
-        public ICollection<Circle> BelongedCircles { get; set; }
+        public ICollection<MemberStatus> BelongedCircles { get; set; }//binded
 
-        public ICollection<Project> CommittedProjects { get; set; }
+        public ICollection<Project> CommittedProjects { get; set; }//binded
 
         public Cource CurrentCource { get; set; }
 
@@ -29,9 +33,11 @@ namespace UnitusCore.Models.DataModel
 
         public string Notes { get; set; }
 
-        public ICollection<Skill> Skills { get; set; }
+        public ICollection<Event> AttendedEvents { get; set; } //binded
 
+        public ICollection<Skill> Skills { get; set; }//binded
 
+        public ICollection<CircleMemberInvitation> InvitedPeople { get; set; } //binded
 
         public enum Cource
         {

@@ -10,19 +10,15 @@ namespace UnitusCore.Models.DataModel
         {
             PasswordResetConfirmation confirm=new PasswordResetConfirmation();
             confirm.GenerateId();
-            confirm.TargetUserIdentifyCode = Guid.Parse(user.Id);
-            confirm.UserInfo = user;
+            confirm.TargetUser = user;
             confirm.ExpireTime = DateTime.Now + new TimeSpan(0, 0, 30, 0);
             confirm.ConfirmationId = confirmationId;
             return confirm;
         }
 
-        [Index]
-        public Guid TargetUserIdentifyCode { get; set; }
-
         public string ConfirmationId { get; set; }
 
-        public ApplicationUser UserInfo { get; set; }
+        public ApplicationUser TargetUser { get; set; }
 
         public DateTime ExpireTime { get; set; }
     }

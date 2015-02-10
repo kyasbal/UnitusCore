@@ -187,6 +187,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalConstants.cs" />
+    <Compile Include="Migrations\201502101836352_Migration1.cs" />
+    <Compile Include="Migrations\201502101836352_Migration1.Designer.cs">
+      <DependentUpon>201502101836352_Migration1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502101857437_Migration2.cs" />
+    <Compile Include="Migrations\201502101857437_Migration2.Designer.cs">
+      <DependentUpon>201502101857437_Migration2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\DataModel\Achivement.cs" />
@@ -205,8 +213,7 @@
     <Compile Include="Models\PermissionManager.cs" />
     <Compile Include="Models\DataModel\Person.cs" />
     <Compile Include="Models\DataModel\Project.cs" />
-    <Compile Include="Models\DataModel\SendMailConfirmResponse.cs" />
-    <Compile Include="Models\DataModel\SimpleMessageResponse.cs" />
+    <Compile Include="Models\SimpleMessageResponse.cs" />
     <Compile Include="Models\DataModel\Skill.cs" />
     <Compile Include="Models\DataModel\Statistics.cs" />
     <Compile Include="Models\DataModel\UserPermission.cs" />
@@ -231,6 +238,10 @@
     <Compile Include="Util\SendGridManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\UnitusCoreDatabase.mdf" />
+    <Content Include="App_Data\UnitusCoreDatabase_log.ldf">
+      <DependentUpon>UnitusCoreDatabase.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\background.png" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -289,7 +300,6 @@
     <Content Include="Views\Account\ForgotPasswordComplete.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Views\Unitus\" />
   </ItemGroup>
@@ -299,6 +309,14 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201502101836352_Migration1.resx">
+      <DependentUpon>201502101836352_Migration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502101857437_Migration2.resx">
+      <DependentUpon>201502101857437_Migration2.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

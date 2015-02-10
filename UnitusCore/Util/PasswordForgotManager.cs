@@ -28,8 +28,7 @@ namespace UnitusCore.Util
 
         private static bool CheckMailServiceAvailable(ApplicationDbContext dbContext, ApplicationUser user)
         {
-            Guid userIdentityCode = Guid.Parse(user.Id);
-            foreach (PasswordResetConfirmation confirmations in dbContext.PasswordResetConfirmations.Where(s => s.TargetUserIdentifyCode.Equals(userIdentityCode)))
+            foreach (PasswordResetConfirmation confirmations in user.PasswordResetRequests)
             {
                 var delta = DateTime.Now - (confirmations.ExpireTime - new TimeSpan(0, 0, 30, 0));//終了時刻から、送信時刻を図る
                 if (delta.TotalMinutes < 15)
@@ -42,9 +41,8 @@ namespace UnitusCore.Util
 
         private static void RemoveOtherPasswordConfirmationData(ApplicationDbContext dbContext, ApplicationUser user)
         {
-            Guid userIdentityCode = Guid.Parse(user.Id);
             HashSet<PasswordResetConfirmation> removeCandidate = new HashSet<PasswordResetConfirmation>();
-            foreach (PasswordResetConfirmation confirmation in dbContext.PasswordResetConfirmations.Where(s => s.TargetUserIdentifyCode.Equals(userIdentityCode)))
+            foreach (PasswordResetConfirmation confirmation in user.PasswordResetRequests)
             {
                 removeCandidate.Add(confirmation);
             }
@@ -92,12 +90,12 @@ namespace UnitusCore.Util
         {
             ApplicationDbContext context = controller.Request.GetOwinContext().Get<ApplicationDbContext>();
             var confirmationData =
-                context.PasswordResetConfirmations.Where(c => c.ConfirmationId.Equals(confirmationId)).Include(a => a.UserInfo).FirstOrDefault();
+                context.PasswordResetConfirmations.Where(c => c.ConfirmationId.Equals(confirmationId)).Include(a => a.TargetUser).FirstOrDefault();
             if (confirmationData != null)
             {
                 if (confirmationData.ExpireTime > DateTime.Now)
                 {
-                    var user = confirmationData.UserInfo;
+                    var user = confirmationData.TargetUser;
                     if (needRemoveoldKey)
                     {
                         context.PasswordResetConfirmations.Remove(confirmationData);

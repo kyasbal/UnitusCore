@@ -11,6 +11,6 @@ namespace UnitusCore.Models.DataModel
         }
         public string PermissionName { get; set; }
 
-        public ICollection<ApplicationUser> AllowedUsers { get; set; }
+        public ICollection<ApplicationUser> AllowedUsers { get; set; }//binded
     }
 }

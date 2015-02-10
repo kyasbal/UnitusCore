@@ -9,7 +9,9 @@ namespace UnitusCore.Models.DataModel
         public string Occupation { get; set; }
 
         public bool IsActiveMember { get; set; }
-        [Index]
-        public Guid TargertUserKey { get; set; }
+
+        public Person TargetUser { get; set; }//binded
+
+        public Circle TargetCircle { get; set; }//binded
     }
 }

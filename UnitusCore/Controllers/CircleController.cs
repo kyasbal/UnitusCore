@@ -59,7 +59,7 @@ namespace UnitusCore.Controllers
                     memberStatus.GenerateId();
                     memberStatus.IsActiveMember = true;
                     memberStatus.Occupation = "代表者";
-                    memberStatus.TargertUserKey = Guid.Parse(user.Id);
+                    memberStatus.TargetUser = user.PersonData;
                     DbSession.MemberStatuses.Add(memberStatus);
                     DbSession.SaveChanges();
                     Circle circle = new Circle();

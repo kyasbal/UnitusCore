@@ -11,17 +11,15 @@ namespace UnitusCore.Models.DataModel
             EmailConfirmation confirmation=new EmailConfirmation()
             {
                 ExpireTime = DateTime.Now+new TimeSpan(7,0,0,0),
-                UserInfo = targetUser,
                 ConfirmationId = confirmationId,
-                TargetUserIdentifyCode = Guid.Parse(targetUser.Id)
+                TargetUser = targetUser
             };
             confirmation.GenerateId();
             return confirmation;
         }
+        public ApplicationUser TargetUser { get; set; }//binded
         [Index]
-        public Guid TargetUserIdentifyCode { get; set; }
         public string ConfirmationId { get; set; }
-        public ApplicationUser UserInfo { get; set; }
         public DateTime ExpireTime { get; set; }
     }
 }

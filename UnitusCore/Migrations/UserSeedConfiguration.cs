@@ -41,7 +41,6 @@ namespace UnitusCore.Migrations
                     person.GenerateId();
                     person.Email = user.Email;
                     context.People.Add(person);
-                    context.SaveChanges();
                     user.PersonData = person;
                     userManager.Create(user, seedPasswords[i]);
                 }

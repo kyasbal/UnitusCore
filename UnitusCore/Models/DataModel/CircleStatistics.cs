@@ -13,7 +13,7 @@ namespace UnitusCore.Models.DataModel
 
         public double CommitPerUser { get; set; }
 
-        public Circle RelatedCircle { get; set; }
+        public Circle RelatedCircle { get; set; }//binded
 
         public DateTime StatDate { get; set; }
     }

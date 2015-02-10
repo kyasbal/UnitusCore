@@ -29,8 +29,7 @@ namespace UnitusCore.Util
 
         private static bool CheckMailServiceAvailable(ApplicationDbContext dbContext,ApplicationUser user)
         {
-            Guid userIdentityCode = Guid.Parse(user.Id);
-            foreach (EmailConfirmation confirmations in dbContext.EmailConfirmations.Where(s => s.TargetUserIdentifyCode.Equals(userIdentityCode)))
+            foreach (EmailConfirmation confirmations in user.SentConfirmations)
             {
                 var delta = DateTime.Now - (confirmations.ExpireTime-new TimeSpan(7,0,0,0));//終了時刻から、送信時刻を図る
                 if (delta.TotalMinutes < 5)
@@ -45,7 +44,7 @@ namespace UnitusCore.Util
         {
             Guid userIdentityCode = Guid.Parse(user.Id);
             HashSet<EmailConfirmation> removeCandidate=new HashSet<EmailConfirmation>();
-            foreach (EmailConfirmation confirmation in dbContext.EmailConfirmations.Where(s=>s.TargetUserIdentifyCode.Equals(userIdentityCode)))
+            foreach (EmailConfirmation confirmation in user.SentConfirmations)
             {
                 removeCandidate.Add(confirmation);
             }
@@ -77,12 +76,12 @@ namespace UnitusCore.Util
         {
             ApplicationDbContext context = controller.Request.GetOwinContext().Get<ApplicationDbContext>();
             var confirmationData =
-                context.EmailConfirmations.Where(c => c.ConfirmationId.Equals(confirmationId)).Include(a=>a.UserInfo).FirstOrDefault();
+                context.EmailConfirmations.Where(c => c.ConfirmationId.Equals(confirmationId)).FirstOrDefault();
             if (confirmationData != null)
             {
                 if (confirmationData.ExpireTime > DateTime.Now)
                 {
-                    var user = confirmationData.UserInfo;
+                    var user = confirmationData.TargetUser;
                     user.EmailConfirmed = true;
                     context.EmailConfirmations.Remove(confirmationData);
                     context.SaveChanges();

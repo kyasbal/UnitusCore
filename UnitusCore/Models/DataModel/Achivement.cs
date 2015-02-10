@@ -7,15 +7,14 @@ namespace UnitusCore.Models.DataModel
     {
         public Achivement()
         {
-            Events = new HashSet<Event>();
-            Projects = new HashSet<Project>();
+
         }
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        public ICollection<Event> Events { get; set; }
+        public Event Event { get; set; }//binded
 
-        public ICollection<Project> Projects { get; set; }
+        public Project Project { get; set; }//binded
     }
 }

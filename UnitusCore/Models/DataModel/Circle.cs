@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNet.Identity.EntityFramework;
 using UnitusCore.Models.BaseClasses;
 
@@ -13,7 +14,8 @@ namespace UnitusCore.Models.DataModel
             Achivements = new HashSet<Achivement>();
             Members = new HashSet<MemberStatus>();
             CircleStatistises = new HashSet<CircleStatistics>();
-            Administrators=new HashSet<IdentityUser>();
+            Administrators=new HashSet<ApplicationUser>();
+            MemberInvitations=new ArraySegment<CircleMemberInvitation>();
         }
 
         public string Name { get; set; }
@@ -26,13 +28,13 @@ namespace UnitusCore.Models.DataModel
 
         public string BelongedSchool { get; set; }
 
-        public ICollection<Event> Events { get; set; }
+        public ICollection<Event> Events { get; set; }//binded
 
-        public ICollection<Project> Projects { get; set; }
+        public ICollection<Project> Projects { get; set; }//binded
 
-        public ICollection<Achivement> Achivements { get; set; }
+        public ICollection<Achivement> Achivements { get; set; }//binded
 
-        public ICollection<MemberStatus> Members { get; set; }
+        public ICollection<MemberStatus> Members { get; set; }//binded
 
         public string Notes { get; set; }
 
@@ -40,10 +42,10 @@ namespace UnitusCore.Models.DataModel
 
         public bool CanInterCollege { get; set; }
 
-        public ICollection<CircleStatistics> CircleStatistises { get; set; }
+        public ICollection<CircleStatistics> CircleStatistises { get; set; }//binded
 
-        public CircleStatistics LastCircleStatistics { get; set; }
+        public ICollection<ApplicationUser>  Administrators { get; set; }//binded
 
-        public ICollection<IdentityUser>  Administrators { get; set; }
+        public ICollection<CircleMemberInvitation> MemberInvitations { get; set; } //binded
     }
 }

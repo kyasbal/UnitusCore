@@ -10,9 +10,10 @@ namespace UnitusCore.Models.DataModel
     {
         public ApplicationUser()
         {
-            AccessableCircles = new HashSet<Circle>();
             Permissions = new HashSet<UserPermission>();
-            AdministrationCircle=new HashSet<Circle>();
+            AdministrationCircle = new HashSet<Circle>();
+            SentConfirmations = new HashSet<EmailConfirmation>();
+            PasswordResetRequests=new HashSet<PasswordResetConfirmation>();
         }
 
 
@@ -25,12 +26,14 @@ namespace UnitusCore.Models.DataModel
         }
         public string GithubAccessToken { get; set; }
 
-        public Person PersonData { get; set; }
+        public Person PersonData { get; set; }//binded
 
-        public ICollection<Circle> AdministrationCircle { get; set; } 
+        public ICollection<Circle> AdministrationCircle { get; set; } //binded
 
-        public ICollection<Circle> AccessableCircles { get; set; }
+        public ICollection<UserPermission> Permissions { get; set; }//binded
 
-        public ICollection<UserPermission> Permissions { get; set; }
+        public ICollection<EmailConfirmation> SentConfirmations { get; set; }//binded 
+
+        public ICollection<PasswordResetConfirmation> PasswordResetRequests { get; set; }//binded 
     }
 }
