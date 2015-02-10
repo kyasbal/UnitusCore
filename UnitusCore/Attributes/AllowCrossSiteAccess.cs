@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
 
@@ -41,8 +43,39 @@ namespace UnitusCore.Attributes
                     }
                 }
             }
-            actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin",fromString);
+            if (actionExecutedContext.Response != null)
+            {
+                actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", fromString);
+            }
             base.OnActionExecuted(actionExecutedContext);
+        }
+
+        public override Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
+        {
+            string fromString = "";
+            if (from.HasFlag(AccessFrom.All))
+            {
+                fromString = "*";
+            }
+            else
+            {
+                if (from.HasFlag(AccessFrom.Unitus))
+                {
+                    fromString += "http://unitus.azurewebsites.com ";
+                }
+                if (from.HasFlag(AccessFrom.LocalHost))
+                {
+                    foreach (var port in AllowLocalPorts)
+                    {
+                        fromString += "http://localhost:" + port + " ";
+                    }
+                }
+            }
+            if (actionExecutedContext.Response != null)
+            {
+                actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", fromString);
+            }
+            return base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);
         }
     }
     [Flags]

@@ -64,9 +64,10 @@ namespace UnitusCore.Controllers
         public async Task<ActionResult> Authorize()
         {
             string cookieToken, formToken;
+            string redirectUrl = Url.Action("AuthorizeCallback", "Github", null, Request.Url.Scheme);
             AntiForgery.GetTokens(null, out cookieToken, out formToken);
-            return Redirect(string.Format(authorizeUrl, CurrentApplicationKey.ApplicationId,
-                Url.Action("AuthorizeCallback", "Github", null, Request.Url.Scheme), cookieToken + ":" + formToken));
+            return Redirect(string.Format(authorizeUrl, CurrentApplicationKey.ApplicationId,redirectUrl
+                , cookieToken + ":" + formToken));
         }
 
         [Authorize]
@@ -88,7 +89,8 @@ namespace UnitusCore.Controllers
                     var user = UserManager.FindByName(User.Identity.Name);
                     user.GithubAccessToken = GithubAccessTokenModel.FromJson(accessToken).access_token;
                     await ApplicationDbSession.SaveChangesAsync();
-                    return RedirectToAction("Index", "Home",new DashboardRequest(new DashboardInformation("success","Github連携","Github連携に成功しました。")));
+                    this.AddNotification(NotificationType.Success,"Github連携完了","OAuth認証処理は正常に終了しました。");
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (Exception antifogeryError)
                 {

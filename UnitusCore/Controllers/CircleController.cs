@@ -71,8 +71,6 @@ namespace UnitusCore.Controllers
                     Trace.WriteLine(exe.ToString());
                     return Json(ResultContainer.GenerateFaultResult(exe.ToString()));
                 }
-
-                return Json(true);
             });
         }
 

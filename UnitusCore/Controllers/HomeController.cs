@@ -29,22 +29,79 @@ namespace UnitusCore.Controllers
             get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
         }
 
+        public ApplicationUser AppUser
+        {
+            get { return UserManager.FindByName(User.Identity.Name); }
+        }
+
         [HttpGet]
         [Authorize]
         // GET: Home
-        public ActionResult Index(DashboardRequest req=null)
+        public ActionResult Index()
         {
-            req = req ?? new DashboardRequest(null);
+            if (string.IsNullOrWhiteSpace(AppUser.GithubAccessToken))
+            {
+                this.AddNotification(NotificationType.Error,"Github連携が未設定です",string.Format("<a href=\"{0}\">こちら</a>をクリックして設定してください。",Url.Action("Authorize","Github")),false);
+            }
+
             var permissionManager=Request.GetOwinContext().GetPermissionManager();
             var user=UserManager.FindByName(User.Identity.Name);
             DbContext.Entry(user).Reference(p => p.PersonData);
-            return View(new DashboardResponse(req.DashboardInformations,user,permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
+            return View(new DashboardResponse(this.GetCurrentDashboardRequest(true).DashboardInformations.ToArray(),user,permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
         }
+    }
+
+    public static class DashboardExtension
+    {
+        public static void AddNotification(this Controller controller,NotificationType type,string title,string message,bool timeDismission=true)
+        {
+            DashboardRequest req = controller.Session["Dashboard-Request"] as DashboardRequest;
+            req = req ?? new DashboardRequest();
+            string typeStr = "";
+            switch (type)
+            {
+                case NotificationType.Success:
+                    typeStr = "success";
+                    break;
+                case NotificationType.Warning:
+                    typeStr = "warning";
+                    break;
+                case NotificationType.Error:
+                    typeStr = "error";
+                    break;
+                case NotificationType.Info:
+                    typeStr = "info";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("type");
+            }
+            req.DashboardInformations.Add(new DashboardInformation(typeStr,title,message,timeDismission));
+            controller.Session["Dashboard-Request"] = req;
+        }
+
+        public static DashboardRequest GetCurrentDashboardRequest(this Controller controller,bool remove=false)
+        {
+            DashboardRequest req = controller.Session["Dashboard-Request"] as DashboardRequest;
+            req = req ?? new DashboardRequest();
+            if (remove)
+            {
+                controller.Session["Dashboard-Request"] = null;
+            }
+            return req;
+        }
+    }
+
+    public enum NotificationType
+    {
+        Success,
+        Warning,
+        Error,
+        Info
     }
 
     public class DashboardResponse
     {
-        public DashboardResponse(DashboardInformation infos, ApplicationUser targetUser,  bool isAdministrator, string validationAjaxToken)
+        public DashboardResponse(DashboardInformation[] infos, ApplicationUser targetUser,  bool isAdministrator, string validationAjaxToken)
         {
             Informations = infos;
             TargetUser = targetUser;
@@ -54,7 +111,7 @@ namespace UnitusCore.Controllers
 
         public bool IsAdministrator;
 
-        public DashboardInformation Informations;
+        public DashboardInformation[] Informations;
 
         public ApplicationUser TargetUser;
 
@@ -65,14 +122,14 @@ namespace UnitusCore.Controllers
     {
         public DashboardRequest()
         {
-            
+            DashboardInformations=new List<DashboardInformation>();
         }
-        public DashboardRequest(DashboardInformation dashboardInformations)
+        public DashboardRequest(List<DashboardInformation> dashboardInformations)
         {
             DashboardInformations = dashboardInformations;
         }
 
-        public DashboardInformation DashboardInformations { get; set; }
+        public List<DashboardInformation> DashboardInformations { get; set; }
     }
 
     public class DashboardInformation
@@ -81,16 +138,19 @@ namespace UnitusCore.Controllers
         {
             
         }
-        public DashboardInformation(string type, string message, string title)
+        public DashboardInformation(string type, string title, string message,bool timeDismission)
         {
             this.type = type;
             this.message = message;
             this.title = title;
+            this.timeDismission = timeDismission;
         }
         public string type { get; set; }
 
         public string title { get; set; }
 
         public string message { get; set; }
+
+        public bool timeDismission { get; set; }
     }
 }

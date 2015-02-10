@@ -242,43 +242,7 @@
                                 <th class="mail_w">メールアドレス</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="name name_w">種市隼兵<i data-js="deleteAccount" class="fa fa-times"></i></td>
-                                <td class="author author_w">編集者</td>
-                                <td class="number number_w">28</td>
-                                <td class="university university_w">東京大学</td>
-                                <td class="mail mail_w">gamerinshaft@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="gamerinshaft@gmail.com"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="name name_w">石井翔<i data-js="deleteAccount" class="fa fa-times"></i></td>
-                                <td class="author author_w">閲覧者</td>
-                                <td class="number number_w">44</td>
-                                <td class="university university_w">お茶の水女子大学</td>
-                                <td class="mail mail_w">unitus.tus@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="unitus.tus@gmail.com"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="name name_w">中森祐人<i data-js="deleteAccount" class="fa fa-times"></i></td>
-                                <td class="author author_w">閲覧者</td>
-                                <td class="number number_w">28</td>
-                                <td class="university university_w">青山学院大学</td>
-                                <td class="mail mail_w">taneichi.unitus@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="taneichi.unitus@gmail.com"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="name name_w">セバスチャン<i data-js="deleteAccount" class="fa fa-times"></i></td>
-                                <td class="author author_w">閲覧者</td>
-                                <td class="number number_w">8</td>
-                                <td class="university university_w">芝浦工業大学</td>
-                                <td class="mail mail_w">trytestjapan@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="trytestjapan@gmail.com"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="name name_w">シュガー<i data-js="deleteAccount" class="fa fa-times"></i></td>
-                                <td class="author author_w">閲覧者</td>
-                                <td class="number number_w">128</td>
-                                <td class="university university_w">デジタルハリウッド大学</td>
-                                <td class="mail mail_w">j.tane3ma@gmail.com<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="j.tane3ma@gmail.com"></i></td>
-                            </tr>
-                        </tbody>
+                        <tbody data-js="userList"></tbody>
                     </table>
                 </div>
                 <!--============================================================
@@ -315,68 +279,153 @@
 }
 </div>
 </div>
-@if (!Model.IsAdministrator)
-{
     <script>
         $(function()
         {
+            $("[data-js=logout]").on("click", function () {
+                var date1 = new Date();
+                date1.setTime(0);
+                document.cookie = "counts=;expires=" + date1.toGMTString();
+                location.assign("/Account/Logout");
+            });
+            @{//make information generate string
+                string generateScript="";
+                for (int i = 0; i < Model.Informations.Length; i++)
+                {
+                    var info = Model.Informations[i];
+                    generateScript+=string.Format("generate('{0}','{1}','{2}',{3});", info.type, info.title, info.message,info.timeDismission?"true" :"false");
+                }
+            }
+            @Html.Raw(generateScript)
         });
     </script>
-}
+
 
 <!-- notification -->
 <script type="text/javascript">
-        function generate(type, title, content) {
-            var icon = "";
-            if(type=="error"){
-              icon = "fa-bolt";
-            }else if(type=="success"){
-              icon = "fa-thumbs-o-up";
-            }
-            text = '<div class="noty_title"><i class="fa ' + icon + '"></i>' + title + '</div><div class="noty_content">' + content + '</div>'
-            var n = noty({
-                text        : text,
-                type        : type,
-                dismissQueue: true,
-                layout      : 'topLeft',
-                closeWith   : ['click'],
-                theme       : 'relax',
-                maxVisible  : 10,
-                animation   : {
-                    open  : 'animated fadeInLeft',
-                    close : 'animated fadeOutLeft',
-                    easing: 'swing',
-                    speed : 100
-                }
-            });
+    function generate(type, title, content,timeDismission) {
+        var icon = "";
+        if(type=="error"){
+            icon = "fa-bolt";
+        }else if(type=="success"){
+            icon = "fa-thumbs-o-up";
+        }else if(type=="info"){
+            icon = "fa-info";
         }
-
-        // function generateAll() {
-        //   generate('warning', notification_html[0]);
-        //   generate('error', notification_html[1]);
-        //   generate('information', notification_html[2]);
-        //   generate('success', notification_html[3]);
-        //   generate('notification');
-        //   generate('success');
-        // }
-
-        $(document).ready(function () {
-
-            setTimeout(function() {
-
-            }, 500);
-
+        text = '<div class="noty_title"><i class="fa ' + icon + '"></i>' + title + '</div><div class="noty_content">' + content + '</div>'
+        var n = noty({
+            text        : text,
+            type        : type,
+            dismissQueue: true,
+            layout      : 'topLeft',
+            closeWith   : ['click'],
+            theme       : 'relax',
+            maxVisible  : 10,
+            animation   : {
+                open  : 'animated fadeInLeft',
+                close : 'animated fadeOutLeft',
+                easing: 'swing',
+                speed : 100
+            }
         });
+        if (timeDismission == undefined) timeDismission = true;
+        if(timeDismission)
+        setTimeout(function() {
+            $("#" + n.options.id).trigger("click");
+        }, 3000);
+
+    }
+    // function generateAll() {
+    //   generate('warning', notification_html[0]);
+    //   generate('error', notification_html[1]);
+    //   generate('information', notification_html[2]);
+    //   generate('success', notification_html[3]);
+    //   generate('notification');
+    //   generate('success');
+    // }
+
+    $(document).ready(function () {
+
+        setTimeout(function() {
+
+        }, 500);
+
+    });
 
 </script>
 @if(Model.IsAdministrator) {
     <script>
+        //Personlistが更新された際に呼び出す部分
+        function OnPersonlistReloaded()
+        {
+            $("[data-js=copyMail]").each(function(index)
+            {
+                var client = new ZeroClipboard($(this));
+                client.on("aftercopy", function(event)
+                {
+                    obj = event.data;
+                    for (var key in obj)
+                    {
+                        generate('info', "コピー成功", obj[key] + "をクリップボードにコピーしました。")
+                    }
+                });
+            });
+            $("[data-js=deleteAccount]").on("click", function()
+            {
+                if (confirm($(this).parent().text() + "を削除しますか？"))
+                {
+                    generate('success', "削除成功", $(this).parent().text() + "を削除しました");
+                } else
+                {
+                    generate('error', "キャンセル", $(this).parent().text() + "の削除をとりやめました");
+                }
+            });
+        }
+
+        function loadPersonList(offset)
+        {
+            var sendData =
+            {
+                Offset:offset,
+                Count:30,
+                ValidationToken:"@(Model.ValidationAjaxToken)"//ここだけそっちじゃ動かないだろうから、適当な文字列を入れる。
+            };
+            $.ajax(
+            {
+                type: "GET",
+                url: "http://unitus-core.azurewebsites.net/Person/Dummy",
+                data: sendData,
+                success: function(msg)
+                {
+                    console.log(msg.Content.Persons.length);
+                    if (msg.Success)
+                    {
+                        generate("success", "サークル追加", "正常にサークルの追加が完了しました。");
+                        $.each(msg.Content.Persons, function()
+                        {
+                            var text = ''
+                            text += '<tr>'
+                            text += '<td class="name name_w">' + this.Name + '<i data-js="deleteAccount" class="fa fa-times"></i></td>'
+                            text += '<td class="author author_w">' + "閲覧者" + '</td>'
+                            text += '<td class="number number_w">' + this.Grade + '</td>'
+                            text += '<td class="university university_w">' + this.BelongedTo + '</td>'
+                            text += '<td class="mail mail_w">' + this.UserName + '<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="' + this.UserName + '"></i></td>'
+                            text += '</tr>'
+                            $("[data-js=userList]").append(text);
+                        });
+                        OnPersonlistReloaded();
+                    }
+                }
+            });
+        }
+
         $(function()
         {
+            loadPersonList(0);
             $("#save_circle").on("click", function(e)
             {
                 var sendData = {
-                    ValidationToken:"@(Model.ValidationAjaxToken)",
+                    ValidationToken: "@(Model.ValidationAjaxToken)",
                     CircleName: $("#circle_name").val(),
                     Description: $("#circle_description").val(),
                     MemberCount: $("#circle_num").val(),
@@ -386,7 +435,7 @@
                     Address: $("#contact").val(),
                     LeaderUserName:$("#leader").val(),
                     InterColledgeAccepted:$("#isAcceptOutside").val()
-                 };
+                };
                 $.ajax(
                 {
                     type: "POST",
@@ -404,36 +453,16 @@
                     }
                 });
             });
-            $("[data-js=open_admin]").on("click", function(e)
-            {
+            $("[data-js=open_admin]").on("click", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 $("#administrator").removeClass("hidden_panel");
             });
 
-            $("[data-js=close_admin]").on("click", function(e)
-            {
+            $("[data-js=close_admin]").on("click", function (e) {
                 $("#administrator").addClass("hidden_panel");
             });
-            $("[data-js=copyMail]").each(function (index) {
-                var client = new ZeroClipboard($(this));
-            });
-            $("[data-js=deleteAccount]").on("click", function () {
-                if (confirm($(this).parent().text() + "を削除しますか？")) {
-                    generate('info', "削除成功", $(this).parent().text() + "を削除しました");
-                } else {
-                    generate('info', "キャンセル", $(this).parent().text() + "の削除をとりやめました");
-                }
-            }); $("[data-js=logout]").on("click", function () {
-                var date1 = new Date();
-                date1.setTime(o);
-                document.cookie = "counts=;expires=" + date1.toGMTString();
-                location.reload();
-            });
-            @if (Model.Informations != null)
-            {
-                Html.Raw(string.Format("generate('{0}','{1}','{2}');", Model.Informations.type, Model.Informations.title, Model.Informations.message));
-            }
+            
         });
 
     </script>

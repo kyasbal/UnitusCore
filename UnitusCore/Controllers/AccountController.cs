@@ -6,10 +6,12 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Permissions;
+using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Filters;
+using System.Web.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -33,9 +35,11 @@ namespace UnitusCore.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
         // GET: Account
-        public ActionResult Login()
+        public ActionResult Login(string ReturnUrl=null)
         {
+            Session["ReturnUrl"] = ReturnUrl;
             return View();
         }
 
@@ -52,6 +56,7 @@ namespace UnitusCore.Controllers
                     var loginIdentity =
                         await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
                     AuthenticationContext.SignIn(new AuthenticationProperties() {IsPersistent = true}, loginIdentity);
+                    if (Session["ReturnUrl"] != null) return Redirect((string) Session["ReturnUrl"]);
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -205,6 +210,15 @@ namespace UnitusCore.Controllers
                 return await ForgotPassword("パスワードリセットトークンの認証に失敗しました。<br>"+result.ErrorMessage);
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> Logout()
+        {
+            AuthenticationContext.SignOut("ApplicationCookie");
+            return Redirect("/Account/Login");
+        }
+
 
         [AllowAnonymous]
         [HttpPost]
