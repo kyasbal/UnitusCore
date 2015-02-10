@@ -21,7 +21,7 @@ using UnitusCore.Models;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
-{//testcommit
+{//test
     public class AccountController : Controller
     {
         public ApplicationUserManager UserManager
