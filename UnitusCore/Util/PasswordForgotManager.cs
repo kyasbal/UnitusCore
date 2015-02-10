@@ -26,6 +26,20 @@ namespace UnitusCore.Util
             return resultStr;
         }
 
+        private static int getRandomIndex(ApplicationDbContext context)
+        {
+            Random rand=new Random();
+            while (true)
+            {
+                int index = rand.Next();
+                if (!context.PasswordResetConfirmations.Any(e => e.KeyIndex == index))
+                {
+                    return index;
+                }
+            }
+        }
+
+
         private static bool CheckMailServiceAvailable(ApplicationDbContext dbContext, ApplicationUser user)
         {
             foreach (PasswordResetConfirmation confirmations in user.PasswordResetRequests)
@@ -61,9 +75,10 @@ namespace UnitusCore.Util
                 if (CheckMailServiceAvailable(context, targetUser))
                 {
                     RemoveOtherPasswordConfirmationData(context,targetUser);
+
                     string confirmationID = userManager.GeneratePasswordResetToken(targetUser.Id);
                     PasswordResetConfirmation confirmation =
-                        PasswordResetConfirmation.GeneratePasswordResetConfirmation(targetUser, confirmationID);
+                        PasswordResetConfirmation.GeneratePasswordResetConfirmation(getRandomIndex(context),targetUser, confirmationID);
                     context.PasswordResetConfirmations.Add(confirmation);
                     context.SaveChanges();
                     SendGridManager.SendUseTemplate(emailAddr, TemplateType.PasswordResetConfirmation,

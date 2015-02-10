@@ -27,6 +27,21 @@ namespace UnitusCore.Util
             return resultStr;
         }
 
+        private static int getRandomIndex(ApplicationDbContext context)
+        {
+            Random rand = new Random();
+            while (true)
+            {
+                int index = rand.Next();
+                if (!context.EmailConfirmations.Any(e => e.KeyIndex == index))
+                {
+                    return index;
+                }
+            }
+        }
+
+
+
         private static bool CheckMailServiceAvailable(ApplicationDbContext dbContext,ApplicationUser user)
         {
             foreach (EmailConfirmation confirmations in user.SentConfirmations)
@@ -61,7 +76,7 @@ namespace UnitusCore.Util
                 return new SendMailConfirmationResult(false, "メールの再送信は連続的にはできません。前の送信から5分ほど開けて再度試行してみてください。");
             RemoveOtherMailConfirmationData(context,user);
             string confirmationID = generateEmailConfirmationId();
-            EmailConfirmation confirm = EmailConfirmation.GenerateEmailConfirmation(user,confirmationID);
+            EmailConfirmation confirm = EmailConfirmation.GenerateEmailConfirmation(getRandomIndex(context),user,confirmationID);
             context.EmailConfirmations.Add(confirm);
             context.SaveChanges();
             SendGridManager.SendUseTemplate(user.Email,TemplateType.AccountConfirmation,new Dictionary<string, string>()

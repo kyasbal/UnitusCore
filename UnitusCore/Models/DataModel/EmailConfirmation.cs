@@ -6,7 +6,7 @@ namespace UnitusCore.Models.DataModel
 {
     public class EmailConfirmation :ModelBase
     {
-        public static EmailConfirmation GenerateEmailConfirmation(ApplicationUser targetUser,string confirmationId)
+        public static EmailConfirmation GenerateEmailConfirmation(int keyIndex,ApplicationUser targetUser,string confirmationId)
         {
             EmailConfirmation confirmation=new EmailConfirmation()
             {
@@ -15,10 +15,11 @@ namespace UnitusCore.Models.DataModel
                 TargetUser = targetUser
             };
             confirmation.GenerateId();
+            confirmation.KeyIndex = keyIndex;
             return confirmation;
         }
+        public int KeyIndex { get; set; }
         public ApplicationUser TargetUser { get; set; }//binded
-        [Index]
         public string ConfirmationId { get; set; }
         public DateTime ExpireTime { get; set; }
     }

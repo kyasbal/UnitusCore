@@ -6,7 +6,7 @@ namespace UnitusCore.Models.DataModel
 {
     public class Event : ModelBase
     {
-        public Event(int a)
+        public Event()
         {
             Circles = new HashSet<Circle>();
             Achivements = new HashSet<Achivement>();
