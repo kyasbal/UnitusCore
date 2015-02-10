@@ -22,17 +22,8 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {//test
-    public class AccountController : Controller
+    public class AccountController : UnitusController
     {
-        public ApplicationUserManager UserManager
-        {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-        }
-
-        public IAuthenticationManager AuthenticationContext
-        {
-            get { return Request.GetOwinContext().Authentication; }
-        }
 
         [AllowAnonymous]
         [HttpGet]

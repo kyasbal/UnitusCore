@@ -12,41 +12,21 @@ using UnitusCore.Models;
 namespace UnitusCore.Controllers
 {
     
-    public class HomeController : Controller
+    public class HomeController : UnitusController
     {
-        public ApplicationUserManager UserManager
-        {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-        }
-
-        public IAuthenticationManager AuthenticationContext
-        {
-            get { return Request.GetOwinContext().Authentication; }
-        }
-
-        public ApplicationDbContext DbContext
-        {
-            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
-        }
-
-        public ApplicationUser AppUser
-        {
-            get { return UserManager.FindByName(User.Identity.Name); }
-        }
-
         [HttpGet]
         [Authorize]
         // GET: Home
         public ActionResult Index()
         {
-            if (string.IsNullOrWhiteSpace(AppUser.GithubAccessToken))
+            if (string.IsNullOrWhiteSpace(CurrentUser.GithubAccessToken))
             {
                 this.AddNotification(NotificationType.Error,"Github連携が未設定です",string.Format("<a href=\"{0}\">こちら</a>をクリックして設定してください。",Url.Action("Authorize","Github")),false);
             }
 
             var permissionManager=Request.GetOwinContext().GetPermissionManager();
             var user=UserManager.FindByName(User.Identity.Name);
-            DbContext.Entry(user).Reference(p => p.PersonData);
+            DbSession.Entry(user).Reference(p => p.PersonData);
             return View(new DashboardResponse(this.GetCurrentDashboardRequest(true).DashboardInformations.ToArray(),user,permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
         }
     }
