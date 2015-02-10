@@ -15,7 +15,7 @@ namespace UnitusCore.Models.DataModel
             Members = new HashSet<MemberStatus>();
             CircleStatistises = new HashSet<CircleStatistics>();
             Administrators=new HashSet<ApplicationUser>();
-            MemberInvitations=new ArraySegment<CircleMemberInvitation>();
+            MemberInvitations=new HashSet<CircleMemberInvitation>();
         }
 
         public string Name { get; set; }

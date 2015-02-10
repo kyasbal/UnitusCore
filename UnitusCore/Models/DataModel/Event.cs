@@ -6,12 +6,12 @@ namespace UnitusCore.Models.DataModel
 {
     public class Event : ModelBase
     {
-        public Event()
+        public Event(int a)
         {
             Circles = new HashSet<Circle>();
             Achivements = new HashSet<Achivement>();
             Projects = new HashSet<Project>();
-            Participants = new List<Person>();
+            Participants = new HashSet<Person>();
         }
         public bool AlreadyHosted { get; set; }
 

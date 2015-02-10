@@ -7,6 +7,7 @@ namespace UnitusCore.Models.DataModel
     {
         public Person()
         {
+            AttendedEvents=new HashSet<Event>();
             BelongedCircles = new HashSet<MemberStatus>();
             CommittedProjects = new HashSet<Project>();
             Skills = new HashSet<Skill>();

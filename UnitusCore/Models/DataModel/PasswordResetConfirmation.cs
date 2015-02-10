@@ -15,7 +15,7 @@ namespace UnitusCore.Models.DataModel
             confirm.ConfirmationId = confirmationId;
             return confirm;
         }
-
+        [Index]
         public string ConfirmationId { get; set; }
 
         public ApplicationUser TargetUser { get; set; }
