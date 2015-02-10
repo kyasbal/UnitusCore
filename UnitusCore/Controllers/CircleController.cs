@@ -12,7 +12,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
+using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {

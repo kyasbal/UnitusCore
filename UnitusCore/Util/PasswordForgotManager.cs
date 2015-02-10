@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Util
 {

@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Controllers
 {

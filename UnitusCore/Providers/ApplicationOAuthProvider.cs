@@ -10,6 +10,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Providers
 {

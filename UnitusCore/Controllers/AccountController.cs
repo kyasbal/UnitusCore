@@ -18,6 +18,7 @@ using Microsoft.Owin.Security;
 using SendGridSharp;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers

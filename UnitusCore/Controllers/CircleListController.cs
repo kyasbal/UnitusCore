@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Newtonsoft.Json;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
 
 namespace UnitusCore.Controllers

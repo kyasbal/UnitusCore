@@ -1,10 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace UnitusCore.Models
+﻿namespace UnitusCore.Models.DataModel
 {
     public class SimpleMessageResponse
     {

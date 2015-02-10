@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{FB7906A6-9CA5-4E3C-A753-DB0744EA921D}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		postbuild.ps1 = postbuild.ps1
 		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
 		UnitusCore\Properties\PublishProfiles\unitus-core.pubxml = UnitusCore\Properties\PublishProfiles\unitus-core.pubxml
 	EndProjectSection
@@ -22,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F46AC
 		CommonVariables.ps1 = CommonVariables.ps1
 		Config.json = Config.json
 		.nuget\packages.config = .nuget\packages.config
+		postbuild.ps1 = postbuild.ps1
 		RBD-AddMigration.ps1 = RBD-AddMigration.ps1
 		RemoteEnableMigrationsApplicationContext.ps1 = RemoteEnableMigrationsApplicationContext.ps1
 		RemoteEnableMigrationsBasicContext.ps1 = RemoteEnableMigrationsBasicContext.ps1
