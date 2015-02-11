@@ -169,6 +169,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\GlobalHandleErrorAttribute.cs" />
     <Compile Include="Attributes\RoleRestrictAttribute.cs" />
     <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -187,15 +188,18 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalConstants.cs" />
-    <Compile Include="Migrations\201502102116006_Migration3.cs" />
-    <Compile Include="Migrations\201502102116006_Migration3.Designer.cs">
-      <DependentUpon>201502102116006_Migration3.cs</DependentUpon>
+    <Compile Include="Migrations\201502110943567_MigrationRemote1.cs" />
+    <Compile Include="Migrations\201502110943567_MigrationRemote1.Designer.cs">
+      <DependentUpon>201502110943567_MigrationRemote1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
+    <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
+    <Compile Include="Models\ApplicationDbContext.TimeLogging.cs" />
+    <Compile Include="Models\BaseClasses\ModelBaseWithTimeLogging.cs" />
     <Compile Include="Models\DataModel\Achivement.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
-    <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />
     <Compile Include="Models\DataModel\Circle.cs" />
     <Compile Include="Models\DataModel\CircleMemberInvitation.cs" />
@@ -258,6 +262,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\ZeroClipboard.Core.min.map" />
     <Content Include="Content\ZeroClipboard.min.map" />
+    <None Include="Properties\PublishProfiles\unitus-core %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\unitus-core.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -294,6 +299,7 @@
     <Content Include="Views\Account\ForgotPasswordConfirm.cshtml" />
     <Content Include="Views\Account\ForgotPasswordMailSent.cshtml" />
     <Content Include="Views\Account\ForgotPasswordComplete.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
@@ -307,8 +313,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201502102116006_Migration3.resx">
-      <DependentUpon>201502102116006_Migration3.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201502110943567_MigrationRemote1.resx">
+      <DependentUpon>201502110943567_MigrationRemote1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -339,6 +345,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.Sql.UnitTesting.targets" Condition="'$(SQLDBExtensionsRefPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.Sql.UnitTesting.targets" Condition="'$(SQLDBExtensionsRefPath)' == ''" />
+  <PropertyGroup>
+    <SsdtUnitTestVersion>2.0</SsdtUnitTestVersion>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

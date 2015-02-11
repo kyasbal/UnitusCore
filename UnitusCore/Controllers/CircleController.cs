@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -54,15 +55,15 @@ namespace UnitusCore.Controllers
             {
                 try
                 {
-                    ApplicationUser user = UserManager.FindByName(req.LeaderUserName);
+                    ApplicationUser user = CurrentUserWithPerson;
+               
                     MemberStatus memberStatus = new MemberStatus();
                     memberStatus.GenerateId();
                     memberStatus.IsActiveMember = true;
                     memberStatus.Occupation = "代表者";
                     memberStatus.TargetUser = user.PersonData;
-                    DbSession.MemberStatuses.Add(memberStatus);
-                    DbSession.SaveChanges();
                     Circle circle = new Circle();
+                    memberStatus.TargetCircle = circle;
                     circle.GenerateId();
                     circle.Name = r.CircleName;
                     circle.Description = r.Description;
@@ -73,6 +74,7 @@ namespace UnitusCore.Controllers
                     circle.Contact = r.Address;
                     circle.CanInterCollege = r.InterColledgeAccepted;
                     circle.Members.Add(memberStatus);
+                    DbSession.MemberStatuses.Add(memberStatus);
                     DbSession.Circles.Add(circle);
                     DbSession.SaveChanges();
                     return Json(ResultContainer.GenerateSuccessResult());
@@ -132,15 +134,24 @@ namespace UnitusCore.Controllers
 
     public class GetCircleResponseCircleEntity
     {
-        public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity, string lastUpdateDate, bool isBelonged)
+        public static GetCircleResponseCircleEntity FromCircle(Circle circle,bool isBelonging)
+        {
+            return new GetCircleResponseCircleEntity(circle.Name,circle.MemberCount,circle.BelongedSchool,"",isBelonging,circle.Id.ToString());
+        }
+
+        public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity, string lastUpdateDate, bool isBelonged, string circleId)
         {
             CircleName = circleName;
             MemberCount = memberCount;
             BelongedUniversity = belongedUniversity;
             this.LastUpdateDate = lastUpdateDate;
-            IsBelonged = isBelonged;
+            IsBelonging = isBelonged;
+            CircleId = circleId;
         }
-        public bool IsBelonged { get; set; }
+
+        public string CircleId { get; set; }
+
+        public bool IsBelonging { get; set; }
 
         public string CircleName { get; set; }
 

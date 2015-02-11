@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using UnitusCore.Models;
 using UnitusCore.Models.BaseClasses;
 using UnitusCore.Models.DataModel;
 
@@ -34,15 +36,25 @@ namespace UnitusCoreUnitTest
             bool hasSimpleConstructor = true;
             foreach (var modelType in ModelTypes)
             {
-
+                int count = 1;
                 foreach (ConstructorInfo constructorInfo in modelType.GetConstructors(BindingFlags.Public))
                 {
-                    int count = constructorInfo.GetParameters().Length;
-                    Console.WriteLine("Type:{0} count:{1}",modelType,count);
-                    if (count != 0) hasSimpleConstructor = false;
+                    count = Math.Min(count,constructorInfo.GetParameters().Length)
+                    ;
+                    Console.WriteLine(string.Format("Type:{0} count:{1}",modelType,count),"VERBOSE");
                 }
+                if (count != 0) hasSimpleConstructor = false;
             }
             Assert.IsFalse(hasSimpleConstructor);
         }
+
+
+        [TestMethod]
+        public void testConnection()
+        {
+          
+            
+        }
+        
     }
 }

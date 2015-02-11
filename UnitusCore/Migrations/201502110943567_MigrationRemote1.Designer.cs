@@ -7,13 +7,13 @@ namespace UnitusCore.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.1-30610")]
-    public sealed partial class Migration3 : IMigrationMetadata
+    public sealed partial class MigrationRemote1 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Migration3));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(MigrationRemote1));
         
         string IMigrationMetadata.Id
         {
-            get { return "201502102116006_Migration3"; }
+            get { return "201502110943567_MigrationRemote1"; }
         }
         
         string IMigrationMetadata.Source
