@@ -22,14 +22,14 @@ namespace UnitusCore.Controllers
             get { return Request.GetOwinContext(); }
         }
 
-        private ApplicationUser currentUserData;
+        protected ApplicationUser currentUserCache;
 
         public ApplicationUser CurrentUser
         {
             get
             {
-                currentUserData = currentUserData ?? UserManager.FindByName(User.Identity.Name);
-                return currentUserData;
+                currentUserCache = currentUserCache ?? UserManager.FindByName(User.Identity.Name);
+                return currentUserCache;
             }
         }
 
@@ -37,14 +37,14 @@ namespace UnitusCore.Controllers
         {
             get
             {
-                if (currentUserData?.PersonData == null)
+                if (currentUserCache?.PersonData == null)
                 {
-                    currentUserData =
+                    currentUserCache =
                         DbSession.Users.Include(a => a.PersonData)
                             .Where(a => a.UserName.Equals(User.Identity.Name))
                             .FirstOrDefault();
                 }
-                return currentUserData;
+                return currentUserCache;
             }
         }
 

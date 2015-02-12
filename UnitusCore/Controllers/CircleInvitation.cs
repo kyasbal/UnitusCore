@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 using UnitusCore.Attributes;
 using UnitusCore.Models.DataModel;
@@ -16,7 +17,7 @@ namespace UnitusCore.Controllers
 
         [Route("Circle/Invite")]
         [Authorize]
-        [AllowCrossSiteAccess(AccessFrom.All)]
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
         {
             return await this.OnValidToken(req, (r) =>

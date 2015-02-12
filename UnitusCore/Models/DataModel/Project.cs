@@ -4,7 +4,7 @@ using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Project : ModelBase
+    public class Project : ModelBaseWithTimeLogging
     {
         public Project()
         {

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.AspNet.Identity.Owin;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
@@ -17,7 +18,7 @@ namespace UnitusCore.Controllers
 {
     public class PeopleController : UnitusApiController
     {
-
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         [Route("Person")]
         [Authorize]
         [RoleRestrict("Administrator")]
@@ -35,10 +36,10 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [AllowCrossSiteAccess(AccessFrom.All)]
+        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
         [Route("Person/Dummy")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetPersonListDummy(int Count,int Offset)
+        public async Task<IHttpActionResult> GetPersonListDummy(int Count=20,int Offset=10)
         {
             return await this.OnValidToken("",() =>
             {

@@ -15,7 +15,7 @@ namespace UnitusCore.Migrations
         protected override void Seed(UnitusCore.Models.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
-            UserSeedConfiguration.RunUserSeed(context);
+          //  UserSeedConfiguration.RunUserSeed(context);
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data. E.g.
             //

@@ -5,7 +5,7 @@ using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Circle : ModelBase
+    public class Circle : ModelBaseWithTimeLogging
     {
         public Circle()
         {

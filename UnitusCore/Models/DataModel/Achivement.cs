@@ -3,7 +3,7 @@ using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Achivement : ModelBase
+    public class Achivement : ModelBaseWithTimeLogging
     {
         public Achivement()
         {

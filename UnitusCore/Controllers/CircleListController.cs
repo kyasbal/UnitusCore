@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.AspNet.Identity.Owin;
 using Newtonsoft.Json;
 using UnitusCore.Attributes;
@@ -16,7 +17,7 @@ namespace UnitusCore.Controllers
     public class CircleListController : UnitusApiController
     {
 
-        [AllowCrossSiteAccess(AccessFrom.Unitus)]
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         [Route("circlelist")]
         [HttpPost]
         public async Task<IHttpActionResult> Index()
@@ -58,7 +59,7 @@ namespace UnitusCore.Controllers
             return labels.ToArray();
         }
 
-        [AllowCrossSiteAccess(AccessFrom.All)]
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         [Route("circlelist/debug")]
         [HttpPost]
         [HttpGet]

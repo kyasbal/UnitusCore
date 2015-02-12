@@ -4,7 +4,7 @@ using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Event : ModelBase
+    public class Event : ModelBaseWithTimeLogging
     {
         public Event()
         {
