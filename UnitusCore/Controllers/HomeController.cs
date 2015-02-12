@@ -13,7 +13,7 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    
+
     public class HomeController : UnitusController
     {
         [HttpGet]
@@ -23,15 +23,27 @@ namespace UnitusCore.Controllers
         {
             if (string.IsNullOrWhiteSpace(CurrentUser.GithubAccessToken))
             {
-                this.AddNotification(NotificationType.Error,"Github連携が未設定です",string.Format("<a href=\"{0}\">こちら</a>をクリックして設定してください。",Url.Action("Authorize","Github")),false);
+                this.AddNotification(NotificationType.Error, "Github連携が未設定です",
+                    string.Format("<a href=\"{0}\">こちら</a>をクリックして設定してください。", Url.Action("Authorize", "Github")), false);
             }
 
-            var permissionManager=Request.GetOwinContext().GetPermissionManager();
-            var user=UserManager.FindByName(User.Identity.Name);
+            var permissionManager = Request.GetOwinContext().GetPermissionManager();
+            var user = UserManager.FindByName(User.Identity.Name);
             DbSession.Entry(user).Reference(p => p.PersonData);
-            return View(new DashboardResponse(this.GetCurrentDashboardRequest(true).DashboardInformations.ToArray(),user,permissionManager.CheckPermission("Administrator",User.Identity.Name),AjaxRequestExtension.GetAjaxValidToken()));
+            return
+                View(new DashboardResponse(this.GetCurrentDashboardRequest(true).DashboardInformations.ToArray(), user,
+                    permissionManager.CheckPermission("Administrator", User.Identity.Name),
+                    AjaxRequestExtension.GetAjaxValidToken()));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Cert()
+        {
+            return Content("ckknF3Jp4XynZBxEn4Em");
         }
     }
+
 
     public static class DashboardExtension
     {

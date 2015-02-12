@@ -8,25 +8,30 @@ using System.Web.Http.Cors;
 using System.Web.Http.Results;
 using UnitusCore.Attributes;
 using UnitusCore.Models.DataModel;
+using UnitusCore.Results;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class CircleInvitation : UnitusApiController
+    public class CircleInvitationController : UnitusApiController
     {
 
-        [Route("Circle/Invite")]
+        [Route("CircleInvitation")]
         [Authorize]
         [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
-        public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
+        [HttpGet]
+        public async Task<IHttpActionResult> PostInvitation(string address,string circleId)
         {
-            return await this.OnValidToken(req, (r) =>
+            return await this.OnValidToken("", () =>
             {
-                string[] inviteMembers = req.GetEmailList();
-                Circle targetCircle = DbSession.Circles.Find(r.CircleId);
+                //string[] inviteMembers = req.GetEmailList();
+                Circle targetCircle = DbSession.Circles.Find(Guid.Parse(circleId));
+                DbSession.Entry(CurrentUser).Collection(a=>a.AdministrationCircle).Load();
+                CurrentUser.AdministrationCircle.Add(targetCircle);
+                DbSession.SaveChanges();
                 if (CurrentUser.AdministrationCircle.Contains(targetCircle))
                 {
-
+                    CircleInvitationManager.SendCircleInvitation(this, targetCircle,new string[] {address});
                 }
                 else
                 {
@@ -34,6 +39,11 @@ namespace UnitusCore.Controllers
                 }
                 return Json(true);
             });
+        }
+
+        public class CircleInvitationSendResponse
+        {
+            public bool HasWarning { get; set; }
         }
 
         public class CircleInvitationSendRequest : AjaxRequestModelBase

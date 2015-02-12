@@ -19,7 +19,11 @@ namespace UnitusCore.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
-            Configuration.LazyLoadingEnabled = false;
+        }
+
+        public ApplicationDbContext(string connectionString):base(connectionString)
+        {
+            
         }
 
         public static ApplicationDbContext Create()

@@ -11,6 +11,8 @@ namespace UnitusCore.Models.DataModel
 
         public string ConfirmationKey { get; set; }
 
-        public string Name { get; set; }
+        public string EmailAddress { get; set; }
+
+        public DateTime SentDate { get; set; }
     }
 }

@@ -29,31 +29,50 @@ namespace UnitusCoreUnitTest
 
         private HashSet<Type> ModelTypes;
 
-        [TestMethod]
-        public void HasSimpleConstructor()
+        private ApplicationDbContext DbSession;
+
+        [TestInitialize]
+        public void TestPrepare()
         {
             createModelTypesIfNotexist();
-            bool hasSimpleConstructor = true;
-            foreach (var modelType in ModelTypes)
-            {
-                int count = 1;
-                foreach (ConstructorInfo constructorInfo in modelType.GetConstructors(BindingFlags.Public))
-                {
-                    count = Math.Min(count,constructorInfo.GetParameters().Length)
-                    ;
-                    Console.WriteLine(string.Format("Type:{0} count:{1}",modelType,count),"VERBOSE");
-                }
-                if (count != 0) hasSimpleConstructor = false;
-            }
-            Assert.IsFalse(hasSimpleConstructor);
+            DbSession=new ApplicationDbContext(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\Lime\Source\Repos\unitus-core\UnitusCore\App_Data\UnitusCoreDatabase.mdf;Initial Catalog=UnitusCoreDatabase;Integrated Security=True");
         }
 
 
         [TestMethod]
-        public void testConnection()
+        public void HasSimpleConstructor()
         {
-          
-            
+            bool hasSimpleConstructor = true;
+            foreach (var modelType in ModelTypes)
+            {
+                int count = 1;
+                var constructor=modelType.GetConstructors(BindingFlags.Public);
+                if (constructor.Length == 0) count = 0;
+                foreach (ConstructorInfo constructorInfo in constructor)
+                {
+                    count = Math.Min(count, constructorInfo.GetParameters().Length);
+                    Console.WriteLine("Type:{0} count:{1}", modelType, count);
+                }
+                if (count != 0)
+                {
+                    hasSimpleConstructor = false;
+                }
+                if (hasSimpleConstructor)
+                {
+                    Console.WriteLine("Type{0} is OK",modelType);
+                }
+                else
+                {
+                    Console.WriteLine("Type{0} is Invalid", modelType);
+                }
+            }
+            Assert.IsTrue(hasSimpleConstructor);
+        }
+
+        [TestMethod]
+        public void ConnectionCheck()
+        {
+            Assert.IsNotNull(DbSession);
         }
         
     }

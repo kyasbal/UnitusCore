@@ -13,13 +13,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitusCore</RootNamespace>
     <AssemblyName>UnitusCore</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +43,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -51,11 +53,11 @@
     <Reference Include="System.Web.Cors">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
@@ -63,7 +65,6 @@
     <Reference Include="System.Web.Http.Cors">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
@@ -111,6 +112,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -182,7 +184,8 @@
     <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CircleController.cs" />
-    <Compile Include="Controllers\CircleInvitation.cs" />
+    <Compile Include="Controllers\CircleInvitationController.cs" />
+    <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
@@ -199,6 +202,10 @@
     <Compile Include="Migrations\201502111621331_MigrationFirst.cs" />
     <Compile Include="Migrations\201502111621331_MigrationFirst.Designer.cs">
       <DependentUpon>201502111621331_MigrationFirst.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502120521026_Migration2.cs" />
+    <Compile Include="Migrations\201502120521026_Migration2.Designer.cs">
+      <DependentUpon>201502120521026_Migration2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
@@ -237,6 +244,7 @@
     <Compile Include="SendGridSharp\SmtpHeader.cs" />
     <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Util\CircleInvitationManager.cs" />
     <Compile Include="Util\ControllerExtensions.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />
@@ -250,6 +258,7 @@
     <Content Include="App_Data\UnitusCoreDatabase_log.ldf">
       <DependentUpon>UnitusCoreDatabase.mdf</DependentUpon>
     </Content>
+    <Content Include="bmi6w7xl.htm" />
     <Content Include="Content\background.png" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -308,6 +317,10 @@
     <Content Include="Views\Account\ForgotPasswordMailSent.cshtml" />
     <Content Include="Views\Account\ForgotPasswordComplete.cshtml" />
     <Content Include="Views\Home\Test.cshtml" />
+    <Content Include="Views\CircleInvitationAccept\Index.cshtml" />
+    <Content Include="Views\CircleInvitationAccept\SelectedEmailForAlreadyUser.cshtml" />
+    <Content Include="Views\CircleInvitationAccept\InviteAcceptMessage.cshtml" />
+    <Content Include="Views\CircleInvitationAccept\SelectedEmailForUnknownUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
@@ -323,6 +336,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201502111621331_MigrationFirst.resx">
       <DependentUpon>201502111621331_MigrationFirst.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502120521026_Migration2.resx">
+      <DependentUpon>201502120521026_Migration2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

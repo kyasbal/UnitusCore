@@ -1,0 +1,61 @@
+﻿@model UnitusCore.Controllers.CircleInvitationAcceptResponse
+@{
+    Layout = "/Views/_BaseLayout.cshtml";
+    ViewBag.Title = "サークルへの招待";
+}
+@section Header{
+    <link href="/Content/Styles/Login.css" rel="stylesheet">
+}
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png"/>
+            <h1 class="login-header">サークルの招待の受諾</h1>
+            <p>「@Model.InviterName」さんから「@Model.CircleName」への招待を受諾します。</p>
+
+            @using (Html.BeginForm("EmailSelect", "CircleInvitationAccept", FormMethod.Post, new {@class = "login-form"}))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" value="@Model.ConfirmationId" name="ConfirmationId"/>
+                <div class="form-group">
+                    <div class="well">
+                        <div class="radio text-left">
+                            <label for="use-t">
+                                <input class="" type="radio" name="UseSentEmail" value="true" id="use-t" checked="checked"/>
+                                招待されたE-Mail(@Model.EmailAddress)
+                            </label>
+                        </div>
+                        <div class="radio text-left">
+                            <label for="use-f">
+                                <input class="" type="radio" name="UseSentEmail" value="false" id="use-f"/>
+                                それ以外のE-Mailを使用する。
+                            </label>
+                            <input id="NewEmail" name="NewEmail" class="form-control" type="email" placeholder="ログインに使用するメールアドレス" disabled/>
+                        </div>
+                    </div>
+                    <input type="submit" class="form-control btn btn-primary" value="次へ"/>
+                </div>
+            }
+
+            <script>
+                $(function()
+                {
+                    $("input[name=UseSentEmail]").on("change", function()
+                    {
+                        if ($("#use-t").is(":checked"))
+                        {
+                            $("#NewEmail").prop("disabled", true);
+                        } else
+                        {
+                            $("#NewEmail").prop("disabled", false);
+                        }
+                    });
+                });
+            </script>
+            @*@if (Model != null)
+            {
+                <p class="bg-@(Model.IsPositiveMessage?"success" :"warning")">@Html.Raw(Model.InfomationMessage)</p>
+            }*@
+        </div>
+    </div>
+</div>

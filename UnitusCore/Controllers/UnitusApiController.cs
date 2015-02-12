@@ -37,7 +37,7 @@ namespace UnitusCore.Controllers
         {
             get
             {
-                if (currentUserCache?.PersonData == null)
+                if (currentUserCache==null||currentUserCache.PersonData == null)
                 {
                     currentUserCache =
                         DbSession.Users.Include(a => a.PersonData)

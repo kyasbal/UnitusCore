@@ -78,35 +78,51 @@ namespace UnitusCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var state=UserManager.CreateUser(request.UserName, request.Password);
-                if (state.Succeeded)
-                {
-                    if (request.IsAdmin)
-                    {
-                        Request.GetOwinContext().GetPermissionManager().ApplyPermissionToUser(GlobalConstants.AdminRoleName,request.UserName);
-                    }
-                    var user=UserManager.FindByName(request.UserName);
-                    var result=MailConfirmationManager.SendMailConfirmation(user, this);
-                    if (result.Success)
-                    {
-                        return accountCreationStateResult(string.Format("アカウント:{0}は正常に作成されました。<br>メールアドレスの確認のためのメールを{0}に送りました。", request.UserName), true);
-                    }
-                    else
-                    {//メールが遅れなかった場合
-                        return accountCreationStateResult(string.Format("アカウント:{0}は正常に作成されました。", request.UserName), true);
-                    }
-
-                }
-                else
-                {
-                    return accountCreationStateResult(string.Format("アカウント:{0}の作成に失敗しました。<br>{1}", request.UserName,state.Errors.FirstOrDefault()),false);
-                }
+                return CreateUnitusAccount(request);
             }
             else
             {
                 return
                     accountCreationStateResult(
                         string.Format("アカウント:{0}の作成に失敗しました。<br>不正なパラメータが渡されました。", request.UserName), false);
+            }
+        }
+
+        internal ActionResult CreateUnitusAccount(AddAccountRequest request)
+        {
+            var state = UserManager.CreateUser(request.UserName, request.Password);
+            if (state.Succeeded)
+            {
+                if (request.IsAdmin)
+                {
+                    Request.GetOwinContext()
+                        .GetPermissionManager()
+                        .ApplyPermissionToUser(GlobalConstants.AdminRoleName, request.UserName);
+                }
+                var user = UserManager.FindByName(request.UserName);
+                Person p = new Person();
+                p.GenerateId();
+                p.Email = user.Email;
+                user.PersonData = p;
+                DbSession.SaveChanges();
+                var result = MailConfirmationManager.SendMailConfirmation(user, this);
+                if (result.Success)
+                {
+                    return
+                        accountCreationStateResult(
+                            string.Format("アカウント:{0}は正常に作成されました。<br>メールアドレスの確認のためのメールを{0}に送りました。", request.UserName), true);
+                }
+                else
+                {
+//メールが遅れなかった場合
+                    return accountCreationStateResult(string.Format("アカウント:{0}は正常に作成されました。", request.UserName), true);
+                }
+            }
+            else
+            {
+                return
+                    accountCreationStateResult(
+                        string.Format("アカウント:{0}の作成に失敗しました。<br>{1}", request.UserName, state.Errors.FirstOrDefault()), false);
             }
         }
 
@@ -341,6 +357,7 @@ namespace UnitusCore.Controllers
 
     public class AddAccountRequest
     {
+        [EmailAddress]
         [Required]
         public string UserName { get; set; }
 
@@ -348,5 +365,7 @@ namespace UnitusCore.Controllers
         public string Password { get; set; }
 
         public bool IsAdmin { get; set; }
+
+        public string Name { get; set; }
     }
 }

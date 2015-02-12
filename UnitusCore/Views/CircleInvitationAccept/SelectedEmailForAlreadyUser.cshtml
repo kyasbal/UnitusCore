@@ -1,0 +1,18 @@
+﻿@model UnitusCore.Controllers.CircleInvitationSelectMailForAlreadyExisiting
+@{
+    Layout = "/Views/_BaseLayout.cshtml";
+    ViewBag.Title = "サークルへの招待";
+}
+@section Header{
+    <link href="/Content/Styles/Login.css" rel="stylesheet">
+}
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png" />
+            <h1 class="login-header">サークルの招待の受諾</h1>
+            <p>"@Model.EmailAddress"で「@Model.InviterName」さんからの「@Model.CircleName」への招待を受諾するには、"@Model.EmailAddress"でログインする必要があります。</p>
+            @Html.ActionLink("ログインして招待を受諾","EmailSelectConfirmForAlreadyExisiting",new{confirmationId=Model.ConfirmationId,securityHash=Model.ConfirmationHash,mailaddr=Model.EmailAddress})
+        </div>
+    </div>
+</div>

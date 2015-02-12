@@ -96,8 +96,8 @@ namespace UnitusCore.Controllers
         }
 
         [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
-        [HttpGet]
         [Route("Circle/Dummy")]
+        [HttpGet]
         public async Task<IHttpActionResult> GetCircleDummy(string validationToken, int Count=20, int Offset=0)
         {
             return await this.OnValidToken(validationToken, () =>
