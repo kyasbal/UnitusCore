@@ -119,6 +119,56 @@ namespace UnitusCore.Controllers
             });
         }
 
+        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [Route("Circle/Detail")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCircleDetailed(string validationToken,string circleId)
+        {
+            Circle circle = null;
+            return await this.OnValidToken(validationToken, () =>
+            {
+                return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(GetPutCircleDetailBody.FromCircle(circle)));
+            }, (a) =>
+            {
+                return CircleIdConfirmation(circleId, a, out circle);
+            });
+        }
+
+        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [Route("Circle/Detail/Dummy")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
+        {
+            return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(new GetPutCircleDetailBody(
+                "応用数学研究部","# 数学とかwwww",28,"Tokyo university of science,Kagura-zaka","特になし","http://unitus-ac.com","なし",false,"毎週木曜日")
+                ));
+        }
+
+        private bool CircleIdConfirmation(string circleId,HashSet<string> errorMsgs , out Circle circleOutput)
+        {
+            Guid circleIdInGuid;
+            if (Guid.TryParse(circleId, out circleIdInGuid))
+            {
+                circleOutput = DbSession.Circles.Find(circleIdInGuid);
+                if (circleOutput == null)
+                {
+                    errorMsgs.Add("該当するサークルが見つかりませんでした。");
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                circleOutput = null;
+                errorMsgs.Add("与えられたGUIDが不正です。");
+                return false;
+            }
+                
+        }
+
 
         [HttpPost]
         [Authorize]
@@ -162,18 +212,57 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [HttpPatch]
+//        [HttpGet]
+//        [Route("Circle/Member")]
+//        [Authorize]
+//        public async Task<IHttpActionResult> GetMembers(string validationToken,string circleId)
+//        {
+//            
+//        }
+
+
+
+        [HttpPut]
         [Authorize]
         [Route("Circle")]
-        public Task<IHttpActionResult> PatchCircle(AddCircleRequest req)
+        public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
-            return this.OnValidToken(req, (r) =>
+            Circle circle = null;
+            return await this.OnValidToken(req.ValidationToken,async () =>
             {
-                return Json(true);
+                circle.Name = req.CircleName ?? circle.Name;
+                circle.Description = req.CircleDescription ?? circle.Description;
+                circle.MemberCount = req.MemberCount!=0?req.MemberCount: circle.MemberCount;
+                circle.WebAddress = req.WebAddress ?? circle.WebAddress;
+                circle.BelongedSchool = req.BelongedSchool ?? circle.BelongedSchool;
+                circle.Notes = req.Notes ?? circle.Notes;
+                circle.Contact = req.Contact ?? circle.Contact;
+                circle.ActivityDate = req.ActivityDate ?? circle.ActivityDate;
+                circle.CanInterCollege = req.CanInterColledge;
+                DbSession.SaveChanges();
+                return await GetCircleDetailed(req.ValidationToken, req.CircleId);
+            },
+            (a) =>
+            {
+                return CircleIdConfirmation(req.CircleId, a, out circle);
             });
         }
 
     }
+
+    public class GetMemberList
+    {
+       
+    }
+
+    public class GetMemberListElement
+    {
+        public string UserId { get; set; }
+
+        public string Ocupation { get; set; }
+
+    }
+
 
     public class AddCircleRequest :AjaxRequestModelBase
     {
@@ -194,6 +283,68 @@ namespace UnitusCore.Controllers
         public string LeaderUserName { get; set; }
 
         public bool InterColledgeAccepted { get; set; }
+    }
+
+    public class PutCircleRequest : GetPutCircleDetailBody
+    {
+        public string CircleId { get; set; }
+        public string ValidationToken { get; set; }
+
+        public PutCircleRequest(string circleId,string validationToken,string circleName, string circleDescription, int memberCount, string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge, string activityDate) : base(circleName, circleDescription, memberCount, belongedSchool, notes, webAddress, contact, canInterColledge, activityDate)
+        {
+            CircleId = circleId;
+            ValidationToken = validationToken;
+        }
+
+        public PutCircleRequest()
+        {
+            
+        }
+    }
+
+    public class GetPutCircleDetailBody
+    {
+        public GetPutCircleDetailBody()
+        {
+            
+        }
+        public GetPutCircleDetailBody(string circleName, string circleDescription, int memberCount, string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge, string activityDate)
+        {
+            CircleName = circleName;
+            CircleDescription = circleDescription;
+            MemberCount = memberCount;
+            BelongedSchool = belongedSchool;
+            Notes = notes;
+            WebAddress = webAddress;
+            Contact = contact;
+            CanInterColledge = canInterColledge;
+            ActivityDate = activityDate;
+        }
+
+        public string CircleName { get; set; }
+
+        public string CircleDescription { get; set; }
+
+        public int MemberCount { get; set; }
+
+        public string WebAddress { get; set; }
+
+        public string BelongedSchool { get; set; }
+
+        public string Notes { get; set; }
+
+        public string Contact { get; set; }
+
+        public bool CanInterColledge { get; set; }
+
+        public string ActivityDate { get; set; }
+
+        public static GetPutCircleDetailBody FromCircle(Circle circle)
+        {
+            return new GetPutCircleDetailBody(circle.Name, circle.Description, circle.MemberCount,
+                circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterCollege,
+                circle.ActivityDate);
+        }
     }
 
     public class GetCircleResponse

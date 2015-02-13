@@ -277,7 +277,6 @@
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
-    <Compile Include="Validator\CircleValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\UnitusCoreDatabase.mdf" />
@@ -349,6 +348,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
+    <Folder Include="Validator\" />
     <Folder Include="Views\Unitus\" />
   </ItemGroup>
   <ItemGroup>

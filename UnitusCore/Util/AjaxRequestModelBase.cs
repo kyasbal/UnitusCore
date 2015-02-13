@@ -29,9 +29,7 @@ namespace UnitusCore.Util
             {
                 return new StatusCodeResult(HttpStatusCode.BadRequest,controller);
             }
-        }
-
-         
+        } 
     }
 
     public static class AjaxRequestExtension
@@ -121,6 +119,29 @@ namespace UnitusCore.Util
                     return controller.JsonResult(new ResultContainer() {Success = false, ErrorMessage = errorMsg});
                 }
             });
+        }
+
+        public static async Task<IHttpActionResult> OnValidToken(this UnitusApiController controller,
+            string validationtoken, Func<Task<IHttpActionResult>> fp, Func<HashSet<string>, bool> vfunc)
+        {
+            return await OnValidToken(controller, validationtoken, async () =>
+            {
+                HashSet<string> ErrorSet = new HashSet<string>();
+                if (vfunc(ErrorSet))
+                {
+                    return await fp();
+                }
+                else
+                {
+                    string errorMsg = "";
+                    foreach (var str in ErrorSet)
+                    {
+                        errorMsg += str + "\n";
+                    }
+                    return controller.JsonResult(new ResultContainer() { Success = false, ErrorMessage = errorMsg });
+                }
+            });
+         
         }
     }
 }

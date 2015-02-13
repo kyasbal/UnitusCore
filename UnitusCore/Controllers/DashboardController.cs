@@ -17,18 +17,18 @@ using WebGrease.Css.Extensions;
 namespace UnitusCore.Controllers
 {
     [Authorize]
-    public class DashboardController:UnitusApiController
+    public class DashboardController : UnitusApiController
     {
-        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         [HttpGet]
         [Authorize]
         [Route("Dashboard")]
         public async Task<IHttpActionResult> GetDashboardStatus(string ValidationToken)
         {
-            return await this.OnValidToken(ValidationToken,async () =>
+            return await this.OnValidToken(ValidationToken, async () =>
             {
-                PermissionManager permission=new PermissionManager(DbSession,UserManager);
-                GithubAssociationManager manager=new GithubAssociationManager(DbSession,UserManager);
+                PermissionManager permission = new PermissionManager(DbSession, UserManager);
+                GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
 
                 return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
                     new GetDashboardStatusAjaxResponse(
@@ -37,12 +37,12 @@ namespace UnitusCore.Controllers
                         CurrentUserWithPerson.Email,
                         await manager.GetAvatarUri(CurrentUserWithPerson.Email),
                         (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, CurrentUserWithPerson)))
-                        ,await GetUserProfile())));
+                        , await GetUserProfile())));
             });
         }
 
 
-        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
         [HttpGet]
         [AllowAnonymous]
         [Route("Dashboard/Dummy")]
@@ -53,10 +53,10 @@ namespace UnitusCore.Controllers
                 return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
                     new GetDashboardStatusAjaxResponse(
                         true,
-                        "齊脇 一志",
+                        "種市 朝日",
                         "darafu@gmail.com",
-                        "http://matome.naver.jp/odai/2124827790117084500/2125888246848056353",
-                        new CircleBelongingStatus[] {new CircleBelongingStatus("ダラフ株式会社", "HelloID", true),},
+                        "https://avatars2.githubusercontent.com/u/230541?v=3&s=460",
+                        new CircleBelongingStatus[] { new CircleBelongingStatus("ダラフ株式会社", "HelloID", true), new CircleBelongingStatus("EspicaCompute", "IDIDIDIDIDIDIDIDIDIID", false), },
                         new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29))))
                     );
             });
@@ -64,7 +64,7 @@ namespace UnitusCore.Controllers
 
         private async Task<CircleBelongingStatus[]> GetAsArray(IEnumerable<MemberStatus> status)
         {
-            HashSet<CircleBelongingStatus> result=new HashSet<CircleBelongingStatus>();
+            HashSet<CircleBelongingStatus> result = new HashSet<CircleBelongingStatus>();
             foreach (var st in status)
             {
                 result.Add(new CircleBelongingStatus(st.TargetCircle.Name, st.TargetCircle.Id.ToString(),
@@ -83,7 +83,7 @@ namespace UnitusCore.Controllers
 
         private async Task<GithubProfile> GetGithubProfile()
         {
-            GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
+            GithubAssociationManager associationManager = new GithubAssociationManager(DbSession, UserManager);
             if (associationManager.IsAssociationEnabled(CurrentUser))
             {
                 GitHubClient client = associationManager.GetAuthenticatedClient(CurrentUser);
@@ -98,7 +98,7 @@ namespace UnitusCore.Controllers
 
         public class GetDashboardStatusAjaxResponse
         {
-            public GetDashboardStatusAjaxResponse(bool isAdministrator, string name, string userName,string avatarUri, CircleBelongingStatus[] circleBelonging, DetailedProfile profile)
+            public GetDashboardStatusAjaxResponse(bool isAdministrator, string name, string userName, string avatarUri, CircleBelongingStatus[] circleBelonging, DetailedProfile profile)
             {
                 IsAdministrator = isAdministrator;
                 Name = name;
