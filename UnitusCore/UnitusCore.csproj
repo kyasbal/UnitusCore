@@ -63,6 +63,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcContrib">
+      <HintPath>..\packages\MvcContrib.2.0.95.0\lib\MvcContrib.dll</HintPath>
+    </Reference>
     <Reference Include="Octokit">
       <HintPath>..\packages\Octokit.0.6.2\lib\net45\Octokit.dll</HintPath>
     </Reference>
@@ -213,6 +216,7 @@
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\GithubController.cs" />
@@ -265,6 +269,7 @@
     <Compile Include="SendGridSharp\SmtpHeader.cs" />
     <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Util\CircleDatabaseHelper.cs" />
     <Compile Include="Util\CircleInvitationManager.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />

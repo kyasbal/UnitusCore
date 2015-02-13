@@ -92,15 +92,16 @@ namespace UnitusCore.Controllers
         {
             GithubAssociationManager manager=new GithubAssociationManager(DbSession,UserManager);
             var client=manager.GetAuthenticatedClient(User.Identity.Name);
-            var gituser=await client.User.Current();
-            var repositories =
-                await
-                    client.Connection.Get<IReadOnlyList<Repository>>(
-                        new Uri(string.Format("https://api.github.com/user/repos")),
-                        new Dictionary<string, string>() {{"type", "all"}}, "application/vnd.github.moondragon+json");
-           List<string> names=new List<string>();
+            var repositories = await manager.GetAllRepositoryCommit(client);
+//            var gituser=await client.User.Current();
+//            var repositories =
+//                await
+//                    client.Connection.Get<IReadOnlyList<Repository>>(
+//                        new Uri(string.Format("https://api.github.com/user/repos")),
+//                        new Dictionary<string, string>() {{"type", "all"}}, "application/vnd.github.moondragon+json");
+//           List<string> names=new List<string>();
 
-            return Json(names.ToArray(), JsonRequestBehavior.AllowGet);
+            return Json(repositories, JsonRequestBehavior.AllowGet);
         }
 
         private async Task<string> ObtainAccessToken(string code)

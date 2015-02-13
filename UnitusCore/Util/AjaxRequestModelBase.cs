@@ -86,6 +86,22 @@ namespace UnitusCore.Util
             }
         }
 
+        public static async Task<IHttpActionResult> OnValidToken(this UnitusApiController controller, string validationToken, Func<Task<IHttpActionResult>> f)
+        {
+            if (AjaxRequestModelBase.NoCheckAntiFogery) return await f();//for debug
+            string[] tokens = validationToken.Split(':');
+            try
+            {
+                AntiForgery.Validate(tokens[0].Trim(), tokens[1].Trim());
+                return await f();
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(HttpStatusCode.BadRequest, controller);
+            }
+        }
+
+
         public static async Task<IHttpActionResult> OnValidToken(this UnitusApiController controller, string validationToken, Func<IHttpActionResult> f,Func<HashSet<string>,bool> vFunc)
         {
             return await OnValidToken(controller,validationToken, () =>

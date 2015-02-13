@@ -8,6 +8,7 @@ using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using MvcContrib;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Util;
@@ -44,12 +45,6 @@ namespace UnitusCore.Controllers
                     AjaxRequestExtension.GetAjaxValidToken()));
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult Cert()
-        {
-            return Content("ckknF3Jp4XynZBxEn4Em");
-        }
     }
 
 
@@ -81,7 +76,44 @@ namespace UnitusCore.Controllers
             controller.Session["Dashboard-Request"] = req;
         }
 
-        public static DashboardRequest GetCurrentDashboardRequest(this Controller controller,bool remove=false)
+//        public static DashboardRequest GetCurrentDashboardRequest(this UnitusApiController controller,bool remove=false)
+//        {
+//            DashboardRequest req  =controller.ControllerContext.Controller. ["Dashboard-Request"] as DashboardRequest;
+//            req = req ?? new DashboardRequest();
+//            if (remove)
+//            {
+//                controller.Session["Dashboard-Request"] = null;
+//            }
+//            return req;
+//        }
+//
+//        public static void AddNotification(this UnitusApiController controller, NotificationType type, string title, string message, bool timeDismission = true)
+//        {
+//            DashboardRequest req = controller.Session["Dashboard-Request"] as DashboardRequest;
+//            req = req ?? new DashboardRequest();
+//            string typeStr = "";
+//            switch (type)
+//            {
+//                case NotificationType.Success:
+//                    typeStr = "success";
+//                    break;
+//                case NotificationType.Warning:
+//                    typeStr = "warning";
+//                    break;
+//                case NotificationType.Error:
+//                    typeStr = "error";
+//                    break;
+//                case NotificationType.Info:
+//                    typeStr = "info";
+//                    break;
+//                default:
+//                    throw new ArgumentOutOfRangeException("type");
+//            }
+//            req.DashboardInformations.Add(new DashboardInformation(typeStr, title, message, timeDismission));
+//            controller.Session["Dashboard-Request"] = req;
+//        }
+
+        public static DashboardRequest GetCurrentDashboardRequest(this Controller controller, bool remove = false)
         {
             DashboardRequest req = controller.Session["Dashboard-Request"] as DashboardRequest;
             req = req ?? new DashboardRequest();
