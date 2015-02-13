@@ -4,6 +4,7 @@ using System.Linq;
 using System.ServiceModel.Description;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -16,6 +17,13 @@ namespace UnitusCore.Controllers
 
     public class HomeController : UnitusController
     {
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Jade()
+        {
+            return Json(true);
+        }
+
         [HttpGet]
         [Authorize]
         // GET: Home

@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
+[assembly: InternalsVisibleTo("UnitusCoreUnitTest")]
 // ComVisible を false に設定すると、このアセンブリ内の型は
 // COM コンポーネントから参照できなくなります。
 // COM からこのアセンブリ内の型にアクセスする必要がある場合は、その型の ComVisible 属性を true に設定してください。

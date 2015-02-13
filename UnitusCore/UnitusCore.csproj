@@ -63,6 +63,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Octokit">
+      <HintPath>..\packages\Octokit.0.6.2\lib\net45\Octokit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -221,6 +224,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalConstants.cs" />
+    <Compile Include="Migrations\201502131246073_Migration3.cs" />
+    <Compile Include="Migrations\201502131246073_Migration3.Designer.cs">
+      <DependentUpon>201502131246073_Migration3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
@@ -259,20 +266,19 @@
     <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Util\CircleInvitationManager.cs" />
-    <Compile Include="Util\ControllerExtensions.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />
     <Compile Include="Util\IdGenerator.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
+    <Compile Include="Validator\CircleValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\UnitusCoreDatabase.mdf" />
     <Content Include="App_Data\UnitusCoreDatabase_log.ldf">
       <DependentUpon>UnitusCoreDatabase.mdf</DependentUpon>
     </Content>
-    <Content Include="wklhtvs0.htm" />
     <Content Include="Content\background.png" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -346,6 +352,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201502131246073_Migration3.resx">
+      <DependentUpon>201502131246073_Migration3.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

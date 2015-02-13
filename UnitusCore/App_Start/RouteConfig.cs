@@ -11,9 +11,12 @@ namespace UnitusCore
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
-            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.RouteExistingFiles = true;
-
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.MapRoute(
+"Stylesheet",
+"JADE/{file}.jade",
+new { controller = "Home", action = "Jade" });
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}",

@@ -12,15 +12,16 @@ namespace UnitusCore.Util
 {
     public class CircleInvitationManager
     {
-        private static bool CheckUserPermission(ApplicationDbContext context,ApplicationUser user,Circle circle)
+        internal static bool CheckUserPermission(ApplicationDbContext context,ApplicationUser user,Circle circle)
         {
+            if (user == null || circle == null) return false;
             //管理権限のあるサークルリストの取得
             var administratedCircles = context.Entry(user).Collection(a => a.AdministrationCircle);
             if(!administratedCircles.IsLoaded)administratedCircles.Load();
             return user.AdministrationCircle.Any(a=>a.Id.Equals(circle.Id));
         }
 
-        private static bool CheckIsAlreadyCircleMember(ApplicationDbContext context, Circle circle,string mailAddr)
+        internal static bool CheckIsAlreadyCircleMember(ApplicationDbContext context, Circle circle,string mailAddr)
         {
             //メンバーリストがロード済みだったら
             var circleMemberState = context.Entry(circle).Collection(a => a.Members);
@@ -35,7 +36,7 @@ namespace UnitusCore.Util
             return circle.Members.Any(a => a.TargetUser.ApplicationUser.UserName.Equals(mailAddr));
         }
 
-        private static bool CheckEmailAvailable(ApplicationDbContext context,Circle circle,string mailAddr)
+        internal static bool CheckEmailAvailable(ApplicationDbContext context,Circle circle,string mailAddr)
         {
             //メール招待リストの取得
             var emailInvitationsState = context.Entry(circle).Collection(e => e.MemberInvitations);

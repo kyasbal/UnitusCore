@@ -22,7 +22,6 @@ namespace UnitusCore.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Index()
         {
-            
             Statistics lastStatistics = null;
             var stats = DbSession.Statisticses.Take(20);
             lastStatistics = stats.FirstOrDefault();

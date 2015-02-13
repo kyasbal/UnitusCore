@@ -42,6 +42,8 @@ namespace UnitusCore.Models.DataModel
 
         public bool CanInterCollege { get; set; }
 
+        public string ActivityDate { get; set; }
+
         public ICollection<CircleStatistics> CircleStatistises { get; set; }//binded
 
         public ICollection<ApplicationUser>  Administrators { get; set; }//binded

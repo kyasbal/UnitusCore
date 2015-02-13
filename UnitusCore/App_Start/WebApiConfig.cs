@@ -17,7 +17,9 @@ namespace UnitusCore
             //// ベアラ トークン認証のみを使用するように、Web API を設定します。
             //config.SuppressDefaultHostAuthentication();
             //config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+
             config.EnableCors();
+
             // Web API ルート
             config.MapHttpAttributeRoutes();
 

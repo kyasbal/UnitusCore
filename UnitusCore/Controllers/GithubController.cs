@@ -13,14 +13,16 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using Octokit;
 using UnitusCore.Models;
+using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class GithubController : Controller
+    public class GithubController : UnitusController
     {
         private string authorizeUrl =
-            "https://github.com/login/oauth/authorize?client_id={0}&scope=repo:status,user&redirect_uri={1}&state={2}";
+            "https://github.com/login/oauth/authorize?client_id={0}&scope=repo:status,user,repo&redirect_uri={1}&state={2}";
 
         private string accessTokenObtainUrl = "https://github.com/login/oauth/access_token";
 
@@ -29,23 +31,6 @@ namespace UnitusCore.Controllers
             {"DEBUG", new GithubApplicationKey("90a14fa554f58795c58b", "038426bee3d13ca096fd1a478b5ac5ca86e84a5b")},
             {"RELEASE",new GithubApplicationKey("9ee00b1085561f4f6ec4","4a72770f6d802a2f451036dc5994e8df4540da07")}
         };
-
-
-        public ApplicationUserManager UserManager
-        {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-        }
-
-        public IAuthenticationManager AuthenticationContext
-        {
-            get { return Request.GetOwinContext().Authentication; }
-        }
-
-        public ApplicationDbContext ApplicationDbSession
-        {
-            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
-        }
-
 
         private GithubApplicationKey CurrentApplicationKey
         {
@@ -59,8 +44,8 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet]
+        [System.Web.Mvc.Authorize]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> Authorize()
         {
             string cookieToken, formToken;
@@ -70,8 +55,8 @@ namespace UnitusCore.Controllers
                 , cookieToken + ":" + formToken));
         }
 
-        [Authorize]
-        [HttpGet]
+        [System.Web.Mvc.Authorize]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> AuthorizeCallback(GithubAuthorizeRequest callback)
         {
             var crlfToken = callback.state;
@@ -88,7 +73,7 @@ namespace UnitusCore.Controllers
                     var accessToken = await ObtainAccessToken(callback.code);
                     var user = UserManager.FindByName(User.Identity.Name);
                     user.GithubAccessToken = GithubAccessTokenModel.FromJson(accessToken).access_token;
-                    await ApplicationDbSession.SaveChangesAsync();
+                    await DbSession.SaveChangesAsync();
                     this.AddNotification(NotificationType.Success,"Github連携完了","OAuth認証処理は正常に終了しました。");
                     return RedirectToAction("Index", "Home");
                 }
@@ -97,6 +82,25 @@ namespace UnitusCore.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 }
             }
+        }
+
+        
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> GithubTest()
+        {
+            GithubAssociationManager manager=new GithubAssociationManager(DbSession,UserManager);
+            var client=manager.GetAuthenticatedClient(User.Identity.Name);
+            var gituser=await client.User.Current();
+            var repositories =
+                await
+                    client.Connection.Get<IReadOnlyList<Repository>>(
+                        new Uri(string.Format("https://api.github.com/user/repos")),
+                        new Dictionary<string, string>() {{"type", "all"}}, "application/vnd.github.moondragon+json");
+           List<string> names=new List<string>();
+
+            return Json(names.ToArray(), JsonRequestBehavior.AllowGet);
         }
 
         private async Task<string> ObtainAccessToken(string code)
@@ -122,6 +126,9 @@ namespace UnitusCore.Controllers
             }
             return responseString;
         }
+
+        
+        
 
         private class GithubApplicationKey
         {

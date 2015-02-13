@@ -63,5 +63,10 @@ namespace UnitusCore.Controllers
             get { return OwinContext.Authentication; }
         }
 
+        public IHttpActionResult JsonResult<T>(T content)
+        {
+            return Json(content);
+        }
+
     }
 }

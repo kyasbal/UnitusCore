@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace UnitusCore.Controllers
     {
         private const string ServerSecret = "#Snisr1Zrd01VLfnl1c&Qx-buRikCn8CWH8RHcM-4NquKvL3m0";
 
-        private CircleMemberInvitation getInvitationData(string confirmationId)
+        internal CircleMemberInvitation getInvitationData(string confirmationId)
         {
             return
                 DbSession.CircleInvitations.Where(a => a.ConfirmationKey.Equals(confirmationId))
@@ -25,10 +26,10 @@ namespace UnitusCore.Controllers
                     .FirstOrDefault();
         }
 
-        private string createSecurityHash(ApplicationUser user, string confirmationId)
+        internal static string createSecurityHash(string mailAddr, string confirmationId)
         {
             var md5 = new MD5CryptoServiceProvider();
-            var bs = md5.ComputeHash(Encoding.Unicode.GetBytes(user.Email + confirmationId + ServerSecret));
+            var bs = md5.ComputeHash(Encoding.Unicode.GetBytes(mailAddr + confirmationId + ServerSecret));
             md5.Clear();
             var result = new StringBuilder();
             foreach (var b in bs)
@@ -70,7 +71,7 @@ namespace UnitusCore.Controllers
             return View("SelectedEmailForAlreadyUser",
                 new CircleInvitationSelectMailForAlreadyExisiting(invitationData.InvitedPerson.Name,
                     invitationData.InvitedCircle.Name, req.ConfirmationId, email,
-                    createSecurityHash(user, invitationData.ConfirmationKey)));
+                    createSecurityHash(user.Email, invitationData.ConfirmationKey)));
         }
 
         [HttpPost]
@@ -129,7 +130,7 @@ namespace UnitusCore.Controllers
         public async Task<ActionResult> EmailSelectConfirmForAlreadyExisiting(string confirmationId, string securityHash,
             string mailaddr)
         {
-            if (createSecurityHash(CurrentUser, confirmationId).Equals(securityHash))
+            if (createSecurityHash(CurrentUser.Email, confirmationId).Equals(securityHash))
             {
 //OKのとき
                 var confirmation = getInvitationData(confirmationId);

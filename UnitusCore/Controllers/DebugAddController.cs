@@ -15,6 +15,15 @@ namespace UnitusCore.Controllers
 {
     public class DebugAddController :UnitusApiController
     {
+
+        [HttpGet]
+        [Route("dashboard/test.jade")]
+        public async Task<IHttpActionResult> Gettestjade()
+        {
+            return Content(HttpStatusCode.OK, "This is jade");
+        }
+
+
  
 
         [Route("add/circle")]

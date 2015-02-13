@@ -42,9 +42,9 @@ namespace UnitusCoreUnitTest
         }
 
         [Test]
-        [TestCase("LimeStreem@gmail.com","Kyasbal!",true)]
-        [TestCase("LimeStreem", "Kyasbal!", false)]
-        [TestCase("LimeStreem@gmail.com", "abcd", false)]
+        [TestCase("LimeStreemTs@gmail.com","Kyasbal!",true)]
+        [TestCase("LimeStreemTs", "Kyasbal!", false)]
+        [TestCase("LimeStreemTs@gmail.com", "abcd", false)]
         public void UserCreationCheck(string userName,string password,bool intendToSuccess)
         {
             var d=UserManager.CreateUser(DbSession, userName, password);
