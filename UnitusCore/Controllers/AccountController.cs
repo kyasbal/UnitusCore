@@ -22,10 +22,10 @@ using UnitusCore.Models.DataModel;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
-{//test
+{
     public class AccountController : UnitusController
     {
-
+        [RequireHttps]
         [AllowAnonymous]
         [HttpGet]
         // GET: Account
@@ -90,7 +90,7 @@ namespace UnitusCore.Controllers
 
         internal ActionResult CreateUnitusAccount(AddAccountRequest request)
         {
-            var state = UserManager.CreateUser(request.UserName, request.Password);
+            var state = UserManager.CreateUser(DbSession,request.UserName, request.Password);
             if (state.Succeeded)
             {
                 if (request.IsAdmin)
@@ -100,11 +100,6 @@ namespace UnitusCore.Controllers
                         .ApplyPermissionToUser(GlobalConstants.AdminRoleName, request.UserName);
                 }
                 var user = UserManager.FindByName(request.UserName);
-                Person p = new Person();
-                p.GenerateId();
-                p.Email = user.Email;
-                user.PersonData = p;
-                DbSession.SaveChanges();
                 var result = MailConfirmationManager.SendMailConfirmation(user, this);
                 if (result.Success)
                 {

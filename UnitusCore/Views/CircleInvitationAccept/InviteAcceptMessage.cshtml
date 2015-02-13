@@ -11,7 +11,7 @@
     <div class="table-cell">
         <div class="login-container">
             <img class="login-logo" src="/Content/logo.png" />
-            <h1 class="login-header">エラー</h1>
+            <h1 class="login-header">@(Model.IsError?"エラー":"手続き完了")</h1>
             <p class="bg-@(Model.IsError?"error":"success")">
                 @Model.ErrorMessage
             </p>

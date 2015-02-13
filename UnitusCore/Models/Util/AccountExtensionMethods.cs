@@ -12,12 +12,18 @@ namespace UnitusCore.Models
     public static class AccountExtensionMethods
     {
 
-        public static IdentityResult CreateUser(this ApplicationUserManager userManager,string email, string password)
+        public static IdentityResult CreateUser(this ApplicationUserManager userManager,ApplicationDbContext dbContext,string email, string password)
         {
             ApplicationUser user = new ApplicationUser();
             user.Id = Guid.NewGuid().ToString();
             user.Email = email;
             user.UserName = email;
+            Person p=new Person();
+            p.GenerateId();
+            p.Email = email;
+            p.ApplicationUser = user;
+            user.PersonData = p;
+            dbContext.SaveChanges();
             return userManager.Create(user, password);
         }
     }

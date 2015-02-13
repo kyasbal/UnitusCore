@@ -20,27 +20,32 @@ namespace UnitusCore
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
-            // ユーザー名の検証ロジックを設定します
-            manager.UserValidator = new UserValidator<ApplicationUser>(manager)
-            {
-                AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = false
-            };
-            // パスワードの検証ロジックを設定します
-            manager.PasswordValidator = new PasswordValidator
-            {
-                RequiredLength = 8,
-                RequireNonLetterOrDigit = false,
-                RequireDigit =false,
-                RequireLowercase = true,
-                RequireUppercase = true,
-            };
+            SetValidator(manager);
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
+        }
+
+        public static void SetValidator(ApplicationUserManager manager)
+        {
+            // ユーザー名の検証ロジックを設定します
+            manager.UserValidator = new UserValidator<ApplicationUser>(manager)
+            {
+                AllowOnlyAlphanumericUserNames = false,
+                RequireUniqueEmail = true
+            };
+            // パスワードの検証ロジックを設定します
+            manager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 8,
+                RequireNonLetterOrDigit = false,
+                RequireDigit = false,
+                RequireLowercase = true,
+                RequireUppercase = true,
+            };
         }
     }
 }

@@ -1,0 +1,40 @@
+﻿@model UnitusCore.Controllers.CircleInvitationAcceptResponse
+@{
+    Layout = "/Views/_BaseLayout.cshtml";
+    ViewBag.Title = "サークルへの招待";
+}
+@section Header{
+    <link href="/Content/Styles/Login.css" rel="stylesheet">
+}
+<div class="table">
+    <div class="table-cell">
+        <div class="login-container">
+            <img class="login-logo" src="/Content/logo.png" />
+            <h1 class="login-header">サークルの招待の受諾</h1>
+            @if (Model.ErrorMessage != null)
+            {
+                <p class="bg-danger">@Model.ErrorMessage</p>
+            }
+            @using (Html.BeginForm("EmailSelectConfirmForUnknownUser", "CircleInvitationAccept", FormMethod.Post, new { @class = "login-form" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" value="@Model.ConfirmationId" name="confirmationId"/>
+                <input type="hidden" name="username" value="@Model.EmailAddress"/>
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input class="form-control col-xs-6" type="text" name="firstName" placeholder="性" />
+                            </div>
+                            <div class="col-xs-6">
+                                <input class="form-control col-xs-6" type="text" name="lastName" placeholder="名" />
+                            </div>
+                        </div>
+                        <input class="form-control" type="text" value="@(Model.EmailAddress+"(ユーザー名)")" name="username" disabled />
+                        <input class="form-control" type="password" name="password" placeholder="パスワード" />
+                        <input class="form-control" type="password" placeholder="パスワード(確認)" />
+                    </div>
+                 <input class="form-control btn btn-primary" type="submit" value="登録" />
+            }
+        </div>
+    </div>
+</div>
