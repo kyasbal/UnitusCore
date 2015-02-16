@@ -63,6 +63,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="MvcContrib">
       <HintPath>..\packages\MvcContrib.2.0.95.0\lib\MvcContrib.dll</HintPath>
     </Reference>
@@ -78,6 +95,9 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Cors">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
@@ -207,6 +227,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\ApiAuthorizedAttribute.cs" />
     <Compile Include="Attributes\CircleMemberAttribute.cs" />
     <Compile Include="Attributes\GlobalHandleErrorAttribute.cs" />
     <Compile Include="Attributes\RoleRestrictAttribute.cs" />
@@ -217,6 +238,7 @@
     <Compile Include="Controllers\CircleInvitationController.cs" />
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
+    <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DebugAddController.cs" />
@@ -247,6 +269,10 @@
     <Compile Include="Migrations\201502140139243_AddUserStatistics.Designer.cs">
       <DependentUpon>201502140139243_AddUserStatistics.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502161054282_addStorage.cs" />
+    <Compile Include="Migrations\201502161054282_addStorage.Designer.cs">
+      <DependentUpon>201502161054282_addStorage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
@@ -255,6 +281,10 @@
     <Compile Include="Models\DataModel\Achivement.cs" />
     <Compile Include="Models\DataModel\CronQueue.cs" />
     <Compile Include="Models\DataModel\CronQueueLog.cs" />
+    <Compile Include="Storage\Base\BlobStorageAttribute.cs" />
+    <Compile Include="Storage\Base\BlobStorageConnection.cs" />
+    <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
+    <Compile Include="Storage\ImageUploaderBlobTable.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />
@@ -286,6 +316,7 @@
     <Compile Include="SendGridSharp\SmtpHeader.cs" />
     <Compile Include="SendGridSharp\SmtpHeaderExtensions.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Storage\Base\AzureStorageConnection.cs" />
     <Compile Include="Util\CircleDatabaseHelper.cs" />
     <Compile Include="Util\CircleInvitationManager.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
@@ -1081,6 +1112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502140139243_AddUserStatistics.resx">
       <DependentUpon>201502140139243_AddUserStatistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502161054282_addStorage.resx">
+      <DependentUpon>201502161054282_addStorage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

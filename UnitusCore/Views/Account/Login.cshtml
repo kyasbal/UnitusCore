@@ -16,8 +16,8 @@
                 @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "login-form" }))
                 {
                     @Html.AntiForgeryToken()
-                    <input type="text" name="UserName" class="form-control" />
-                    <input type="password" name="Password" class="form-control" />
+                    <input type="text" name="UserName" class="form-control" placeholder="ユーザーID(メールアドレス)"/>
+                    <input type="password" name="Password" class="form-control" placeholder="パスワード"/>
                     <input type="submit" value="ログイン" class="form-control btn btn-primary"/>
                    @Html.ActionLink("パスワードを忘れた","ForgotPassword")
                 }

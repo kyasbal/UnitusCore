@@ -7,6 +7,7 @@ using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using Octokit;
+using UnitusCore.Attributes;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
@@ -16,12 +17,12 @@ using WebGrease.Css.Extensions;
 
 namespace UnitusCore.Controllers
 {
-    [Authorize]
+    
     public class DashboardController : UnitusApiController
     {
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
         [HttpGet]
-        [Authorize]
         [Route("Dashboard")]
         public async Task<IHttpActionResult> GetDashboardStatus(string ValidationToken)
         {
@@ -42,7 +43,7 @@ namespace UnitusCore.Controllers
         }
 
 
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [UnitusCorsEnabled]
         [HttpGet]
         [AllowAnonymous]
         [Route("Dashboard/Dummy")]

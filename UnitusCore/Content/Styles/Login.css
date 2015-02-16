@@ -1,5 +1,5 @@
 ﻿body {
-    background: url("/Content/background.png");
+    background-color:#262B34;
     height:100%;
 }
 html {
@@ -13,6 +13,20 @@ html {
 
 .login-header {
     text-align: center;
+}
+
+.form-wrap.hidden-form{
+height: 0px;
+}
+
+.form-wrap {
+    -webkit-transition: height 0.3s ease-out;
+    -moz-transition: height 0.3s ease-out;
+    -ms-transition: height 0.3s ease-out;
+    -o-transition: height 0.3s ease-out;
+    transition: height 0.3s ease-out;
+    height: 44px;
+    overflow: hidden;
 }
 
 .login-form input{

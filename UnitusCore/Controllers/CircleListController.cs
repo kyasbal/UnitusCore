@@ -17,7 +17,7 @@ namespace UnitusCore.Controllers
     public class CircleListController : UnitusApiController
     {
 
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [UnitusCorsEnabled]
         [Route("circlelist")]
         [HttpPost]
         public async Task<IHttpActionResult> Index()
@@ -58,7 +58,7 @@ namespace UnitusCore.Controllers
             return labels.ToArray();
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [UnitusCorsEnabled]
         [Route("circlelist/debug")]
         [HttpPost]
         [HttpGet]

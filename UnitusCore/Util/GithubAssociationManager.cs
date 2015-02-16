@@ -78,7 +78,7 @@ namespace UnitusCore.Util
             }
             else
             {
-                return "/Content/GithubAssociationRequired.svg";
+                return "https://core.unitus-ac.com/Uploader/Download?imageId=jlTKlJU7xTQwaEH5";
             }
 
         }

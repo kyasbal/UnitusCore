@@ -40,10 +40,36 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        private Circle GetCircleFromId(string circleId,bool allowNoCircle=false)
+        {
+            Guid circleGuid;
+            if(!Guid.TryParse(circleId,out circleGuid))throw new HttpResponseException(HttpStatusCode.BadRequest);
+            var circle = DbSession.Circles.Find(circleGuid);
+            if (circle == null && !allowNoCircle) throw new HttpResponseException(HttpStatusCode.NotFound);
+            return circle;
+        }
+
+        [UnitusCorsEnabled]
+        [HttpDelete]
+        [Route("Circle")]
+        [ApiAuthorized]
+        [RoleRestrict(GlobalConstants.AdminRoleName)]
+        public async Task<IHttpActionResult> RemoveCircle(DeleteCircleRequest req)
+        {
+            return await this.OnValidToken(req.ValidationToken,async () =>
+            {
+                var circle=GetCircleFromId(req.CircleId);
+                DbSession.Circles.Remove(circle);
+                await DbSession.SaveChangesAsync();
+                return Json(ResultContainer.GenerateSuccessResult());
+            });
+        }
+
+
+        [UnitusCorsEnabled]
         [HttpGet]
         [Route("Circle")]
-        [Authorize]
+        [ApiAuthorized]
         public async Task<IHttpActionResult> GetCircle(string validationToken, int Count = 20, int Offset = 0)
         {
             return await this.OnValidToken(validationToken, () =>
@@ -95,7 +121,7 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [UnitusCorsEnabled]
         [Route("Circle/Dummy")]
         [HttpGet]
         public async Task<IHttpActionResult> GetCircleDummy(string validationToken, int Count=20, int Offset=0)
@@ -119,7 +145,7 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [UnitusCorsEnabled]
         [Route("Circle/Detail")]
         [HttpGet]
         public async Task<IHttpActionResult> GetCircleDetailed(string validationToken,string circleId)
@@ -134,7 +160,7 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+       [UnitusCorsEnabled]
         [Route("Circle/Detail/Dummy")]
         [HttpGet]
         public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
@@ -171,7 +197,7 @@ namespace UnitusCore.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [ApiAuthorized]
         [RoleRestrict("Administrator")]
         [Route("Circle")]
         public Task<IHttpActionResult> AddCircle(AddCircleRequest req)
@@ -212,19 +238,31 @@ namespace UnitusCore.Controllers
                 }
             });
         }
-
-//        [HttpGet]
-//        [Route("Circle/Member")]
-//        [Authorize]
-//        public async Task<IHttpActionResult> GetMembers(string validationToken,string circleId)
-//        {
-//            
-//        }
+        [CircleMember("circleId")]
+        [HttpGet]
+        [Route("Circle/Member")]
+        [ApiAuthorized]
+        public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
+        {
+            Circle circle = await DbSession.Circles.FindAsync(Guid.Parse(circleId));
+            var circleMembersState = DbSession.Entry(circle).Collection(a => a.Members);
+            if (!circleMembersState.IsLoaded) await circleMembersState.LoadAsync();
+            List<GetMemberListElement> elements=new List<GetMemberListElement>();
+            foreach (MemberStatus members in circle.Members)
+            {
+                var memberTargetUserStatus = DbSession.Entry(members).Reference(a => a.TargetUser);
+                if (!memberTargetUserStatus.IsLoaded) await memberTargetUserStatus.LoadAsync();
+                var userTargetStatus = DbSession.Entry(members.TargetUser).Reference(a => a.ApplicationUser);
+                if (!userTargetStatus.IsLoaded) await userTargetStatus.LoadAsync();
+                elements.Add(new GetMemberListElement(members.TargetUser.Id.ToString(),members.TargetUser.Name,members.Occupation,members.TargetUser.CurrentCource,members.IsActiveMember));
+            }
+            return Json(ResultContainer<GetMemberList>.GenerateSuccessResult(new GetMemberList(elements.ToArray())));
+        }
 
 
 
         [HttpPut]
-        [Authorize]
+        [ApiAuthorized]
         [Route("Circle")]
         public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
@@ -254,14 +292,34 @@ namespace UnitusCore.Controllers
 
     public class GetMemberList
     {
-       
+        public GetMemberList(GetMemberListElement[] members)
+        {
+            Members = members;
+        }
+
+        public GetMemberListElement[] Members { get; set; }
     }
 
     public class GetMemberListElement
     {
+        public GetMemberListElement(string userId,string name, string ocupation, Person.Cource currentGrade, bool isActiveMember)
+        {
+            UserId = userId;
+            Ocupation = ocupation;
+            CurrentGrade = currentGrade;
+            IsActiveMember = isActiveMember;
+            Name = name;
+        }
+
         public string UserId { get; set; }
 
         public string Ocupation { get; set; }
+
+        public Person.Cource CurrentGrade { get; set; }
+
+        public bool IsActiveMember { get; set; }
+
+        public string Name { get; set; }
 
     }
 
@@ -287,6 +345,12 @@ namespace UnitusCore.Controllers
         public bool CanInterColledge { get; set; }
 
         public string ActivityDate { get; set; }
+    }
+
+    public class DeleteCircleRequest
+    {
+        public string CircleId { get; set; }
+        public string ValidationToken { get; set; }
     }
 
     public class PutCircleRequest : GetPutCircleDetailBody

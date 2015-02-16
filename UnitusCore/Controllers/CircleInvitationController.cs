@@ -17,8 +17,8 @@ namespace UnitusCore.Controllers
     {
 
         [Route("CircleInvitation")]
-        [Authorize]
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
         [HttpPost]
         public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
         {

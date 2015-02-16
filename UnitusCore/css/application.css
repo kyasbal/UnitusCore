@@ -57,7 +57,7 @@ section#panel {
   z-index: 5; }
 
 .clear {
-  clear: both; }
+    clear: both !important; }
 
 #app {
   width: 100%;

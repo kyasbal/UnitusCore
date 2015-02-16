@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Policy;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 
@@ -19,6 +20,7 @@ namespace UnitusCore
             //config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 
             config.EnableCors();
+          
 
             // Web API ルート
             config.MapHttpAttributeRoutes();

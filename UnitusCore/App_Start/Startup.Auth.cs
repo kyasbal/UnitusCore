@@ -32,6 +32,20 @@ namespace UnitusCore
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
+                Provider = new CookieAuthenticationProvider()
+                {
+                    OnApplyRedirect = ctx =>
+                    {
+                        if (ctx.Response.ReasonPhrase.Equals("Unauthorized API Access"))
+                        {
+
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                    }
+                }
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ApplicationCookie);
 
@@ -42,8 +56,7 @@ namespace UnitusCore
                 TokenEndpointPath = new PathString("/Token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
-                AllowInsecureHttp = true
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14)
             };
 
             //// アプリケーションがベアラ トークンを使用してユーザーを認証できるようにします
@@ -67,6 +80,16 @@ namespace UnitusCore
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+        }
+        private static bool IsAjaxRequest(IOwinRequest request)
+        {
+            IReadableStringCollection query = request.Query;
+            if ((query != null) && (query["X-Requested-With"] == "XMLHttpRequest"))
+            {
+                return true;
+            }
+            IHeaderDictionary headers = request.Headers;
+            return ((headers != null) && (headers["X-Requested-With"] == "XMLHttpRequest"));
         }
     }
 }

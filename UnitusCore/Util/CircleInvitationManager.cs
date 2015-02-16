@@ -23,6 +23,8 @@ namespace UnitusCore.Util
 
         internal static bool CheckIsAlreadyCircleMember(ApplicationDbContext context, Circle circle,string mailAddr)
         {
+            string[] nocheckList = {"soliloquydev@gmail.com"};
+            if (nocheckList.Contains(mailAddr)) return false;
             //メンバーリストがロード済みだったら
             var circleMemberState = context.Entry(circle).Collection(a => a.Members);
             if(!circleMemberState.IsLoaded)circleMemberState.Load();
@@ -50,7 +52,15 @@ namespace UnitusCore.Util
                 var invitation=circle.MemberInvitations.FirstOrDefault(a => a.EmailAddress.Equals(mailAddr));
                 if (DateTime.Now - invitation.SentDate > new TimeSpan(0, 0, 30, 0))
                 {
+                    var invitedPersonStatus = context.Entry(invitation).Reference(a => a.InvitedPerson);
+                    if(!invitedPersonStatus.IsLoaded)invitedPersonStatus.Load();
+                    var p = invitation.InvitedPerson;
+                    var invitationPersonListStatus = context.Entry(p).Collection(a => a.InvitedPeople);
+                    if(!invitationPersonListStatus.IsLoaded)invitationPersonListStatus.Load();
+                    p.InvitedPeople.Remove(invitation);
                     circle.MemberInvitations.Remove(invitation);
+                    context.CircleInvitations.Remove(invitation);
+                    context.SaveChanges();
                     return true;
                 }
                 else
@@ -62,6 +72,11 @@ namespace UnitusCore.Util
 
         private static string SetInvitationData(ApplicationDbContext context,ApplicationUser user,Circle circle,string mailAddr)
         {
+            context.SaveChanges();
+            var personDataStatus = context.Entry(user).Reference(a => a.PersonData);
+            if(!personDataStatus.IsLoaded)personDataStatus.Load();
+            var invitedMembersStatus = context.Entry(user.PersonData).Collection(a => a.InvitedPeople);
+            if(!invitedMembersStatus.IsLoaded)invitedMembersStatus.Load();
             string confirmationId = IdGenerator.GetId(20);
             CircleMemberInvitation invitation=new CircleMemberInvitation();
             invitation.GenerateId();
@@ -70,6 +85,7 @@ namespace UnitusCore.Util
             invitation.SentDate = DateTime.Now;
             invitation.ConfirmationKey = confirmationId;
             invitation.EmailAddress = mailAddr;
+            user.PersonData.InvitedPeople.Add(invitation);
             context.CircleInvitations.Add(invitation);
             context.SaveChanges();
             return confirmationId;

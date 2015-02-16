@@ -18,9 +18,9 @@ namespace UnitusCore.Controllers
 {
     public class PeopleController : UnitusApiController
     {
-        [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
+        [UnitusCorsEnabled]
         [Route("Person")]
-        [Authorize]
+        [ApiAuthorized]
         [RoleRestrict("Administrator")]
         [HttpGet]
         public async Task<IHttpActionResult> GetPersonList(string validationToken,int Count=20,int Offset=0)
@@ -36,7 +36,7 @@ namespace UnitusCore.Controllers
             });
         }
 
-        [EnableCors(GlobalConstants.CorsOrigins,"*","*")]
+        [UnitusCorsEnabled]
         [Route("Person/Dummy")]
         [HttpGet]
         public async Task<IHttpActionResult> GetPersonListDummy(int Count=20,int Offset=10)

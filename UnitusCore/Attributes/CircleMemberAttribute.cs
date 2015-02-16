@@ -58,7 +58,9 @@ namespace UnitusCore.Attributes
                 }
                 else
                 {
-                    Guid circleId = Guid.Parse((string)circleArg);
+
+                    Guid circleId;
+                    if(!Guid.TryParse((string)circleArg,out circleId))return false;
                     if (!IsCircleMember(circleId, context))
                     {
                         return false;

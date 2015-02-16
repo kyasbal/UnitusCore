@@ -48,7 +48,7 @@ namespace UnitusCore.Controllers
             {
                 return
                     View(new CircleInvitationAcceptResponse(invitationData.InvitedPerson.Name,
-                        invitationData.InvitedCircle.Name, confirmationId, invitationData.EmailAddress));
+                        invitationData.InvitedCircle.Name, confirmationId, invitationData.EmailAddress,invitationData.InvitedCircle.BelongedSchool));
             }
             return Json(false);
         }
@@ -65,7 +65,7 @@ namespace UnitusCore.Controllers
             {
                 return View("SelectedEmailForUnknownUser",
                     new CircleInvitationAcceptResponse(invitationData.InvitedPerson.Name,
-                        invitationData.InvitedCircle.Name, req.ConfirmationId, email));
+                        invitationData.InvitedCircle.Name, req.ConfirmationId, email,invitationData.InvitedCircle.BelongedSchool));
             }
             //userがnullでない、すでに登録されているユーザーの場合。
             return View("SelectedEmailForAlreadyUser",
@@ -74,11 +74,17 @@ namespace UnitusCore.Controllers
                     createSecurityHash(user.Email, invitationData.ConfirmationKey)));
         }
 
+        private void RemoveInvitation(CircleMemberInvitation removeTarget)
+        {
+            DbSession.CircleInvitations.Remove(removeTarget);
+            DbSession.SaveChanges();
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EmailSelectConfirmForUnknownUser(string confirmationId,
-            [EmailAddress] string username, string firstName, string lastName, string password)
+            [EmailAddress] string username, [Required]string firstName, [Required]string lastName, string password,string NewBelongedUniversity)
         {
             if (ModelState.IsValid)
             {
@@ -90,6 +96,11 @@ namespace UnitusCore.Controllers
                     var user = UserManager.FindByName(username);
                     DbSession.Entry(user).Reference(p => p.PersonData).Load();
                     DbSession.Entry(user.PersonData).Collection(p => p.BelongedCircles);
+                    user.PersonData.Name = firstName + " " + lastName;
+                    string belongedTo = string.IsNullOrWhiteSpace(NewBelongedUniversity)
+                        ? invitationData.InvitedCircle.BelongedSchool
+                        : NewBelongedUniversity;
+                    user.PersonData.BelongedColledge = belongedTo;
                     var status = new MemberStatus();
                     status.GenerateId();
                     status.Occupation = "新入生";
@@ -101,23 +112,26 @@ namespace UnitusCore.Controllers
                     DbSession.SaveChanges();
                     if (invitationData.EmailAddress.Equals(username)) //この時メールの確認は必要ない。
                     {
+                        RemoveInvitation(invitationData);
                         return View("InviteAcceptMessage",
                             new SimpleMessage(string.Format("アカウント:{0}は正常に作成されました。", user.UserName), false));
                     }
                     var result = MailConfirmationManager.SendMailConfirmation(user, this);
                     if (result.Success)
                     {
+                        RemoveInvitation(invitationData);
                         return View("InviteAcceptMessage",
                             new SimpleMessage(
                                 string.Format("アカウント:{0}は正常に作成されました。{0}にアカウントの確認のためのメールを送りました。", user.UserName),
                                 false));
                     }
+                    RemoveInvitation(invitationData);
                     return View("InviteAcceptMessage", new SimpleMessage(string.Format("アカウント:{0}は正常に作成されました。" +
                                                                                        "", user.UserName), false));
                 }
                 return View("SelectedEmailForUnknownUser",
                     new CircleInvitationAcceptResponse(invitationData.InvitedPerson.Name,
-                        invitationData.InvitedCircle.Name, confirmationId, username)
+                        invitationData.InvitedCircle.Name, confirmationId, username,invitationData.InvitedCircle.BelongedSchool)
                     {
                         ErrorMessage = state.Errors.FirstOrDefault()
                     });
@@ -133,15 +147,15 @@ namespace UnitusCore.Controllers
             if (createSecurityHash(CurrentUser.Email, confirmationId).Equals(securityHash))
             {
 //OKのとき
-                var confirmation = getInvitationData(confirmationId);
+                var invitationData= getInvitationData(confirmationId);
                 DbSession.Entry(CurrentUser).Reference(a => a.PersonData).Load();
                 DbSession.Entry(CurrentUser.PersonData).Collection(a => a.BelongedCircles).Load();
-                DbSession.CircleInvitations.Remove(confirmation);
+                DbSession.CircleInvitations.Remove(invitationData);
                 var isAlreadyMember = false;
                 foreach (var member in CurrentUser.PersonData.BelongedCircles)
                 {
                     DbSession.Entry(member).Reference(a => a.TargetCircle);
-                    if (member.TargetCircle.Id.Equals(confirmation.InvitedCircle.Id))
+                    if (member.TargetCircle.Id.Equals(invitationData.InvitedCircle.Id))
                     {
                         isAlreadyMember = true;
                         break;
@@ -149,9 +163,10 @@ namespace UnitusCore.Controllers
                 }
                 if (isAlreadyMember)
                 {
+                    RemoveInvitation(invitationData);
                     DbSession.SaveChanges();
                     this.AddNotification(NotificationType.Error, "招待の受諾(エラー)",
-                        string.Format("「{0}」に既にあなたは参加しています。", confirmation.InvitedCircle.Name));
+                        string.Format("「{0}」に既にあなたは参加しています。", invitationData.InvitedCircle.Name));
                 }
                 else
                 {
@@ -159,12 +174,13 @@ namespace UnitusCore.Controllers
                     status.GenerateId();
                     status.Occupation = "新入生";
                     status.IsActiveMember = true;
-                    status.TargetCircle = confirmation.InvitedCircle;
+                    status.TargetCircle = invitationData.InvitedCircle;
                     status.TargetUser = CurrentUser.PersonData;
                     CurrentUser.PersonData.BelongedCircles.Add(status);
                     DbSession.SaveChanges();
+                    RemoveInvitation(invitationData);
                     this.AddNotification(NotificationType.Success, "招待の受諾",
-                        string.Format("「{0}」に参加しました。", confirmation.InvitedCircle.Name));
+                        string.Format("「{0}」に参加しました。", invitationData.InvitedCircle.Name));
                 }
                 return RedirectToAction("Index", "Home");
             }
@@ -203,12 +219,13 @@ namespace UnitusCore.Controllers
     public class CircleInvitationAcceptResponse
     {
         public CircleInvitationAcceptResponse(string inviterName, string circleName, string confirmationId,
-            string emailAddress)
+            string emailAddress,string belongedUniveristy)
         {
             InviterName = inviterName;
             CircleName = circleName;
             ConfirmationId = confirmationId;
             EmailAddress = emailAddress;
+            BelongedUniversity = belongedUniveristy;
         }
 
         public string InviterName { get; set; }
@@ -220,6 +237,8 @@ namespace UnitusCore.Controllers
         public string EmailAddress { get; set; }
 
         public string ErrorMessage { get; set; }
+
+        public string BelongedUniversity { get; set; }
     }
 
     public class CircleInvitationSelectMailForAlreadyExisiting
