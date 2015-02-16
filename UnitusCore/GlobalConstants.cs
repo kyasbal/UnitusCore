@@ -11,6 +11,6 @@ namespace UnitusCore
 
         public static string[] ProtectedRoleNames=new string[] {"Administrator"};
 
-        public const string CorsOrigins= "http://localhost:8888,http://localhost:3672,http://unitus-ac.com";
+        public const string CorsOrigins = "https://localhost:8888,https://localhost:3672,https://localhost:44301,http://unitus-ac.com,https://core.unitus-ac.com,http://core.unitus-ac.com";
     }
 }

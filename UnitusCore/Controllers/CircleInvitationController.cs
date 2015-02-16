@@ -19,19 +19,19 @@ namespace UnitusCore.Controllers
         [Route("CircleInvitation")]
         [Authorize]
         [EnableCors(GlobalConstants.CorsOrigins, "*", "*")]
-        [HttpGet]
-        public async Task<IHttpActionResult> PostInvitation(string address,string circleId)
+        [HttpPost]
+        public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
         {
             return await this.OnValidToken("", () =>
             {
-                //string[] inviteMembers = req.GetEmailList();
-                Circle targetCircle = DbSession.Circles.Find(Guid.Parse(circleId));
+                Circle targetCircle = DbSession.Circles.Find(Guid.Parse(req.CircleId));
                 DbSession.Entry(CurrentUser).Collection(a=>a.AdministrationCircle).Load();
                 CurrentUser.AdministrationCircle.Add(targetCircle);
                 DbSession.SaveChanges();
                 if (CurrentUser.AdministrationCircle.Contains(targetCircle))
                 {
-                    CircleInvitationManager.SendCircleInvitation(this, targetCircle,new string[] {address});
+                    var result=CircleInvitationManager.SendCircleInvitation(this, targetCircle,req.GetEmailList());
+                    return Json(ResultContainer<CircleInvitationResult>.GenerateSuccessResult(result));
                 }
                 else
                 {
@@ -53,19 +53,19 @@ namespace UnitusCore.Controllers
 
             }
 
-            public CircleInvitationSendRequest(string circleId, string sendEmails)
+            public CircleInvitationSendRequest(string circleId, string address)
             {
                 CircleId = circleId;
-                SendEmails = sendEmails;
+                Address = address;
             }
 
             public string CircleId { get; set; }
 
-            public string SendEmails { get; set; }
+            public string Address { get; set; }
 
             public string[] GetEmailList()
             {
-                return SendEmails.Split('\n');
+                return Address.Split('\n');
             }
         }
     }

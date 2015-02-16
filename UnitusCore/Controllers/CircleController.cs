@@ -176,7 +176,7 @@ namespace UnitusCore.Controllers
         [Route("Circle")]
         public Task<IHttpActionResult> AddCircle(AddCircleRequest req)
         {
-            return this.OnValidToken(req, (r) =>
+            return this.OnValidToken(req,async (r) =>
             {
                 try
                 {
@@ -191,18 +191,19 @@ namespace UnitusCore.Controllers
                     memberStatus.TargetCircle = circle;
                     circle.GenerateId();
                     circle.Name = r.CircleName;
-                    circle.Description = r.Description;
+                    circle.Description = r.CircleDescription;
                     circle.MemberCount = r.MemberCount;
                     circle.WebAddress = r.WebSiteAddress;
-                    circle.BelongedSchool = r.BelongedUniversity;
-                    circle.Notes = r.Note;
-                    circle.Contact = r.Address;
-                    circle.CanInterCollege = r.InterColledgeAccepted;
+                    circle.BelongedSchool = r.BelongedSchool;
+                    circle.Notes = r.Notes;
+                    circle.Contact = r.Contact;
+                    circle.CanInterCollege = r.CanInterColledge;
                     circle.Members.Add(memberStatus);
+                    circle.ActivityDate = req.ActivityDate;
                     DbSession.MemberStatuses.Add(memberStatus);
                     DbSession.Circles.Add(circle);
                     DbSession.SaveChanges();
-                    return Json(ResultContainer.GenerateSuccessResult());
+                    return await GetCircleDetailed(req.ValidationToken, circle.Id.ToString());
                 }
                 catch (Exception exe)
                 {
@@ -239,6 +240,7 @@ namespace UnitusCore.Controllers
                 circle.Contact = req.Contact ?? circle.Contact;
                 circle.ActivityDate = req.ActivityDate ?? circle.ActivityDate;
                 circle.CanInterCollege = req.CanInterColledge;
+
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
             },
@@ -268,21 +270,23 @@ namespace UnitusCore.Controllers
     {
         public string CircleName { get; set; }
 
-        public string Description { get; set; }
+        public string CircleDescription { get; set; }
 
         public int MemberCount { get; set; }
 
         public string WebSiteAddress { get; set; }
 
-        public string BelongedUniversity { get; set; }
+        public string BelongedSchool { get; set; }
 
-        public string Note { get; set; }
+        public string Notes { get; set; }
 
-        public string Address { get; set; }
+        public string Contact { get; set; }
 
         public string LeaderUserName { get; set; }
 
-        public bool InterColledgeAccepted { get; set; }
+        public bool CanInterColledge { get; set; }
+
+        public string ActivityDate { get; set; }
     }
 
     public class PutCircleRequest : GetPutCircleDetailBody

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Linq;
 using System.Web;
+using UnitusCore.Controllers;
 using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Models
@@ -73,6 +74,7 @@ namespace UnitusCore.Models
                 ).WillCascadeOnDelete();
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Permissions).WithMany(c => c.AllowedUsers).Map(NoAction).MapToStoredProcedures();
+            modelBuilder.Entity<UserStatistics>().HasRequired(a=>a.LinkedPerson).WithMany(a=>a.UserStatistics).Map(NoAction).WillCascadeOnDelete();
             base.OnModelCreating(modelBuilder);
         }
     }

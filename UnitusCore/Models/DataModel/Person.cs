@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnitusCore.Controllers;
 using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
@@ -12,6 +13,7 @@ namespace UnitusCore.Models.DataModel
             CommittedProjects = new HashSet<Project>();
             Skills = new HashSet<Skill>();
             InvitedPeople=new HashSet<CircleMemberInvitation>();
+            UserStatistics=new HashSet<UserStatistics>();
         }
 
         public ApplicationUser ApplicationUser { get; set; }//binded
@@ -37,6 +39,8 @@ namespace UnitusCore.Models.DataModel
         public ICollection<Event> AttendedEvents { get; set; } //binded
 
         public ICollection<Skill> Skills { get; set; }//binded
+
+        public ICollection<UserStatistics> UserStatistics { get; set; } 
 
         public ICollection<CircleMemberInvitation> InvitedPeople { get; set; } //binded
 

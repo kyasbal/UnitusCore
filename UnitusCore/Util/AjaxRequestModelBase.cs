@@ -29,6 +29,21 @@ namespace UnitusCore.Util
             {
                 return new StatusCodeResult(HttpStatusCode.BadRequest,controller);
             }
+        }
+
+        public async Task<IHttpActionResult> OnValidToken<T>(UnitusApiController controller, T arg, Func<T, Task<IHttpActionResult>> f) where T : AjaxRequestModelBase
+        {
+            if (NoCheckAntiFogery) return await f(arg);//for debug
+            string[] tokens = arg.ValidationToken.Split(':');
+            try
+            {
+                AntiForgery.Validate(tokens[0].Trim(), tokens[1].Trim());
+                return await f(arg);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(HttpStatusCode.BadRequest, controller);
+            }
         } 
     }
 
@@ -36,6 +51,12 @@ namespace UnitusCore.Util
     {
         public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
             Func<T, IHttpActionResult> f) where T : AjaxRequestModelBase
+        {
+            return await arg.OnValidToken(controller, arg, f);
+        }
+
+        public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
+    Func<T, Task<IHttpActionResult>> f) where T : AjaxRequestModelBase
         {
             return await arg.OnValidToken(controller, arg, f);
         }

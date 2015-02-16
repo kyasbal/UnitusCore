@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -30,6 +31,13 @@ namespace UnitusCore.Util
             this.applicationHeaderValue=new ProductHeaderValue("UNITUS-CORE","1.00");
         }
 
+        public GitHubClient GetAuthenticatedClientFromToken(string token)
+        {
+            var github = new GitHubClient(applicationHeaderValue,
+                new InMemoryCredentialStore(new Credentials(token)));
+            return github;
+        }
+
         public GitHubClient GetAuthenticatedClient(string userName)
         {
             var user = userManager.FindByName(userName);
@@ -47,7 +55,12 @@ namespace UnitusCore.Util
 
         public bool IsAssociationEnabled(ApplicationUser user)
         {
-            if (string.IsNullOrWhiteSpace(user.GithubAccessToken)) return false;
+            return IsAssociationEnabled(user.GithubAccessToken);
+        }
+
+        public bool IsAssociationEnabled(string userName)
+        {
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length != 40) return false;
             else
             {
                 return true;
@@ -57,9 +70,17 @@ namespace UnitusCore.Util
 
         public async Task<string> GetAvatarUri(string userName)
         {
-            var github=GetAuthenticatedClient(userName);
-            var user = await github.User.Current();
-            return user.AvatarUrl;
+            if (IsAssociationEnabled(userName))
+            {
+                var github = GetAuthenticatedClient(userName);
+                var user = await github.User.Current();
+                return user.AvatarUrl;
+            }
+            else
+            {
+                return "/Content/GithubAssociationRequired.svg";
+            }
+
         }
 
         public async Task<int> GetRepositoryCount(GitHubClient client)
@@ -81,27 +102,52 @@ namespace UnitusCore.Util
 
 //
 //
-        public async Task<int> GetAllRepositoryCommit(GitHubClient client)
+        public async Task<GithubCollaboratorStatisticData> GetAllRepositoryCommit(GitHubClient client)
         {
+            Stopwatch st=new Stopwatch();
+            st.Start();
             var user = await client.User.Current();
             var repoIdentities = await GetAllRepositoriesList(client);
-            int count = 0;
-            foreach (GithubRepositoryIdentity rIdentity in repoIdentities)
+            GithubCollaboratorStatisticData statistic=new GithubCollaboratorStatisticData();
+            statistic.RepositoryCount = repoIdentities.Count();
+            foreach (var r in repoIdentities)
             {
-                var contributers=await client.Repository.Statistics.GetContributors(rIdentity.OwnerName, rIdentity.RepoName);
+                var contributers =
+                    await client.Repository.Statistics.GetContributors(r.OwnerName, r.RepoName);
                 foreach (var contributor in contributers)
                 {
-                    if(contributor.Author.Login.Equals(user.Login))
+                    if (contributor.Author.Login.Equals(user.Login))
                     {
-                        count += contributor.Total;
+                        statistic.SumCommit += contributor.Total;
+
                         break;
                     }
                 }
             }
-            return count;
+            st.Stop();
+            Console.WriteLine(st.ElapsedMilliseconds);
+            return statistic;
         }
+////
 //
-//
+        public class GithubCollaboratorStatisticData
+        {
+            public GithubCollaboratorStatisticData()
+            {
+                LanguageCommitcount=new Dictionary<string, int>();
+            }
+
+            public int SumCommit { get; set; }
+            
+            public int SumAddition { get; set; }
+
+            public int SumDeletion { get; set; }
+
+            public int RepositoryCount { get; set; }
+
+            public Dictionary<string,int> LanguageCommitcount { get; set; } 
+        }
+        
 
         public class GithubRepositoryIdentity
         {

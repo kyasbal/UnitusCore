@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc.Html;
 using Microsoft.AspNet.Identity.EntityFramework;
+using UnitusCore.Controllers;
 using UnitusCore.Models.BaseClasses;
 using UnitusCore.Models.DataModel;
 
@@ -57,6 +58,11 @@ namespace UnitusCore.Models
 
         public DbSet<CircleMemberInvitation> CircleInvitations { get; set; }
 
+        public DbSet<CronQueue> CronjobQueue { get; set; } 
+
+        public DbSet<CronQueueLog> CronjobQueueLog { get; set; } 
+
+        public DbSet<UserStatistics> UserStatistics { get; set; } 
        
     }
 }

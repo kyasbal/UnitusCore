@@ -25,7 +25,7 @@ namespace UnitusCore.Controllers
 {
     public class AccountController : UnitusController
     {
-        [RequireHttps]
+        [RequireHttps]  
         [AllowAnonymous]
         [HttpGet]
         // GET: Account

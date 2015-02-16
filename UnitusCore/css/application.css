@@ -1,0 +1,483 @@
+.table {
+  display: table;
+  width: 100%;
+  height: 100%; }
+
+.table-cell {
+  display: table-cell;
+  width: 100%;
+  text-align: center;
+  vertical-align: middle; }
+
+body, html {
+  height: 100%;
+  width: 100%; }
+
+body, html {
+  background-color: white;
+  margin: 0; }
+
+section#app {
+  display: none; }
+
+section#loading {
+  height: 100%; }
+  section#loading img {
+    width: 96px; }
+
+section#panel {
+  height: 100%;
+  position: relative; }
+
+#basicUser, #adminUser {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  top: 42px; }
+
+#adminUser {
+  -webkit-transition: -webkit-transform 0.5s ease-out;
+  -moz-transition: -moz-transform 0.5s ease-out;
+  -ms-transition: -ms-transform 0.5s ease-out;
+  -o-transition: -o-transform 0.5s ease-out;
+  transition: transform 0.5s ease-out; }
+
+#adminUser.hidden_panel {
+  -webkit-transform: translateX(-100%);
+  -moz-transform: translateX(-100%);
+  -ms-transform: translateX(-100%);
+  -o-transform: translateX(-100%);
+  transform: translateX(-100%); }
+
+#adminUser {
+  z-index: 10; }
+
+#basicUser {
+  z-index: 5; }
+
+.clear {
+  clear: both; }
+
+#app {
+  width: 100%;
+  height: 100%; }
+
+section#main {
+  margin-right: auto;
+  margin-left: auto;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0px 0px 64px rgba(0, 0, 0, 0.4);
+  overflow: hidden; }
+
+section#header {
+  width: 100%;
+  position: absolute;
+  background-image: -webkit-linear-gradient(top, #262B34 0%, #262B34 100%);
+  background-image: -o-linear-gradient(top, #262B34 0%, #262B34 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#262B34), to(#262B34));
+  background-image: linear-gradient(to bottom, #262B34 0%, #262B34 100%);
+  background-color: #262B34;
+  z-index: 50; }
+  section#header h1 {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    font-size: 24px;
+    padding: 8px;
+    letter-spacing: 8px;
+    color: whitesmoke;
+    font-weight: normal;
+    font-family: sans-serif; }
+  section#header .dropdown {
+    display: inline-block;
+    color: whitesmoke;
+    position: absolute;
+    z-index: 5;
+    top: 0px;
+    right: 0px; }
+  section#header .dropdown #account {
+    cursor: pointer;
+    padding: 10px 24px; }
+  section#header .dropdown .dropdown-menu {
+    margin: 0px; }
+  section#header .dropdown.open .dropdown-menu {
+    height: 200px; }
+  section#header .dropdown .dropdown-menu .divider {
+    border-top: 1px solid #A1A5B2;
+    border-bottom: 1px solid #152545;
+    height: 0px;
+    margin: 0px; }
+  section#header .dropdown .dropdown-menu {
+    -webkit-transition: .2s ease-in-out height;
+    -o-transition: .2s ease-in-out height;
+    transition: .2s ease-in-out height;
+    right: 0px;
+    left: auto;
+    background-color: #262B34;
+    border-radius: 0px;
+    display: block;
+    height: 0px;
+    overflow: hidden;
+    padding: 0px;
+    border: none; }
+  section#header .dropdown .dropdown-menu li.menu {
+    padding: 6px 8px;
+    font-size: 10px;
+    color: #aec5d8; }
+  section#header .dropdown .dropdown-menu li.item {
+    font-size: 12px;
+    padding: 4px 16px;
+    cursor: pointer; }
+  section#header .dropdown .dropdown-menu li.item:hover {
+    background-color: #435162; }
+
+.sidebar {
+  overflow: scroll;
+  position: absolute;
+  width: 220px;
+  display: inline-block;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  padding: 16px 0px;
+  background-color: #39414D;
+  z-index: 40; }
+  .sidebar .tablist {
+    border-bottom: solid 1px #B7C5D0; }
+  .sidebar ul li {
+    width: 100%;
+    margin: 0px; }
+  .sidebar ul li.divider {
+    border-top: none; }
+  .sidebar ul li.divider h1 {
+    font-size: 12px;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: #FFFFFF;
+    background-color: #31343E;
+    margin: 0; }
+  .sidebar ul li a {
+    border: none;
+    border-radius: 0px;
+    color: #9BA7AB;
+    margin: 0px; }
+  .sidebar ul li a:hover {
+    background-color: #525D71;
+    color: white; }
+  .sidebar ul li a .glyphicon {
+    font-size: 24px;
+    vertical-align: top;
+    display: inline-block; }
+  .sidebar ul li a .circleIcon {
+    font-size: 18px;
+    width: 24px;
+    font-weight: bold;
+    padding: 1px;
+    display: inline-block;
+    border-radius: 1px;
+    text-align: center; }
+  .sidebar ul li a .title {
+    vertical-align: top;
+    font-size: 12px;
+    display: inline-block;
+    padding: 2px 8px; }
+  .sidebar ul li.active a {
+    border: none !important;
+    margin: 0px;
+    border-radius: 0px;
+    background-color: white;
+    border-color: white;
+    right: 0px; }
+  .sidebar ul li a:hover {
+    border: none;
+    margin: 0; }
+  .sidebar ul li.active a:hover {
+    margin-top: 0px;
+    border: none;
+    border-radius: 0px; }
+
+#userContent, #adminContent {
+  top: 0px;
+  background-color: white;
+  display: inline-block;
+  position: absolute;
+  left: 220px;
+  right: 0px;
+  bottom: 0px;
+  padding: 24px;
+  overflow: scroll;
+  z-index: 30; }
+
+#adminContent {
+  right: 40px; }
+
+.content {
+  overflow: scroll;
+  top: 0px;
+  background-color: white;
+  display: inline-block;
+  position: absolute;
+  left: 220px;
+  right: 0px;
+  bottom: 0px;
+  padding: 24px;
+  z-index: 30; }
+
+.content h1 {
+  color: #55555a;
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 1.4px; }
+
+#circleList table {
+  width: 100%;
+  margin-top: 40px; }
+#circleList table thead {
+  border-bottom: solid 3px #ccc; }
+#circleList table thead tr th {
+  border-right: 1px solid #ccc;
+  padding-left: 8px;
+  font-weight: normal;
+  font-size: 13px; }
+#circleList table thead tr th.name_w {
+  width: 40%; }
+#circleList table thead tr th.number_w {
+  width: 10%; }
+#circleList table thead tr th.university_w {
+  width: 20%; }
+#circleList table thead tr th.update_w {
+  width: 30%; }
+#circleList table thead tr th.author_w {
+  width: 10%; }
+#circleList table tbody {
+  font-size: 12px; }
+#circleList table tbody tr {
+  border-bottom: solid 1px white; }
+#circleList table tbody tr td {
+  padding: 8px;
+  position: relative; }
+#circleList table tbody tr.self .name {
+  background-color: #16a085;
+  color: white; }
+#circleList table tbody tr .name {
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: rgba(87, 214, 141, 0.45); }
+#circleList table tbody tr:hover .name {
+  background-color: #57d68d;
+  color: white; }
+#circleList table tbody tr:hover .update, #circleList table tbody tr:hover .number, #circleList table tbody tr:hover .author, #circleList table tbody tr:hover .university {
+  background-color: rgba(87, 214, 141, 0.45); }
+#circleList table tbody tr.self .name:hover {
+  opacity: 0.8; }
+#circleList table tbody tr.self .update, #circleList table tbody tr.self .number, #circleList table tbody tr.self .author, #circleList table tbody tr.self .university {
+  background-color: #1abc9c;
+  color: white; }
+#circleList table tbody:before {
+  content: "";
+  margin-top: 16px;
+  display: block;
+  width: 100%;
+  background-color: transparent; }
+#circleList table tr i {
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  padding: 7px 0px;
+  display: none;
+  color: white; }
+#circleList table tr.self i {
+  color: white;
+  display: block; }
+#circleList table tr:hover i {
+  display: block; }
+
+#adminNewCircle h1 {
+  margin-bottom: 32px; }
+#adminNewCircle .label {
+  font-size: 14px;
+  font-weight: normal;
+  background-color: rgba(35, 129, 58, 0.67);
+  padding: 6px 8px;
+  cursor: pointer;
+  vertical-align: top;
+  margin: 0px 23px;
+  display: inline-block;
+  font-weight: normal;
+  cursor: pointer; }
+#adminNewCircle label {
+  color: #555;
+  margin-top: 12px;
+  padding: 0px 2px; }
+#adminNewCircle .checkbox label {
+  margin-left: 20px; }
+
+#profile.fade.active.in .profilebar {
+  left: 0px; }
+
+#profile .profilebar {
+  overflow: scroll;
+  -webkit-transition: left 0.3s ease-out;
+  -moz-transition: left 0.3s ease-out;
+  -ms-transition: left 0.3s ease-out;
+  -o-transition: left 0.3s ease-out;
+  transition: left 0.3s ease-out;
+  position: absolute;
+  left: -240px;
+  background-color: white;
+  top: 0px;
+  bottom: 0px;
+  width: 240px;
+  border-right: 1px solid #ddd;
+  z-index: 2;
+  box-shadow: 1px 1px 10px #B3B3B3; }
+  #profile .profilebar .profile_name {
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    padding: 8px; }
+    #profile .profilebar .profile_name i {
+      margin-right: 8px;
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      transform: rotate(90deg); }
+  #profile .profilebar img {
+    width: 80%;
+    margin: 15px auto;
+    display: block; }
+  #profile .profilebar hr.style-line {
+    margin: 16px 32px;
+    padding: 0;
+    border: none;
+    border-top: medium double #555;
+    text-align: center;
+    color: #555; }
+  #profile .profilebar hr.style-line:after {
+    display: inline-block;
+    position: relative;
+    top: -0.7em;
+    font-size: 14px;
+    padding: 0 0.25em;
+    background: white;
+    letter-spacing: 6px; }
+  #profile .profilebar hr.style-line.profile:after {
+    content: "PROFILE"; }
+  #profile .profilebar hr.style-line.activity:after {
+    content: "ACTIVITY"; }
+  #profile .profilebar .panel {
+    margin: 0px;
+    padding: 0px;
+    border: none; }
+    #profile .profilebar .panel .panel-heading {
+      border-radius: 0px;
+      border-bottom: 2px solid #B5B5B5;
+      color: #555;
+      background: white; }
+      #profile .profilebar .panel .panel-heading i {
+        margin-right: 8px;
+        color: #555;
+        -webkit-transition: -webkit-transform 0.3s ease-out;
+        -moz-transition: -moz-transform 0.3s ease-out;
+        -ms-transition: -ms-transform 0.3s ease-out;
+        -o-transition: -o-transform 0.3s ease-out;
+        transition: transform 0.3s ease-out; }
+    #profile .profilebar .panel .list-group {
+      border: none; }
+  #profile .profilebar a[aria-expanded="true"] i {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg); }
+#profile .profilecontent {
+  background-color: #e5e5e5;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
+  z-index: 1;
+  padding-left: 240px;
+  left: 0px;
+  right: 0px; }
+
+#adminUserList table {
+  width: 100%;
+  margin-top: 40px; }
+#adminUserList table thead {
+  border-bottom: solid 3px #ccc; }
+#adminUserList table thead tr th {
+  border-right: 1px solid #ccc;
+  padding-left: 8px;
+  font-weight: normal;
+  font-size: 13px; }
+#adminUserList table thead tr th.name_w {
+  width: 20%; }
+#adminUserList table thead tr th.number_w {
+  width: 10%; }
+#adminUserList table thead tr th.university_w {
+  width: 25%; }
+#adminUserList table thead tr th.mail_w {
+  width: 45%; }
+#adminUserList table thead tr th.author_w {
+  width: 10%; }
+#adminUserList table tbody {
+  font-size: 12px; }
+#adminUserList table tbody tr {
+  border-bottom: solid 1px white; }
+#adminUserList table tbody tr td {
+  padding: 8px;
+  position: relative; }
+#adminUserList table tbody tr.self .name {
+  background-color: #16a085;
+  color: white; }
+#adminUserList table tbody tr .name {
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: rgba(44, 134, 210, 0.45);
+  color: #555; }
+#adminUserList table tbody tr:hover .name {
+  background-color: rgba(44, 153, 210, 0.45);
+  color: whitesmoke; }
+#adminUserList table tbody tr:hover .mail, #adminUserList table tbody tr:hover .number, #adminUserList table tbody tr:hover .author, #adminUserList table tbody tr:hover .university {
+  background-color: rgba(44, 166, 210, 0.3); }
+#adminUserList table tbody:before {
+  content: "";
+  margin-top: 16px;
+  display: block;
+  width: 100%;
+  background-color: transparent; }
+#adminUserList table tr i {
+  display: none;
+  color: #687d9d;
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  padding: 7px 0px;
+  top: 0px; }
+#adminUserList table tr i[data-js="copyMail"] {
+  display: block; }
+#adminUserList table tr:hover .name i {
+  display: block;
+  cursor: pointer;
+  color: white; }
+
+#adminOptionbar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0px;
+  width: 40px;
+  background-color: #778ead;
+  z-index: 5; }
+  #adminOptionbar .close_btn {
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+    padding: 10px 13px;
+    color: white; }

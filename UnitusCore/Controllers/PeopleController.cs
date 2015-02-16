@@ -23,9 +23,9 @@ namespace UnitusCore.Controllers
         [Authorize]
         [RoleRestrict("Administrator")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetPersonList(string validationKey,int Count=20,int Offset=0)
+        public async Task<IHttpActionResult> GetPersonList(string validationToken,int Count=20,int Offset=0)
         {
-            return await this.OnValidToken(validationKey, () =>
+            return await this.OnValidToken(validationToken, () =>
             {
                 var persons =
                     DbSession.People.OrderBy(o => o.Id)
