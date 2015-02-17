@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using UnitusCore.Attributes;
+using UnitusCore.Models.DataModel;
+using UnitusCore.Results;
+using UnitusCore.Util;
+
+namespace UnitusCore.Controllers
+{
+    public class PersonalController:UnitusApiController
+    {
+        [UnitusCorsEnabled]
+        [ApiAuthorized]
+        [HttpPut]
+        [Route("Personal/Profile")]
+        public async Task<IHttpActionResult> PutPersonalProfile(PutPersonalRequest req)
+        {
+            return await this.OnValidToken(req, async (a) =>
+            {
+                Person personData = CurrentUserWithPerson.PersonData;
+                personData.BelongedColledge = req.BelongedUniversity ?? personData.BelongedColledge;
+                personData.Faculty = req.Faculty ?? personData.Faculty;
+                personData.Major = req.Major ?? personData.Major;
+                personData.CurrentCource = req.CurrentGrade;
+                personData.Notes = req.Notes ?? personData.Notes;
+                await DbSession.SaveChangesAsync();
+                return Json(ResultContainer.GenerateSuccessResult());
+            });
+        }
+
+        [RoleRestrict(GlobalConstants.AdminRoleName)]
+        [UnitusCorsEnabled]
+        [ApiAuthorized]
+        [HttpPut]
+        [Route("Personal/Profile/Admin")]
+        public async Task<IHttpActionResult> PutPersonalProfileAdmin(PutPersonalRequestAdmin req)
+        {
+            return await this.OnValidToken(req, async (a) =>
+            {
+                var applicationUser = await UserManager.FindByNameAsync(req.UserName);
+                await applicationUser.LoadPersonData(DbSession);
+                Person personData = applicationUser.PersonData;
+                personData.Name = req.Name ?? personData.Name;
+                personData.BelongedColledge = req.BelongedUniversity ?? personData.BelongedColledge;
+                personData.Faculty = req.Faculty ?? personData.Faculty;
+                personData.Major = req.Major ?? personData.Major;
+                personData.CurrentCource = req.CurrentGrade;
+                personData.Notes = req.Notes ?? personData.Notes;
+                await DbSession.SaveChangesAsync();
+                return Json(ResultContainer.GenerateSuccessResult());
+            });
+        }
+
+        public class PutPersonalRequestAdmin:PutPersonalRequest
+        {
+            public string UserName { get; set; }
+
+            public string Name { get; set; }
+        }
+
+        public class PutPersonalRequest : AjaxRequestModelBase
+        {
+            public string BelongedUniversity { get; set; }
+
+            public string Faculty { get; set; }
+
+            public string Major { get; set; }
+
+            public Person.Cource CurrentGrade { get; set; }
+
+            public string Notes { get; set; }
+        }
+    }
+}

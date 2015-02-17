@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnitusCore.Controllers;
 using UnitusCore.Models.BaseClasses;
+using UnitusCore.Util;
 
 namespace UnitusCore.Models.DataModel
 {
@@ -47,6 +50,12 @@ namespace UnitusCore.Models.DataModel
         public enum Cource
         {
             UG1, UG2, UG3, UG4, UG5, UG6, MC1, MC2, MC3, MC4, DC1, DC2, DC3, DC4
+        }
+
+        public async static Task<Person> FromIdAsync(ApplicationDbContext dbSession, string personID)
+        {
+            Guid guid = personID.ToValidGuid();
+            return await dbSession.People.FindAsync(guid);
         }
     }
 }

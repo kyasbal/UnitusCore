@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
@@ -68,5 +69,11 @@ namespace UnitusCore.Controllers
             return Json(content);
         }
 
+        public async Task<ApplicationUser> FindUserFromName(string userName,bool allowNotFound=false)
+        {
+            ApplicationUser applicationUser = await UserManager.FindByNameAsync(userName);
+            if(applicationUser==null&&!allowNotFound)throw new HttpResponseException(HttpStatusCode.NotFound);
+            return applicationUser;
+        }
     }
 }

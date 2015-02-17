@@ -38,5 +38,11 @@ namespace UnitusCore.Models.DataModel
         public ICollection<PasswordResetConfirmation> PasswordResetRequests { get; set; }//binded 
 
         public ICollection<CircleUploaderEntity> UploadedEntities { get; set; }//binded 
+
+        public async Task LoadPersonData(ApplicationDbContext dbSession)
+        {
+            var persondataStatus = dbSession.Entry(this).Reference(a => a.PersonData);
+            if (!persondataStatus.IsLoaded)await persondataStatus.LoadAsync();
+        }
     }
 }

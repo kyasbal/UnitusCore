@@ -72,10 +72,16 @@ namespace UnitusCore.Models.DataModel
             }
         }
 
-        public async void LoadMemberInvitations(ApplicationDbContext dbContext)
+        public async Task LoadMemberInvitations(ApplicationDbContext dbContext)
         {
             var invitationStatus = dbContext.Entry(this).Collection(a => a.MemberInvitations);
             if (!invitationStatus.IsLoaded) await invitationStatus.LoadAsync();
+        }
+
+        public async Task LoadMembers(ApplicationDbContext dbContext)
+        {
+            var memberStatus = dbContext.Entry(this).Collection(a => a.Members);
+            if (!memberStatus.IsLoaded) await memberStatus.LoadAsync();
         }
 
     }

@@ -83,6 +83,50 @@ namespace UnitusCore.Util
             });
         }
 
+        public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
+    Func<T, Task<IHttpActionResult>> f, Func<T, HashSet<string>, bool> vFunc) where T : AjaxRequestModelBase
+        {
+            return await arg.OnValidToken(controller, arg,async (r) =>
+            {
+                HashSet<string> err = new HashSet<string>();
+                if (vFunc(r, err))
+                {
+                    return await f(r);
+                }
+                else
+                {
+                    string errorMsg = "";
+                    foreach (var str in err)
+                    {
+                        errorMsg += str + "\n";
+                    }
+                    return controller.JsonResult(new ResultContainer() { Success = false, ErrorMessage = errorMsg });
+                }
+            });
+        }
+
+
+        public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
+    Func<T, Task<IHttpActionResult>> f, Func<T, HashSet<string>, Task<bool>> vFunc) where T : AjaxRequestModelBase
+        {
+            return await arg.OnValidToken(controller, arg, async (r) =>
+            {
+                HashSet<string> err = new HashSet<string>();
+                if (await vFunc(r, err))
+                {
+                    return await f(r);
+                }
+                else
+                {
+                    string errorMsg = "";
+                    foreach (var str in err)
+                    {
+                        errorMsg += str + "\n";
+                    }
+                    return controller.JsonResult(new ResultContainer() { Success = false, ErrorMessage = errorMsg });
+                }
+            });
+        }
         public static string GetAjaxValidToken()
         {
             string cookieToken, formToken;

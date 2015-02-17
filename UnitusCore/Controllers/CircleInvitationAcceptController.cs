@@ -148,8 +148,7 @@ namespace UnitusCore.Controllers
             {
 //OKのとき
                 var invitationData= getInvitationData(confirmationId);
-                DbSession.Entry(CurrentUser).Reference(a => a.PersonData).Load();
-                DbSession.Entry(CurrentUser.PersonData).Collection(a => a.BelongedCircles).Load();
+                await invitationData.LoadReferences(DbSession);
                 DbSession.CircleInvitations.Remove(invitationData);
                 var isAlreadyMember = false;
                 foreach (var member in CurrentUser.PersonData.BelongedCircles)

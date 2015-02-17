@@ -23,22 +23,50 @@ namespace UnitusCore.Controllers
 {
     public class CircleController : UnitusApiController
     {
+        #region Dummy
 
-        private ApplicationUser GetWithAdministrationCircle
+        [UnitusCorsEnabled]
+        [Route("Circle/Dummy")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCircleDummy(string validationToken, int Count = 20, int Offset = 0)
         {
-            get
+            return await this.OnValidToken(validationToken, () =>
             {
-                if (currentUserCache == null || currentUserCache.AdministrationCircle == null)
+                Random rand = new Random();
+                int belongedCount = rand.Next(Count);
+                List<GetCircleResponseCircleEntity> responseData = new List<GetCircleResponseCircleEntity>();
+                for (int i = 0; i < belongedCount; i++)
                 {
-                    currentUserCache =
-                        DbSession.Users.Include(a => a.PersonData)
-                            .Include(a => a.AdministrationCircle)
-                            .Where(a => a.UserName.Equals(User.Identity.Name))
-                            .FirstOrDefault();
+                    DateTime randomTime = DateTime.Now - new TimeSpan(rand.Next(10000), 0, 0, 0);
+                    responseData.Add(new GetCircleResponseCircleEntity(IdGenerator.GetId(10), rand.Next(120),
+                        IdGenerator.GetId(10) + "大学", randomTime.ToString("yyyy年M月d日"), true, Guid.NewGuid().ToString()));
                 }
-                return currentUserCache;
-            }
+                for (int i = 0; i < Count - belongedCount; i++)
+                {
+                    DateTime randomTime = DateTime.Now - new TimeSpan(rand.Next(10000), 0, 0, 0);
+                    responseData.Add(new GetCircleResponseCircleEntity(IdGenerator.GetId(10), rand.Next(120),
+                        IdGenerator.GetId(10) + "大学", randomTime.ToString("yyyy年M月d日"), false, Guid.NewGuid().ToString()));
+                }
+                return
+                    Json(
+                        ResultContainer<GetCircleResponse>.GenerateSuccessResult(
+                            new GetCircleResponse(responseData.ToArray())));
+            });
         }
+
+
+        [UnitusCorsEnabled]
+        [Route("Circle/Detail/Dummy")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
+        {
+            return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(new GetPutCircleDetailBody(
+                "応用数学研究部", "# 数学とかwwww", 28, "Tokyo university of science,Kagura-zaka", "特になし", "http://unitus-ac.com",
+                "なし", false, "毎週木曜日")
+                ));
+        }
+
+        #endregion
 
         [UnitusCorsEnabled]
         [HttpDelete]
@@ -47,9 +75,9 @@ namespace UnitusCore.Controllers
         [RoleRestrict(GlobalConstants.AdminRoleName)]
         public async Task<IHttpActionResult> RemoveCircle(DeleteCircleRequest req)
         {
-            return await this.OnValidToken(req.ValidationToken,async () =>
+            return await this.OnValidToken(req.ValidationToken, async () =>
             {
-                var circle =await Circle.FromIdAsync(DbSession, req.CircleId);
+                var circle = await Circle.FromIdAsync(DbSession, req.CircleId);
                 DbSession.Circles.Remove(circle);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
@@ -65,14 +93,16 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, () =>
             {
-                DbSession.Entry(CurrentUserWithPerson.PersonData).Collection<MemberStatus>(a => a.BelongedCircles).Load();
-                HashSet<Circle> resultCircle=new HashSet<Circle>();
-                HashSet<Circle> circleBelonging=new HashSet<Circle>();
+                DbSession.Entry(CurrentUserWithPerson.PersonData)
+                    .Collection<MemberStatus>(a => a.BelongedCircles)
+                    .Load();
+                HashSet<Circle> resultCircle = new HashSet<Circle>();
+                HashSet<Circle> circleBelonging = new HashSet<Circle>();
                 foreach (MemberStatus belongedCircles in CurrentUserWithPerson.PersonData.BelongedCircles)
                 {
                     DbSession.Entry(belongedCircles).Reference<Circle>(a => a.TargetCircle).Load();
                     circleBelonging.Add(belongedCircles.TargetCircle);
-                }//とりあえず自分の入っているサークルをHashSetに入れておく。
+                } //とりあえず自分の入っているサークルをHashSetに入れておく。
                 if (Offset > resultCircle.Count)
                 {
                     Offset -= circleBelonging.Count;
@@ -93,11 +123,11 @@ namespace UnitusCore.Controllers
                         }
                     }
                 }
-                List<GetCircleResponseCircleEntity> responseData=new List<GetCircleResponseCircleEntity>();
-                responseData.AddRange(resultCircle.Select(a=>GetCircleResponseCircleEntity.FromCircle(a,true)));
+                List<GetCircleResponseCircleEntity> responseData = new List<GetCircleResponseCircleEntity>();
+                responseData.AddRange(resultCircle.Select(a => GetCircleResponseCircleEntity.FromCircle(a, true)));
                 resultCircle.Clear();
                 //残りは自分の入っていない中からとってくる。
-                var taken=DbSession.Circles.OrderBy(c => c.Name).Skip(Offset).Take(Count + circleBelonging.Count);
+                var taken = DbSession.Circles.OrderBy(c => c.Name).Skip(Offset).Take(Count + circleBelonging.Count);
                 foreach (Circle circle in taken)
                 {
                     if (Count == 0) break;
@@ -107,61 +137,34 @@ namespace UnitusCore.Controllers
                         resultCircle.Add(circle);
                     }
                 }
-                responseData.AddRange(resultCircle.Select(a => GetCircleResponseCircleEntity.FromCircle(a,false)));
-                return Json(ResultContainer<GetCircleResponse>.GenerateSuccessResult(new GetCircleResponse(responseData.ToArray())));
-            });
-        }
-
-        [UnitusCorsEnabled]
-        [Route("Circle/Dummy")]
-        [HttpGet]
-        public async Task<IHttpActionResult> GetCircleDummy(string validationToken, int Count=20, int Offset=0)
-        {
-            return await this.OnValidToken(validationToken, () =>
-            {
-                Random rand=new Random();
-                int belongedCount = rand.Next(Count);
-                List<GetCircleResponseCircleEntity> responseData=new List<GetCircleResponseCircleEntity>();
-                for (int i = 0; i < belongedCount; i++)
-                {
-                    DateTime randomTime = DateTime.Now - new TimeSpan(rand.Next(10000),0, 0, 0);
-                    responseData.Add(new GetCircleResponseCircleEntity(IdGenerator.GetId(10),rand.Next(120),IdGenerator.GetId(10)+"大学",randomTime.ToString("yyyy年M月d日"),true,Guid.NewGuid().ToString()));
-                }
-                for (int i = 0; i < Count-belongedCount; i++)
-                {
-                    DateTime randomTime = DateTime.Now - new TimeSpan(rand.Next(10000), 0, 0, 0);
-                    responseData.Add(new GetCircleResponseCircleEntity(IdGenerator.GetId(10), rand.Next(120), IdGenerator.GetId(10) + "大学", randomTime.ToString("yyyy年M月d日"), false, Guid.NewGuid().ToString()));
-                }
-                return Json(ResultContainer<GetCircleResponse>.GenerateSuccessResult(new GetCircleResponse(responseData.ToArray())));
+                responseData.AddRange(resultCircle.Select(a => GetCircleResponseCircleEntity.FromCircle(a, false)));
+                return
+                    Json(
+                        ResultContainer<GetCircleResponse>.GenerateSuccessResult(
+                            new GetCircleResponse(responseData.ToArray())));
             });
         }
 
         [UnitusCorsEnabled]
         [Route("Circle/Detail")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetCircleDetailed(string validationToken,string circleId)
+        public async Task<IHttpActionResult> GetCircleDetailed(string validationToken, string circleId)
         {
             Circle circle = null;
             return await this.OnValidToken(validationToken, () =>
             {
-                return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(GetPutCircleDetailBody.FromCircle(circle)));
+                return
+                    Json(
+                        ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(
+                            GetPutCircleDetailBody.FromCircle(circle)));
             }, (a) =>
             {
                 return CircleIdConfirmation(circleId, a, out circle);
             });
         }
 
-       [UnitusCorsEnabled]
-        [Route("Circle/Detail/Dummy")]
-        [HttpGet]
-        public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
-        {
-            return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(new GetPutCircleDetailBody(
-                "応用数学研究部","# 数学とかwwww",28,"Tokyo university of science,Kagura-zaka","特になし","http://unitus-ac.com","なし",false,"毎週木曜日")
-                ));
-        }
 
-        private bool CircleIdConfirmation(string circleId,HashSet<string> errorMsgs , out Circle circleOutput)
+        private bool CircleIdConfirmation(string circleId, HashSet<string> errorMsgs, out Circle circleOutput)
         {
             Guid circleIdInGuid;
             if (Guid.TryParse(circleId, out circleIdInGuid))
@@ -183,7 +186,12 @@ namespace UnitusCore.Controllers
                 errorMsgs.Add("与えられたGUIDが不正です。");
                 return false;
             }
-                
+
+        }
+
+        private bool CheckCircleExisiting(string circleName,string belongedTo)
+        {
+            return DbSession.Circles.Where(a => a.Name.Equals(circleName) && a.BelongedSchool.Equals(belongedTo)).Any();
         }
 
 
@@ -193,12 +201,12 @@ namespace UnitusCore.Controllers
         [Route("Circle")]
         public Task<IHttpActionResult> AddCircle(AddCircleRequest req)
         {
-            return this.OnValidToken(req,async (r) =>
+            ApplicationUser user = null;
+            return this.OnValidToken(req, async (r) =>
             {
                 try
                 {
-                    ApplicationUser user = CurrentUserWithPerson;
-               
+                    
                     MemberStatus memberStatus = new MemberStatus();
                     memberStatus.GenerateId();
                     memberStatus.IsActiveMember = true;
@@ -227,8 +235,23 @@ namespace UnitusCore.Controllers
                     Trace.WriteLine(exe.ToString());
                     return Json(ResultContainer.GenerateFaultResult(exe.ToString()));
                 }
+            },async (r,set) =>
+            {
+                if (CheckCircleExisiting(req.CircleName, req.BelongedSchool))
+                {
+                    set.Add("その団体は既に存在します。");
+                    return false;
+                }
+                user = await UserManager.FindByNameAsync(req.LeaderUserName);
+                if (user == null)
+                {
+                    set.Add("ユーザーIDが存在しません。");
+                    return false;
+                }
+                return true;
             });
         }
+
         [CircleMember("circleId")]
         [HttpGet]
         [Route("Circle/Member")]
@@ -236,18 +259,46 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
             Circle circle = await Circle.FromIdAsync(DbSession, circleId);
-            var circleMembersState = DbSession.Entry(circle).Collection(a => a.Members);
-            if (!circleMembersState.IsLoaded) await circleMembersState.LoadAsync();
-            List<GetMemberListElement> elements=new List<GetMemberListElement>();
+            await circle.LoadMembers(DbSession);
+            List<GetMemberListElement> elements = new List<GetMemberListElement>();
             foreach (MemberStatus members in circle.Members)
             {
-                var memberTargetUserStatus = DbSession.Entry(members).Reference(a => a.TargetUser);
-                if (!memberTargetUserStatus.IsLoaded) await memberTargetUserStatus.LoadAsync();
-                var userTargetStatus = DbSession.Entry(members.TargetUser).Reference(a => a.ApplicationUser);
-                if (!userTargetStatus.IsLoaded) await userTargetStatus.LoadAsync();
-                elements.Add(new GetMemberListElement(members.TargetUser.Id.ToString(),members.TargetUser.Name,members.Occupation,members.TargetUser.CurrentCource,members.IsActiveMember));
+                await members.LoadReferencesAsync(DbSession);
+                elements.Add(new GetMemberListElement(members.TargetUser.Id.ToString(), members.TargetUser.Name,
+                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedColledge,members.TargetUser.Faculty,members.TargetUser.Major));
             }
             return Json(ResultContainer<GetMemberList>.GenerateSuccessResult(new GetMemberList(elements.ToArray())));
+        }
+
+        [CircleAdmin("circleId")]
+        [HttpPut]
+        [Route("Circle/Member")]
+        [ApiAuthorized]
+        public async Task<IHttpActionResult> PutMembersState(PutMemberStateRequest req)
+        {
+            return await this.OnValidToken(req,async (r) =>
+            {
+                Circle circle = await Circle.FromIdAsync(DbSession, r.CircleId);
+                Person targetUser = await Person.FromIdAsync(DbSession, r.PersonId);
+                await circle.LoadMembers(DbSession);
+                bool found = false;
+                foreach (MemberStatus memberStatus in circle.Members)
+                {
+                    await memberStatus.LoadReferencesAsync(DbSession);
+                    if (memberStatus.TargetUser.Id.Equals(targetUser.Id))
+                    {
+                        memberStatus.IsActiveMember = r.IsActiveMember;
+                        memberStatus.Occupation =r.Ocupation;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return Json(ResultContainer.GenerateFaultResult("指定したユーザーがサークル内に見つかりません。"));
+                await DbSession.SaveChangesAsync();
+                return Json(ResultContainer.GenerateSuccessResult());
+            });
+
+
         }
 
 
@@ -258,11 +309,11 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
             Circle circle = null;
-            return await this.OnValidToken(req.ValidationToken,async () =>
+            return await this.OnValidToken(req.ValidationToken, async () =>
             {
                 circle.Name = req.CircleName ?? circle.Name;
                 circle.Description = req.CircleDescription ?? circle.Description;
-                circle.MemberCount = req.MemberCount!=0?req.MemberCount: circle.MemberCount;
+                circle.MemberCount = req.MemberCount != 0 ? req.MemberCount : circle.MemberCount;
                 circle.WebAddress = req.WebAddress ?? circle.WebAddress;
                 circle.BelongedSchool = req.BelongedSchool ?? circle.BelongedSchool;
                 circle.Notes = req.Notes ?? circle.Notes;
@@ -273,177 +324,208 @@ namespace UnitusCore.Controllers
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
             },
-            (a) =>
+                (a) =>
+                {
+                    return CircleIdConfirmation(req.CircleId, a, out circle);
+                });
+        }
+
+        public class PutMemberStateRequest:AjaxRequestModelBase
+        {
+            public string CircleId { get; set; }
+
+            public string PersonId { get; set; }
+
+            public string Ocupation { get; set; }
+
+            public bool IsActiveMember { get; set; }
+        }
+
+
+        public class GetMemberList
+        {
+            public GetMemberList(GetMemberListElement[] members)
             {
-                return CircleIdConfirmation(req.CircleId, a, out circle);
-            });
+                Members = members;
+            }
+
+            public GetMemberListElement[] Members { get; set; }
         }
 
-    }
-
-    public class GetMemberList
-    {
-        public GetMemberList(GetMemberListElement[] members)
+        public class GetMemberListElement
         {
-            Members = members;
+            public GetMemberListElement(string personId, string name, string ocupation, Person.Cource currentGrade,
+                bool isActiveMember, string belongedUniversity, string faculty, string major)
+            {
+                PersonId = personId;
+                Ocupation = ocupation;
+                CurrentGrade = currentGrade;
+                IsActiveMember = isActiveMember;
+                BelongedUniversity = belongedUniversity;
+                Faculty = faculty;
+                Major = major;
+                Name = name;
+            }
+
+            public string PersonId { get; set; }
+
+            public string Ocupation { get; set; }
+
+            public Person.Cource CurrentGrade { get; set; }
+
+            public bool IsActiveMember { get; set; }
+
+            public string Name { get; set; }
+
+            public string BelongedUniversity { get; set; }
+
+            public string Faculty { get; set; }
+
+            public string Major { get; set; }
+
         }
 
-        public GetMemberListElement[] Members { get; set; }
-    }
 
-    public class GetMemberListElement
-    {
-        public GetMemberListElement(string userId,string name, string ocupation, Person.Cource currentGrade, bool isActiveMember)
+        public class AddCircleRequest : AjaxRequestModelBase
         {
-            UserId = userId;
-            Ocupation = ocupation;
-            CurrentGrade = currentGrade;
-            IsActiveMember = isActiveMember;
-            Name = name;
+            public string CircleName { get; set; }
+
+            public string CircleDescription { get; set; }
+
+            public int MemberCount { get; set; }
+
+            public string WebSiteAddress { get; set; }
+
+            public string BelongedSchool { get; set; }
+
+            public string Notes { get; set; }
+
+            public string Contact { get; set; }
+
+            public string LeaderUserName { get; set; }
+
+            public bool CanInterColledge { get; set; }
+
+            public string ActivityDate { get; set; }
         }
 
-        public string UserId { get; set; }
-
-        public string Ocupation { get; set; }
-
-        public Person.Cource CurrentGrade { get; set; }
-
-        public bool IsActiveMember { get; set; }
-
-        public string Name { get; set; }
-
-    }
-
-
-    public class AddCircleRequest :AjaxRequestModelBase
-    {
-        public string CircleName { get; set; }
-
-        public string CircleDescription { get; set; }
-
-        public int MemberCount { get; set; }
-
-        public string WebSiteAddress { get; set; }
-
-        public string BelongedSchool { get; set; }
-
-        public string Notes { get; set; }
-
-        public string Contact { get; set; }
-
-        public string LeaderUserName { get; set; }
-
-        public bool CanInterColledge { get; set; }
-
-        public string ActivityDate { get; set; }
-    }
-
-    public class DeleteCircleRequest
-    {
-        public string CircleId { get; set; }
-        public string ValidationToken { get; set; }
-    }
-
-    public class PutCircleRequest : GetPutCircleDetailBody
-    {
-        public string CircleId { get; set; }
-        public string ValidationToken { get; set; }
-
-        public PutCircleRequest(string circleId,string validationToken,string circleName, string circleDescription, int memberCount, string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge, string activityDate) : base(circleName, circleDescription, memberCount, belongedSchool, notes, webAddress, contact, canInterColledge, activityDate)
+        public class DeleteCircleRequest
         {
-            CircleId = circleId;
-            ValidationToken = validationToken;
+            public string CircleId { get; set; }
+            public string ValidationToken { get; set; }
         }
 
-        public PutCircleRequest()
+        public class PutCircleRequest : GetPutCircleDetailBody
         {
-            
-        }
-    }
+            public string CircleId { get; set; }
+            public string ValidationToken { get; set; }
 
-    public class GetPutCircleDetailBody
-    {
-        public GetPutCircleDetailBody()
+            public PutCircleRequest(string circleId, string validationToken, string circleName, string circleDescription,
+                int memberCount, string belongedSchool, string notes, string webAddress, string contact,
+                bool canInterColledge, string activityDate)
+                : base(
+                    circleName, circleDescription, memberCount, belongedSchool, notes, webAddress, contact,
+                    canInterColledge, activityDate)
+            {
+                CircleId = circleId;
+                ValidationToken = validationToken;
+            }
+
+            public PutCircleRequest()
+            {
+
+            }
+        }
+
+        public class GetPutCircleDetailBody
         {
-            
+            public GetPutCircleDetailBody()
+            {
+
+            }
+
+            public GetPutCircleDetailBody(string circleName, string circleDescription, int memberCount,
+                string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge,
+                string activityDate)
+            {
+                CircleName = circleName;
+                CircleDescription = circleDescription;
+                MemberCount = memberCount;
+                BelongedSchool = belongedSchool;
+                Notes = notes;
+                WebAddress = webAddress;
+                Contact = contact;
+                CanInterColledge = canInterColledge;
+                ActivityDate = activityDate;
+            }
+
+            public string CircleName { get; set; }
+
+            public string CircleDescription { get; set; }
+
+            public int MemberCount { get; set; }
+
+            public string WebAddress { get; set; }
+
+            public string BelongedSchool { get; set; }
+
+            public string Notes { get; set; }
+
+            public string Contact { get; set; }
+
+            public bool CanInterColledge { get; set; }
+
+            public string ActivityDate { get; set; }
+
+            public static GetPutCircleDetailBody FromCircle(Circle circle)
+            {
+                return new GetPutCircleDetailBody(circle.Name, circle.Description, circle.MemberCount,
+                    circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterCollege,
+                    circle.ActivityDate);
+            }
         }
-        public GetPutCircleDetailBody(string circleName, string circleDescription, int memberCount, string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge, string activityDate)
+
+        public class GetCircleResponse
         {
-            CircleName = circleName;
-            CircleDescription = circleDescription;
-            MemberCount = memberCount;
-            BelongedSchool = belongedSchool;
-            Notes = notes;
-            WebAddress = webAddress;
-            Contact = contact;
-            CanInterColledge = canInterColledge;
-            ActivityDate = activityDate;
+            public GetCircleResponse(GetCircleResponseCircleEntity[] circle)
+            {
+                Circle = circle;
+            }
+
+            public GetCircleResponseCircleEntity[] Circle { get; set; }
+
         }
 
-        public string CircleName { get; set; }
-
-        public string CircleDescription { get; set; }
-
-        public int MemberCount { get; set; }
-
-        public string WebAddress { get; set; }
-
-        public string BelongedSchool { get; set; }
-
-        public string Notes { get; set; }
-
-        public string Contact { get; set; }
-
-        public bool CanInterColledge { get; set; }
-
-        public string ActivityDate { get; set; }
-
-        public static GetPutCircleDetailBody FromCircle(Circle circle)
+        public class GetCircleResponseCircleEntity
         {
-            return new GetPutCircleDetailBody(circle.Name, circle.Description, circle.MemberCount,
-                circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterCollege,
-                circle.ActivityDate);
+            public static GetCircleResponseCircleEntity FromCircle(Circle circle, bool isBelonging)
+            {
+                return new GetCircleResponseCircleEntity(circle.Name, circle.MemberCount, circle.BelongedSchool,
+                    circle.LastModefied.ToString("yyyy年M月d日"), isBelonging, circle.Id.ToString());
+            }
+
+            public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity,
+                string lastUpdateDate, bool isBelonged, string circleId)
+            {
+                CircleName = circleName;
+                MemberCount = memberCount;
+                BelongedUniversity = belongedUniversity;
+                this.LastUpdateDate = lastUpdateDate;
+                IsBelonging = isBelonged;
+                CircleId = circleId;
+            }
+
+            public string CircleId { get; set; }
+
+            public bool IsBelonging { get; set; }
+
+            public string CircleName { get; set; }
+
+            public int MemberCount { get; set; }
+
+            public string BelongedUniversity { get; set; }
+
+            public string LastUpdateDate { get; set; }
         }
-    }
-
-    public class GetCircleResponse
-    {
-        public GetCircleResponse(GetCircleResponseCircleEntity[] circle)
-        {
-            Circle = circle;
-        }
-
-        public GetCircleResponseCircleEntity[] Circle { get; set; }
-
-    }
-
-    public class GetCircleResponseCircleEntity
-    {
-        public static GetCircleResponseCircleEntity FromCircle(Circle circle,bool isBelonging)
-        {
-            return new GetCircleResponseCircleEntity(circle.Name,circle.MemberCount,circle.BelongedSchool,circle.LastModefied.ToString("yyyy年M月d日"),isBelonging,circle.Id.ToString());
-        }
-
-        public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity, string lastUpdateDate, bool isBelonged, string circleId)
-        {
-            CircleName = circleName;
-            MemberCount = memberCount;
-            BelongedUniversity = belongedUniversity;
-            this.LastUpdateDate = lastUpdateDate;
-            IsBelonging = isBelonged;
-            CircleId = circleId;
-        }
-
-        public string CircleId { get; set; }
-
-        public bool IsBelonging { get; set; }
-
-        public string CircleName { get; set; }
-
-        public int MemberCount { get; set; }
-
-        public string BelongedUniversity { get; set; }
-
-        public string LastUpdateDate { get; set; }
     }
 }
