@@ -50,8 +50,37 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-
+                Circle circle = await Circle.FromIdAsync(DbSession, CircleId);
+                circle.LoadMemberInvitations(DbSession);
+                List<CurrentInvitationEntity> invitations=new List<CurrentInvitationEntity>();
+                foreach (CircleMemberInvitation invitation in circle.MemberInvitations)
+                {
+                    await invitation.LoadReferences(DbSession);
+                    invitations.Add(new CurrentInvitationEntity(invitation.Id.ToString(),invitation.InvitedPerson.Name,invitation.SentDate.ToString("YYYY-M-D DDDD"),invitation.EmailAddress));
+                }
+                return Json(ResultContainer<CurrentInvitationEntity[]>.GenerateSuccessResult(invitations.ToArray()));
             });
+        }
+
+        [Route("CircleInvitation")]
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteInvitation(DeleteInvitationRequest request)
+        {
+            return await this.OnValidToken(request, async (a) =>
+            {
+                CircleMemberInvitation targetInvitation =
+                    await CircleMemberInvitation.FindFromIdAsync(DbSession, request.InvitationId);
+                DbSession.CircleInvitations.Remove(targetInvitation);
+                return Json(ResultContainer.GenerateSuccessResult());
+            }
+                );
+        }
+
+        public class DeleteInvitationRequest:AjaxRequestModelBase
+        {
+            public string InvitationId { get; set; }
         }
 
         public class CurrentInvitationEntity

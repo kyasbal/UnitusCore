@@ -71,5 +71,12 @@ namespace UnitusCore.Models.DataModel
                 return circle;
             }
         }
+
+        public async void LoadMemberInvitations(ApplicationDbContext dbContext)
+        {
+            var invitationStatus = dbContext.Entry(this).Collection(a => a.MemberInvitations);
+            if (!invitationStatus.IsLoaded) await invitationStatus.LoadAsync();
+        }
+
     }
 }

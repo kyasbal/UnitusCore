@@ -331,6 +331,7 @@
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
+    <Compile Include="Util\UtilExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\UnitusCoreDatabase.mdf" />
