@@ -33,9 +33,9 @@ namespace UnitusCore.Attributes
             return base.OnActionExecutingAsync(actionContext, cancellationToken);
         }
 
-        private void ApplyCheckResult(HttpActionContext actionContext)
+        private async void ApplyCheckResult(HttpActionContext actionContext)
         {
-            if (!IsValid(actionContext))
+            if (!await IsValid(actionContext))
             {
                 var response = actionContext.Request.CreateResponse(HttpStatusCode.Unauthorized);
                 response.Content = new StringContent("You have no enough authority to access this api");
@@ -43,7 +43,7 @@ namespace UnitusCore.Attributes
             }
         }
 
-        private bool IsValid(HttpActionContext context)
+        private async Task<bool> IsValid(HttpActionContext context)
         {
             if (!IsAdmin(context))
             {
@@ -58,17 +58,7 @@ namespace UnitusCore.Attributes
                 }
                 else
                 {
-
-                    Guid circleId;
-                    if(!Guid.TryParse((string)circleArg,out circleId))return false;
-                    if (!IsCircleMember(circleId, context))
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return await IsCircleMember((string) circleArg,context);
                 }
             }
             
@@ -77,10 +67,10 @@ namespace UnitusCore.Attributes
 
 
 
-        private bool IsCircleMember(Guid circleId,HttpActionContext context)
+        private async Task<bool> IsCircleMember(string circleId,HttpActionContext context)
         {
             var dbContext = GetDbContext(context);
-            Circle circle = dbContext.Circles.Find(circleId);
+            Circle circle =await Circle.FromIdAsync(dbContext, circleId);
             if(circle==null)return false;
             var memberState = dbContext.Entry(circle).Collection(a => a.Members);
             if(!memberState.IsLoaded)memberState.Load();
@@ -117,9 +107,9 @@ namespace UnitusCore.Attributes
             return base.OnActionExecutingAsync(actionContext, cancellationToken);
         }
 
-        private void ApplyCheckResult(HttpActionContext actionContext)
+        private async void ApplyCheckResult(HttpActionContext actionContext)
         {
-            if (!IsValid(actionContext))
+            if (!await IsValid(actionContext))
             {
                 var response = actionContext.Request.CreateResponse(HttpStatusCode.Unauthorized);
                 response.Content = new StringContent("You have no enough authority to access this api");
@@ -127,32 +117,31 @@ namespace UnitusCore.Attributes
             }
         }
 
-        private bool IsValid(HttpActionContext context)
+        private async Task<bool> IsValid(HttpActionContext context)
         {
             if (IsAdmin(context)) return true;
             else
             {
-                Circle circle = GetCircleFromArgument(context);
-                return circle != null && IsCircleAdmin(context, circle);
+                Circle circle = await GetCircleFromArgument(context);
+                return circle != null && await IsCircleAdmin(context, circle);
             }
         }
 
-        private Circle GetCircleFromArgument(HttpActionContext context)
+        private async Task<Circle> GetCircleFromArgument(HttpActionContext context)
         {
             var argObject = context.ActionArguments[_circleIdField];
             if (argObject == null) return null;
             else
             {
-                Guid circleId = Guid.Parse((string) argObject);
-                return GetDbContext(context).Circles.Find(circleId);
+                return await Circle.FromIdAsync(GetDbContext(context), (string) argObject);
             }
         }
 
-        private bool IsCircleAdmin(HttpActionContext context,Circle circle)
+        private async Task<bool> IsCircleAdmin(HttpActionContext context,Circle circle)
         {
             if (GetCurrentUser(context) == null) return false;
             var adminState = GetDbContext(context).Entry(circle).Collection(a => a.Administrators);
-            if(!adminState.IsLoaded)adminState.Load();
+            if(!adminState.IsLoaded)await adminState.LoadAsync();
             return circle.Administrators.Contains(GetCurrentUser(context));
         }
     }

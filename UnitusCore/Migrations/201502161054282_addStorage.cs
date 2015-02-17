@@ -7,12 +7,12 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.UserStatistics", "RecordedTime", c => c.DateTime(nullable: false));
+            //AddColumn("dbo.UserStatistics", "RecordedTime", c => c.DateTime(nullable: false));
         }
         
         public override void Down()
         {
-            DropColumn("dbo.UserStatistics", "RecordedTime");
+           // DropColumn("dbo.UserStatistics", "RecordedTime");
         }
     }
 }

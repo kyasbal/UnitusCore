@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNet.Identity.EntityFramework;
 using UnitusCore.Models.BaseClasses;
 
@@ -16,6 +19,7 @@ namespace UnitusCore.Models.DataModel
             CircleStatistises = new HashSet<CircleStatistics>();
             Administrators=new HashSet<ApplicationUser>();
             MemberInvitations=new HashSet<CircleMemberInvitation>();
+            UploadedEntities=new HashSet<CircleUploaderEntity>();
         }
 
         public string Name { get; set; }
@@ -49,5 +53,23 @@ namespace UnitusCore.Models.DataModel
         public ICollection<ApplicationUser>  Administrators { get; set; }//binded
 
         public ICollection<CircleMemberInvitation> MemberInvitations { get; set; } //binded
+
+        public ICollection<CircleUploaderEntity> UploadedEntities { get; set; }//binded 
+
+
+        public async static Task<Circle> FromIdAsync(ApplicationDbContext dbContext, string circleId, bool allowNotFound = false)
+        {
+            Guid circleGuid;
+            if (!Guid.TryParse(circleId, out circleGuid))
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+            else
+            {
+                Circle circle = await dbContext.Circles.FindAsync(circleGuid);
+                if(circle==null&&!allowNotFound)throw new HttpResponseException(HttpStatusCode.NotFound);
+                return circle;
+            }
+        }
     }
 }

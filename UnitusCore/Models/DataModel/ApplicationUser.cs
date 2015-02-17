@@ -14,6 +14,7 @@ namespace UnitusCore.Models.DataModel
             AdministrationCircle = new HashSet<Circle>();
             SentConfirmations = new HashSet<EmailConfirmation>();
             PasswordResetRequests=new HashSet<PasswordResetConfirmation>();
+            UploadedEntities=new HashSet<CircleUploaderEntity>();
         }
 
 
@@ -35,5 +36,7 @@ namespace UnitusCore.Models.DataModel
         public ICollection<EmailConfirmation> SentConfirmations { get; set; }//binded 
 
         public ICollection<PasswordResetConfirmation> PasswordResetRequests { get; set; }//binded 
+
+        public ICollection<CircleUploaderEntity> UploadedEntities { get; set; }//binded 
     }
 }

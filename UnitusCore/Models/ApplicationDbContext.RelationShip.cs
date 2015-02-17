@@ -74,7 +74,13 @@ namespace UnitusCore.Models
                 ).WillCascadeOnDelete();
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Permissions).WithMany(c => c.AllowedUsers).Map(NoAction).MapToStoredProcedures();
-            modelBuilder.Entity<UserStatistics>().HasRequired(a=>a.LinkedPerson).WithMany(a=>a.UserStatistics).Map(NoAction).WillCascadeOnDelete();
+            modelBuilder.Entity<UserStatistics>()
+                .HasRequired(a => a.LinkedPerson)
+                .WithMany(a => a.UserStatistics)
+                .Map(NoAction)
+                .WillCascadeOnDelete();
+            modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadUser).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
+            modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadedCircle).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
             base.OnModelCreating(modelBuilder);
         }
     }

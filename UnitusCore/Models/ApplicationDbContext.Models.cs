@@ -63,6 +63,8 @@ namespace UnitusCore.Models
         public DbSet<CronQueueLog> CronjobQueueLog { get; set; } 
 
         public DbSet<UserStatistics> UserStatistics { get; set; } 
+
+        public DbSet<CircleUploaderEntity> CircleUploaderEntities { get; set; } 
        
     }
 }

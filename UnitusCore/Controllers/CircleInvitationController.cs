@@ -22,9 +22,9 @@ namespace UnitusCore.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
         {
-            return await this.OnValidToken("", () =>
+            return await this.OnValidToken("",async () =>
             {
-                Circle targetCircle = DbSession.Circles.Find(Guid.Parse(req.CircleId));
+                Circle targetCircle = await Circle.FromIdAsync(DbSession, req.CircleId);
                 DbSession.Entry(CurrentUser).Collection(a=>a.AdministrationCircle).Load();
                 CurrentUser.AdministrationCircle.Add(targetCircle);
                 DbSession.SaveChanges();
@@ -39,6 +39,38 @@ namespace UnitusCore.Controllers
                 }
                 return Json(true);
             });
+        }
+
+        [Route("CircleInvitation/CurrentState")]
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
+        [HttpGet]
+        [CircleAdmin("CircleId")]
+        public async Task<IHttpActionResult> GetCurrentInvitationList(string CircleId,string validationToken)
+        {
+            return await this.OnValidToken(validationToken, async () =>
+            {
+
+            });
+        }
+
+        public class CurrentInvitationEntity
+        {
+            public CurrentInvitationEntity(string invitationId, string inviterName, string inviteDate, string targetAddress)
+            {
+                InvitationId = invitationId;
+                InviterName = inviterName;
+                InviteDate = inviteDate;
+                TargetAddress = targetAddress;
+            }
+
+            public string InvitationId { get; set; }
+
+            public string InviterName { get; set; }
+
+            public string InviteDate { get; set; }
+
+            public string TargetAddress { get; set; }
         }
 
         public class CircleInvitationSendResponse

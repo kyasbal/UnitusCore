@@ -238,6 +238,7 @@
     <Compile Include="Controllers\CircleInvitationController.cs" />
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
+    <Compile Include="Controllers\CircleUploaderController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -273,12 +274,17 @@
     <Compile Include="Migrations\201502161054282_addStorage.Designer.cs">
       <DependentUpon>201502161054282_addStorage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502162139189_AddCircleUploader.cs" />
+    <Compile Include="Migrations\201502162139189_AddCircleUploader.Designer.cs">
+      <DependentUpon>201502162139189_AddCircleUploader.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
     <Compile Include="Models\ApplicationDbContext.TimeLogging.cs" />
     <Compile Include="Models\BaseClasses\ModelBaseWithTimeLogging.cs" />
     <Compile Include="Models\DataModel\Achivement.cs" />
+    <Compile Include="Models\DataModel\CircleUploaderEntity.cs" />
     <Compile Include="Models\DataModel\CronQueue.cs" />
     <Compile Include="Models\DataModel\CronQueueLog.cs" />
     <Compile Include="Storage\Base\BlobStorageAttribute.cs" />
@@ -1115,6 +1121,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502161054282_addStorage.resx">
       <DependentUpon>201502161054282_addStorage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502162139189_AddCircleUploader.resx">
+      <DependentUpon>201502162139189_AddCircleUploader.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -40,15 +40,6 @@ namespace UnitusCore.Controllers
             }
         }
 
-        private Circle GetCircleFromId(string circleId,bool allowNoCircle=false)
-        {
-            Guid circleGuid;
-            if(!Guid.TryParse(circleId,out circleGuid))throw new HttpResponseException(HttpStatusCode.BadRequest);
-            var circle = DbSession.Circles.Find(circleGuid);
-            if (circle == null && !allowNoCircle) throw new HttpResponseException(HttpStatusCode.NotFound);
-            return circle;
-        }
-
         [UnitusCorsEnabled]
         [HttpDelete]
         [Route("Circle")]
@@ -58,7 +49,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req.ValidationToken,async () =>
             {
-                var circle=GetCircleFromId(req.CircleId);
+                var circle =await Circle.FromIdAsync(DbSession, req.CircleId);
                 DbSession.Circles.Remove(circle);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
@@ -244,7 +235,7 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
-            Circle circle = await DbSession.Circles.FindAsync(Guid.Parse(circleId));
+            Circle circle = await Circle.FromIdAsync(DbSession, circleId);
             var circleMembersState = DbSession.Entry(circle).Collection(a => a.Members);
             if (!circleMembersState.IsLoaded) await circleMembersState.LoadAsync();
             List<GetMemberListElement> elements=new List<GetMemberListElement>();
