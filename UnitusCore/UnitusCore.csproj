@@ -230,9 +230,11 @@
     <Compile Include="Attributes\ApiAuthorizedAttribute.cs" />
     <Compile Include="Attributes\CircleMemberAttribute.cs" />
     <Compile Include="Attributes\GlobalHandleErrorAttribute.cs" />
+    <Compile Include="Attributes\HttpsApiAttribute.cs" />
     <Compile Include="Attributes\RoleRestrictAttribute.cs" />
     <Compile Include="Attributes\AllowCrossSiteAccess.cs" />
     <Compile Include="Attributes\UnitusActionFilterAttribute.cs" />
+    <Compile Include="Controllers\AccountApiController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CircleController.cs" />
     <Compile Include="Controllers\CircleInvitationController.cs" />
@@ -648,10 +650,7 @@
     <Content Include="Content\ZeroClipboard.min.js" />
     <Content Include="Content\ZeroClipboard.swf" />
     <Content Include="css\application.css" />
-    <Content Include="css\font-awesome.css" />
-    <Content Include="css\font-awesome.min.css" />
     <Content Include="favicon.ico" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="img\loading.gif" />
@@ -1056,11 +1055,6 @@
     <Content Include="bower_components\underscore\README.md" />
     <Content Include="bower_components\underscore\underscore-min.map" />
     <Content Include="img\Thumbs.db" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
-    <Content Include="fonts\FontAwesome.otf" />
     <None Include="Properties\PublishProfiles\unitus-core %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\unitus-core.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
