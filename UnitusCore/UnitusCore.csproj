@@ -252,6 +252,7 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\UnitusApiController.cs" />
     <Compile Include="Controllers\UnitusController.cs" />
+    <Compile Include="Controllers\UserConfigureController.cs" />
     <Compile Include="Controllers\UserStatistics.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -281,6 +282,10 @@
     <Compile Include="Migrations\201502162139189_AddCircleUploader.Designer.cs">
       <DependentUpon>201502162139189_AddCircleUploader.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502171046434_AddUserConfigure.cs" />
+    <Compile Include="Migrations\201502171046434_AddUserConfigure.Designer.cs">
+      <DependentUpon>201502171046434_AddUserConfigure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
@@ -290,6 +295,7 @@
     <Compile Include="Models\DataModel\CircleUploaderEntity.cs" />
     <Compile Include="Models\DataModel\CronQueue.cs" />
     <Compile Include="Models\DataModel\CronQueueLog.cs" />
+    <Compile Include="Models\DataModel\UserConfigure.cs" />
     <Compile Include="Storage\Base\BlobStorageAttribute.cs" />
     <Compile Include="Storage\Base\BlobStorageConnection.cs" />
     <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
@@ -1128,6 +1134,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502162139189_AddCircleUploader.resx">
       <DependentUpon>201502162139189_AddCircleUploader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502171046434_AddUserConfigure.resx">
+      <DependentUpon>201502171046434_AddUserConfigure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

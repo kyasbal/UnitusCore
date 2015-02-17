@@ -21,6 +21,8 @@ namespace UnitusCore.Models.DataModel
 
         public ApplicationUser ApplicationUser { get; set; }//binded
 
+        public UserConfigure UserConfigure { get; set; }//binded
+
         public string Name { get; set; }
 
         public string Email { get; set; }
@@ -56,6 +58,20 @@ namespace UnitusCore.Models.DataModel
         {
             Guid guid = personID.ToValidGuid();
             return await dbSession.People.FindAsync(guid);
+        }
+
+        public async Task LoadUserConfigure(ApplicationDbContext dbSession)
+        {
+            var userConfigureStatus = dbSession.Entry(this).Reference(a => a.UserConfigure);
+            if (!userConfigureStatus.IsLoaded) await userConfigureStatus.LoadAsync();
+            if (userConfigureStatus.CurrentValue == null)
+            {
+                UserConfigure=new UserConfigure();
+                UserConfigure.GenerateId();
+                UserConfigure.ShowOwnProfileToOtherCircle = true;
+                dbSession.UserConfigures.Add(UserConfigure);
+                await dbSession.SaveChangesAsync();
+            }
         }
     }
 }

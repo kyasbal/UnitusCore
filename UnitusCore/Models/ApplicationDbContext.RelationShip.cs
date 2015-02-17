@@ -81,6 +81,7 @@ namespace UnitusCore.Models
                 .WillCascadeOnDelete();
             modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadUser).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
             modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadedCircle).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
+            modelBuilder.Entity<Person>().HasOptional(a=>a.UserConfigure).WithRequired(a=>a.TargetPerson).Map(NoAction).WillCascadeOnDelete();
             base.OnModelCreating(modelBuilder);
         }
     }
