@@ -11,17 +11,23 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
     }
 
     DashboadView.prototype.initialize = function(option) {
-      $("[data-js=loading]").fadeOut();
       this.user = new User();
+      $.ajaxSetup({
+        xhrFields: {
+          withCredentials: true
+        },
+        data: {
+          ValidationToken: 'abc'
+        }
+      });
       return $.ajax({
         url: 'https://core.unitus-ac.com/Dashboard',
-        data: {
-          validationToken: 'abc'
-        },
         type: 'GET',
         success: (function(_this) {
           return function(msg) {
             var data;
+            console.log(msg);
+            $("[data-js=loading]").fadeOut();
             data = msg.Content;
             _this.user.set({
               name: data.Name
@@ -56,7 +62,10 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
           };
         })(this),
         error: function(msg) {
-          return console.log(msg);
+          console.log(msg);
+          if (msg.statusText === "Unauthorized API Access") {
+            return location.assign("https://core.unitus-ac.com/Account/Login");
+          }
         }
       });
     };

@@ -15,7 +15,7 @@ define(['jquery', 'backbone'], function($, Backbone) {
       mail: 'example.com',
       avatar: 'noImage',
       circles: '',
-      isAdmin: true,
+      isAdmin: false,
       valdationToken: 'abc'
     };
 

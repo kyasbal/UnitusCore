@@ -98,6 +98,10 @@
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Cors">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
@@ -253,7 +257,6 @@
     <Compile Include="Controllers\UnitusApiController.cs" />
     <Compile Include="Controllers\UnitusController.cs" />
     <Compile Include="Controllers\UserConfigureController.cs" />
-    <Compile Include="Controllers\UserStatistics.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -286,7 +289,20 @@
     <Compile Include="Migrations\201502171046434_AddUserConfigure.Designer.cs">
       <DependentUpon>201502171046434_AddUserConfigure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502172029229_LinkedPerson.cs" />
+    <Compile Include="Migrations\201502172029229_LinkedPerson.Designer.cs">
+      <DependentUpon>201502172029229_LinkedPerson.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502172046022_Reset.cs" />
+    <Compile Include="Migrations\201502172046022_Reset.Designer.cs">
+      <DependentUpon>201502172046022_Reset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502172054037_SecoundReset.cs" />
+    <Compile Include="Migrations\201502172054037_SecoundReset.Designer.cs">
+      <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\CustomDbInitializer.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.RelationShip.cs" />
     <Compile Include="Models\ApplicationDbContext.TimeLogging.cs" />
@@ -296,9 +312,16 @@
     <Compile Include="Models\DataModel\CronQueue.cs" />
     <Compile Include="Models\DataModel\CronQueueLog.cs" />
     <Compile Include="Models\DataModel\UserConfigure.cs" />
+    <Compile Include="Models\DataModel\UserStatistics.cs" />
     <Compile Include="Storage\Base\BlobStorageAttribute.cs" />
     <Compile Include="Storage\Base\BlobStorageConnection.cs" />
     <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
+    <Compile Include="Storage\Base\TableStorageConnection.cs" />
+    <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
+    <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
+    <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
@@ -340,6 +363,7 @@
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\SendGridManager.cs" />
+    <Compile Include="Util\StorageUtil.cs" />
     <Compile Include="Util\UtilExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1137,6 +1161,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502171046434_AddUserConfigure.resx">
       <DependentUpon>201502171046434_AddUserConfigure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502172029229_LinkedPerson.resx">
+      <DependentUpon>201502172029229_LinkedPerson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502172046022_Reset.resx">
+      <DependentUpon>201502172046022_Reset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502172054037_SecoundReset.resx">
+      <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

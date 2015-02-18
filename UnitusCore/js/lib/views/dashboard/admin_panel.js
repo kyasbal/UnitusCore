@@ -14,7 +14,6 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel'], function($, Ba
       var sendData;
       sendData = {
         count: 40,
-        offset: 0,
         validationToken: "abc"
       };
       $.ajax({

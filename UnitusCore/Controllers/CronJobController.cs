@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +14,10 @@ using Microsoft.AspNet.Identity.Owin;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using System.Web.Helpers;
+using Octokit;
+using UnitusCore.Storage;
+using UnitusCore.Storage.Base;
+using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
@@ -52,9 +57,9 @@ namespace UnitusCore.Controllers
             {
                 executeQueue.Add(queue);
             }
-            Parallel.ForEach(executeQueue,async (q) =>
+            foreach (CronQueue q in executeQueue)
             {
-                Stopwatch w=new Stopwatch();
+                Stopwatch w = new Stopwatch();
                 w.Start();
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -65,7 +70,7 @@ namespace UnitusCore.Controllers
                 CronQueueLog log = new CronQueueLog(DateTime.Now, q.Arguments, q.TargetAddress, w.ElapsedMilliseconds,
                     await response.Content.ReadAsStringAsync());
                 DbSession.CronjobQueueLog.Add(log);
-            });
+            }
             await DbSession.SaveChangesAsync();
             return Json(true);
         }
@@ -93,11 +98,20 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> RunMembersStatistics(MemberStatisticsArgument arg)
         {
             GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
-            UserStatistics statistics=new UserStatistics();
-            statistics.GenerateId();
-            statistics.RecordedTime = DateTime.Now;
-            statistics.LinkedPerson = CurrentUserWithPerson.PersonData;
-            
+            ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
+            if (associationManager.IsAssociationEnabled(user))
+            {
+                ContributeStatisticsByDay contributeStatistics = ContributeStatisticsByDay.GenerateTodayStatistics(user);
+                
+                GitHubClient client = associationManager.GetAuthenticatedClient(user);
+                var st = await associationManager.GetAllRepositoryCommit(client,contributeStatistics);
+                contributeStatistics.SumAddition = st.SumAddition;
+                contributeStatistics.SumDeletion = st.SumDeletion;
+                contributeStatistics.SumRepository = st.RepositoryCount;
+                contributeStatistics.SumCommit = st.SumCommit;
+                ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection());
+                await storage.Add(contributeStatistics);
+            }
             return Json(true);
         }
 

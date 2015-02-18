@@ -57,7 +57,7 @@ section#panel {
   z-index: 5; }
 
 .clear {
-    clear: both !important; }
+  clear: both; }
 
 #app {
   width: 100%;
@@ -291,6 +291,15 @@ section#header {
   padding: 7px 0px;
   display: none;
   color: white; }
+#circleList table tr .update i {
+  color: #0f961b;
+  cursor: pointer;
+  vertical-align: top;
+  height: auto;
+  padding: 0;
+  display: none; }
+#circleList table tr:hover .update i {
+  display: inline-block; }
 #circleList table tr.self i {
   color: white;
   display: block; }

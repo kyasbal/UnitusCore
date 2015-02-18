@@ -73,5 +73,11 @@ namespace UnitusCore.Models.DataModel
                 await dbSession.SaveChangesAsync();
             }
         }
+
+        public async Task LoadStatisticsData(ApplicationDbContext dbSession)
+        {
+            var statisticsStatus = dbSession.Entry(this).Collection(a => a.UserStatistics);
+            if (!statisticsStatus.IsLoaded) await statisticsStatus.LoadAsync();
+        }
     }
 }

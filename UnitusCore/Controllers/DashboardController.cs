@@ -58,7 +58,7 @@ namespace UnitusCore.Controllers
                         "darafu@gmail.com",
                         "https://avatars2.githubusercontent.com/u/230541?v=3&s=460",
                         new CircleBelongingStatus[] { new CircleBelongingStatus("ダラフ株式会社", "HelloID", true), new CircleBelongingStatus("EspicaCompute", "IDIDIDIDIDIDIDIDIDIID", false), },
-                        new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false))))
+                        new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false),"")))
                     );
             });
         }
@@ -87,7 +87,7 @@ namespace UnitusCore.Controllers
         private async Task<DetailedProfile> GetUserProfile()
         {
             var p = CurrentUserWithPerson.PersonData;
-            return new DetailedProfile(p.BelongedColledge, p.Faculty, p.Major, p.CurrentCource, await GetGithubProfile(),await GetUserConfig());
+            return new DetailedProfile(p.BelongedColledge, p.Faculty, p.Major, p.CurrentCource, await GetGithubProfile(),await GetUserConfig(),p.Notes);
         }
 
         private async Task<GithubProfile> GetGithubProfile()
@@ -148,7 +148,7 @@ namespace UnitusCore.Controllers
 
         public class DetailedProfile
         {
-            public DetailedProfile(string belongingColledge, string faculty, string major, Person.Cource currentGrade, GithubProfile githubProfie, UserConfig userConfigure)
+            public DetailedProfile(string belongingColledge, string faculty, string major, Person.Cource currentGrade, GithubProfile githubProfie, UserConfig userConfigure, string notes)
             {
                 BelongingColledge = belongingColledge;
                 Faculty = faculty;
@@ -156,6 +156,7 @@ namespace UnitusCore.Controllers
                 CurrentGrade = currentGrade;
                 GithubProfie = githubProfie;
                 UserConfigure = userConfigure;
+                Notes = notes;
             }
 
             public GithubProfile GithubProfie { get; set; }
@@ -169,6 +170,8 @@ namespace UnitusCore.Controllers
             public string Major { get; set; }
 
             public Person.Cource CurrentGrade { get; set; }
+
+            public string Notes { get; set; }
         }
 
         public class GithubProfile

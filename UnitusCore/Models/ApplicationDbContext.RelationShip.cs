@@ -76,9 +76,7 @@ namespace UnitusCore.Models
                 .HasMany(a => a.Permissions).WithMany(c => c.AllowedUsers).Map(NoAction).MapToStoredProcedures();
             modelBuilder.Entity<UserStatistics>()
                 .HasRequired(a => a.LinkedPerson)
-                .WithMany(a => a.UserStatistics)
-                .Map(NoAction)
-                .WillCascadeOnDelete();
+                .WithMany(a => a.UserStatistics).Map(m => m.MapKey("LinkedPerson_UserStatistics_Id"));
             modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadUser).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
             modelBuilder.Entity<CircleUploaderEntity>().HasRequired(a=>a.UploadedCircle).WithMany(a=>a.UploadedEntities).Map(NoAction).WillCascadeOnDelete();
             modelBuilder.Entity<Person>().HasOptional(a=>a.UserConfigure).WithRequired(a=>a.TargetPerson).Map(NoAction).WillCascadeOnDelete();

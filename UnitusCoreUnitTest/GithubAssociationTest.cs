@@ -37,8 +37,7 @@ namespace UnitusCoreUnitTest
         public async void RepositoryCommitTest()
         {
             var client = manager.GetAuthenticatedClientFromToken("b47f54c7f2afb543f421ce7a01a4a7db6bb72140");
-            var data = await manager.GetAllRepositoryCommit(client);
-            Console.WriteLine(data.ToString());
+
         }
     }
 }

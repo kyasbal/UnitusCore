@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using UnitusCore.Models.BaseClasses;
-using UnitusCore.Models.DataModel;
 
-namespace UnitusCore.Controllers
+namespace UnitusCore.Models.DataModel
 {
     public class UserStatistics:ModelBase
     {

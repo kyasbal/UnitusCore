@@ -13,5 +13,11 @@ namespace UnitusCore.Util
             double nowTick = (date.ToUniversalTime() - UNIX_EPOCH).TotalSeconds;
             return (long) nowTick;
         }
+
+        public static long ToDateCode(this DateTime date)
+        {
+            DateTime timeEliminated=new DateTime(date.Year,date.Month,date.Day,0,0,0);
+            return ToUnixTime(timeEliminated);
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -64,14 +66,19 @@ namespace UnitusCore.Controllers
 
         public class PutPersonalRequest : AjaxRequestModelBase
         {
+            [Required]
+            [MaxLength(32)]
             public string BelongedUniversity { get; set; }
-
+            [Required]
+            [MaxLength(32)]
             public string Faculty { get; set; }
-
+            [Required]
+            [MaxLength(32)]
             public string Major { get; set; }
-
+            [Required]
             public Person.Cource CurrentGrade { get; set; }
-
+            [Required]
+            [MaxLength(640)]
             public string Notes { get; set; }
         }
     }

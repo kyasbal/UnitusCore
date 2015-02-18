@@ -388,6 +388,7 @@ namespace UnitusCore.Controllers
 
         public class AddCircleRequest : AjaxRequestModelBase
         {
+            
             public string CircleName { get; set; }
 
             public string CircleDescription { get; set; }

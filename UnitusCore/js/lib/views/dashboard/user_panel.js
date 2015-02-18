@@ -21,31 +21,40 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
       }
     };
 
+    UserPanelView.prototype.events = {
+      "click [data-js=deleteCircle]": "deleteCircle"
+    };
+
     UserPanelView.prototype.renderUserPanel = function() {
       return this.$el.html(UserTemplate());
     };
 
     UserPanelView.prototype.renderCircleList = function() {
-      var sendData;
+      var sendData, user;
+      user = this.user;
       sendData = {
         count: 40,
-        offset: 0,
-        validationToken: 'abc'
+        offset: 0
       };
       return $.ajax({
         type: "GET",
         url: "https://core.unitus-ac.com/Circle",
         data: sendData,
         success: function(msg) {
+          console.log(msg.Content.Circle);
           return $.each(msg.Content.Circle, function() {
             var text;
             text = '';
-            text += '<tr>';
+            text += '<tr data-circleID="' + this.CircleId + '" data-commonId="' + this.CircleId + '">';
             text += '<td class="name name_w">' + this.CircleName + '<i class="glyphicon glyphicon-eye-open"></i></td>';
             text += '<td class="author author_w">' + "閲覧者" + '</td>';
             text += '<td class="number number_w">' + this.MemberCount + '</td>';
             text += '<td class="university university_w">' + this.BelongedUniversity + '</td>';
-            text += '<td class="update update_w">' + this.LastUpdateDate + '<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="' + this.UserName + '"></i></td>';
+            if (user.get("isAdmin")) {
+              text += '<td class="update update_w">' + this.LastUpdateDate + '<i class="fa fa-times-circle" data-js="deleteCircle"></i></td>';
+            } else {
+              text += '<td class="update update_w">' + this.LastUpdateDate + '</td>';
+            }
             text += '</tr>';
             return $("[data-js=circleList]").append(text);
           });
@@ -68,18 +77,43 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
       textPanel = '';
       textSidebar += '<li class="divider"><h1>所属サークル</h1></li>';
       $.each(this.belongingCircles, function() {
-        textSidebar += '<li role="presentation">';
+        textSidebar += '<li role="presentation" data-commonId="' + this.CircleId + '">';
         textSidebar += '<a href="#' + this.CircleId + '" aria-controls="#' + this.CircleId + '" role="tab" data-toggle="tab">';
         textSidebar += '<i class="circleIcon">' + this.CircleName.slice(0, 1) + '</i>';
         textSidebar += '<span class="title">' + this.CircleName + '</span>';
         textSidebar += '</a>';
         textSidebar += '</li>';
-        textPanel += '<div id="' + this.CircleId + '" class="tab-pane fade in" role="tabpanel">';
+        textPanel += '<div id="' + this.CircleId + '" class="tab-pane fade in" role="tabpanel" data-commonId="' + this.CircleId + '">';
         textPanel += '<h1>' + this.CircleName + '</h1>';
         return textPanel += '</div>';
       });
       $("[data-js=userSideList]").append(textSidebar);
       return $("[data-js=userPanelList]").append(textPanel);
+    };
+
+    UserPanelView.prototype.deleteCircle = function(e) {
+      var $circleRow, sendData;
+      e.preventDefault();
+      e.stopPropagation();
+      $circleRow = $($($(e.target).get(0)).closest("tr").get(0));
+      if (confirm($($circleRow.children("td.name").get(0)).text() + "を削除しますか？")) {
+        sendData = {
+          circleID: $circleRow.attr("data-circleId")
+        };
+        return $.ajax({
+          type: "DELETE",
+          url: "https://core.unitus-ac.com/Circle",
+          data: sendData,
+          success: function(msg) {
+            var target;
+            target = "[data-commonId=" + $circleRow.attr("data-circleId") + "]";
+            return $(target).remove();
+          },
+          error: function(msg) {
+            return console.log("削除できませんでした。");
+          }
+        });
+      }
     };
 
     return UserPanelView;
