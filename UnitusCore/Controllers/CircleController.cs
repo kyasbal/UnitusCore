@@ -243,11 +243,13 @@ namespace UnitusCore.Controllers
                     return false;
                 }
                 user = await UserManager.FindByNameAsync(req.LeaderUserName);
+                
                 if (user == null)
                 {
                     set.Add("ユーザーIDが存在しません。");
                     return false;
                 }
+                await user.LoadPersonData(DbSession);
                 return true;
             });
         }

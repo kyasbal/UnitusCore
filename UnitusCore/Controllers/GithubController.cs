@@ -22,7 +22,7 @@ namespace UnitusCore.Controllers
     public class GithubController : UnitusController
     {
         private string authorizeUrl =
-            "https://github.com/login/oauth/authorize?client_id={0}&scope=repo:status,user,repo&redirect_uri={1}&state={2}";
+            "https://github.com/login/oauth/authorize?client_id={0}&scope={3}&redirect_uri={1}&state={2}";
 
         private string accessTokenObtainUrl = "https://github.com/login/oauth/access_token";
 
@@ -52,7 +52,7 @@ namespace UnitusCore.Controllers
             string redirectUrl = Url.Action("AuthorizeCallback", "Github", null, Request.Url.Scheme);
             AntiForgery.GetTokens(null, out cookieToken, out formToken);
             return Redirect(string.Format(authorizeUrl, CurrentApplicationKey.ApplicationId,redirectUrl
-                , cookieToken + ":" + formToken));
+                , cookieToken + ":" + formToken,GithubAssociationManager.requireScopes.ToCommaDividedString()));
         }
 
         [System.Web.Mvc.Authorize]

@@ -93,7 +93,7 @@ namespace UnitusCore.Controllers
         private async Task<GithubProfile> GetGithubProfile()
         {
             GithubAssociationManager associationManager = new GithubAssociationManager(DbSession, UserManager);
-            if (associationManager.IsAssociationEnabled(CurrentUser))
+            if (await associationManager.IsAssociationEnabled(CurrentUser))
             {
                 GitHubClient client = associationManager.GetAuthenticatedClient(CurrentUser);
                 if (client == null) return new GithubProfile(false, 0);

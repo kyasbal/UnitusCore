@@ -72,6 +72,9 @@
     <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.Mvc">
+      <HintPath>..\packages\Mvc2Futures.2.0.50217.0\lib\Microsoft.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -245,6 +248,7 @@
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CircleUploaderController.cs" />
+    <Compile Include="Controllers\MaintenanceController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
@@ -313,16 +317,23 @@
     <Compile Include="Models\DataModel\CronQueueLog.cs" />
     <Compile Include="Models\DataModel\UserConfigure.cs" />
     <Compile Include="Models\DataModel\UserStatistics.cs" />
+    <Compile Include="Storage\AchivementStatisticsStorage.cs" />
     <Compile Include="Storage\Base\BlobStorageAttribute.cs" />
     <Compile Include="Storage\Base\BlobStorageConnection.cs" />
     <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
+    <Compile Include="Storage\Base\QueueStorageConnection.cs" />
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
+    <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
+    <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
+    <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
+    <Compile Include="Storage\StatisticJobLogStorage.cs" />
+    <Compile Include="Storage\StatisticTaskQueueStorage.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />

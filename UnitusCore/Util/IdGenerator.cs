@@ -29,5 +29,6 @@ namespace UnitusCore.Util
             var values = Enum.GetValues(typeof (T));
             return (T)values.GetValue(rand.Next(values.Length));
         }
+
     }
 }

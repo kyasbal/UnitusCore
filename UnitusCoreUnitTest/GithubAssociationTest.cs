@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
 using NUnit.Framework;
+using Octokit;
 using UnitusCore;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
+using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
 
 namespace UnitusCoreUnitTest
@@ -36,8 +38,20 @@ namespace UnitusCoreUnitTest
         [Test]
         public async void RepositoryCommitTest()
         {
-            var client = manager.GetAuthenticatedClientFromToken("b47f54c7f2afb543f421ce7a01a4a7db6bb72140");
+            var client = manager.GetAuthenticatedClientFromToken("731dc5b4f7d2346f28751b00436df0178402a2a2");
+            ContributeStatisticsByDay contributeStatistics = ContributeStatisticsByDay.GenerateTodayStatistics("UNIT TEST");
+            var data=await manager.GetAllRepositoryCommit(client, contributeStatistics);
+            
+        }
 
+        [Test]
+        public async void GistTest()
+        {
+            var client = manager.GetAuthenticatedClientFromToken("b1526091539cf5d2ddf9b0076b68c80138cb08b8");
+            var user = await client.User.Current();
+            var auth=await client.Authorization.Update(user.Id, new AuthorizationUpdate());
+            var token=await manager.IsAssociationEnabled("731dc5b4f7d2346f28751b00436df0178402a2a2");
+            await manager.GetGists(client);
         }
     }
 }

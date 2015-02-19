@@ -86,6 +86,7 @@ namespace UnitusCore.Storage
         private async Task GenerateDiff(ContributeStatisticsByDay day)
         {
             var yesterdayData = await Get(day.PartitionKey, DateTime.Now - new TimeSpan(1, 0, 0, 0));
+            if (yesterdayData == null) return;
             ContributeStatisticsByDayDiff diff = ContributeStatisticsByDayDiff.GenerateTodayDiff(day.PartitionKey, day,
                 yesterdayData);
             foreach (SingleUserLanguageStatisticsByDayDiff statEntity in diff.LanguageStatisticsDiffs)

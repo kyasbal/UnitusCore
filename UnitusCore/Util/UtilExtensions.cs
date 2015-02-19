@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 
@@ -20,6 +22,31 @@ namespace UnitusCore.Util
             {
                 return result;
             }
+        }
+
+        public static string ToHashCode(this string source)
+        {
+            MD5CryptoServiceProvider md5=new MD5CryptoServiceProvider();
+            byte[] hash=md5.ComputeHash(Encoding.Unicode.GetBytes(source));
+            md5.Clear();
+            return BitConverter.ToString(hash).ToLower().Replace("-", "");
+        }
+
+        public static string ToCommaDividedString(this IEnumerable<string> strs)
+        {
+            string result = "";
+            var enumerator = strs.GetEnumerator();
+            bool hasNext = enumerator.MoveNext();
+            while (hasNext)
+            {
+                result += enumerator.Current;
+                hasNext = enumerator.MoveNext();
+                if (hasNext)
+                {
+                    result += ",";
+                }
+            }
+            return result;
         }
     }
 }

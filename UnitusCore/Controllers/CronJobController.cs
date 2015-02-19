@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity.Owin;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using System.Web.Helpers;
+using Microsoft.Web.Mvc.Resources;
 using Octokit;
 using UnitusCore.Storage;
 using UnitusCore.Storage.Base;
@@ -52,27 +53,53 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> ExecuteQueue(string cronId)
         {
             if (!cronId.Equals(ValidCronId)) return null;
-            HashSet<CronQueue> executeQueue=new HashSet<CronQueue>();
-            foreach (CronQueue queue in DbSession.CronjobQueue.OrderBy(a=>a.QueueTime).Take(5))
-            {
-                executeQueue.Add(queue);
+            var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
+            if (
+                await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
+                        StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
+                        async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        }) 
+                        &&
+                await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
+                        StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, 10,
+                        async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        })
+                        &&
+                await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
+                        StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        }))
+            {//タスクが全くない時
+                return Json("All Tasks were completed!");
             }
-            foreach (CronQueue q in executeQueue)
+            return Json(true);
+        }
+
+        private static async Task ExecuteQueues(IEnumerable<StatisticTaskQueueStorage.QueueMessageContainer> tasks, StatisticTaskQueueStorage st)
+        {
+            foreach (StatisticTaskQueueStorage.QueueMessageContainer q in tasks)
             {
-                Stopwatch w = new Stopwatch();
-                w.Start();
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var argumentObject = System.Web.Helpers.Json.Decode<object>(q.Arguments);
+                var argumentObject = System.Web.Helpers.Json.Decode<object>(q.TargetArguments);
                 var response = await client.PostAsJsonAsync(q.TargetAddress, argumentObject);
-                w.Stop();
-                CronQueueLog log = new CronQueueLog(DateTime.Now, q.Arguments, q.TargetAddress, w.ElapsedMilliseconds,
-                    await response.Content.ReadAsStringAsync());
-                DbSession.CronjobQueueLog.Add(log);
+                if (response.IsSuccessStatusCode)
+                {
+                    await st.EndTask(q);
+                }
             }
-            await DbSession.SaveChangesAsync();
-            return Json(true);
         }
 
         [Route("cron/generate/{cronId}")]
@@ -80,16 +107,26 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> GenerateMembersStatisticsQueue(string cronId)
         {
             if (!cronId.Equals(ValidCronId)) return null;
+            StatisticTaskQueueStorage taskQueueStorage = new StatisticTaskQueueStorage(new QueueStorageConnection());
+            AchivementStatisticsStorage acStorage=new AchivementStatisticsStorage(new TableStorageConnection());
             foreach (ApplicationUser user in DbSession.Users)
             {
-                CronQueue queue=new CronQueue();
-                queue.GenerateId();
-                queue.TargetAddress = Url.Content("/cron/queue/member/stat");
-                queue.Arguments = System.Web.Helpers.Json.Encode(new MemberStatisticsArgument(user.Id.ToString(),ValidCronId));
-                queue.QueueTime = DateTime.Now;
-                DbSession.CronjobQueue.Add(queue);
+                StatisticTaskQueueStorage queueStorage=taskQueueStorage;
+                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics,Url.Content("/cron/queue/member/stat"),
+                    new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
-            await DbSession.SaveChangesAsync();
+            foreach (ApplicationUser user in DbSession.Users)
+            {
+                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
+                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, Url.Content("/cron/queue/member/achivement"),
+                    new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
+            }
+            foreach (string achivementName in acStorage.GetAchivementNames())
+            {
+                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
+                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics, Url.Content("/cron/queue/system/achivement"),
+                    new SystemAchivementStatisticsArgument(achivementName, ValidCronId));
+            }
             return Json(true);
         }
 
@@ -97,9 +134,11 @@ namespace UnitusCore.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> RunMembersStatistics(MemberStatisticsArgument arg)
         {
+            StatisticJobLogStorage jobLog=new StatisticJobLogStorage(new TableStorageConnection());
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SingleUserStatisticGithubContribution,System.Web.Helpers.Json.Encode(arg));
             GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
             ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
-            if (associationManager.IsAssociationEnabled(user))
+            if (await associationManager.IsAssociationEnabled(user))
             {
                 ContributeStatisticsByDay contributeStatistics = ContributeStatisticsByDay.GenerateTodayStatistics(user);
                 
@@ -112,6 +151,34 @@ namespace UnitusCore.Controllers
                 ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection());
                 await storage.Add(contributeStatistics);
             }
+            await logger.End("Success" + user.Id);
+            return Json(true);
+        }
+
+        [Route("cron/queue/member/achivement")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunMembersAchivement(MemberStatisticsArgument arg)
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SingleUserAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
+            ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
+            AchivementStatisticsStorage storage=new AchivementStatisticsStorage(tableStorageConnection);
+            await storage.ExecuteAchivementTask(user);
+            await logger.End("Success" + user.Id);
+            return Json(true);
+        }
+
+        [Route("cron/queue/system/achivement")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunSystemAchivement(SystemAchivementStatisticsArgument arg)
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SystemAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            await storage.ExecuteAchivementStatisticsBySystemTask(arg.AchivementId);
+            await logger.End("Success" + arg.AchivementId);
             return Json(true);
         }
 
@@ -128,6 +195,24 @@ namespace UnitusCore.Controllers
             }
 
             public string UserId { get; set; }
+
+            public string CronId { get; set; }
+        }
+
+
+        public class SystemAchivementStatisticsArgument
+        {
+            public SystemAchivementStatisticsArgument()
+            {
+            }
+
+            public SystemAchivementStatisticsArgument(string achivementId, string cronId)
+            {
+                AchivementId = achivementId;
+                CronId = cronId;
+            }
+
+            public string AchivementId { get; set; }
 
             public string CronId { get; set; }
         }

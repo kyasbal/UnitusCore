@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Web;
@@ -18,11 +20,17 @@ using UnitusCore.Controllers;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.DataModels;
+using Authorization = Octokit.Authorization;
+using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace UnitusCore.Util
 {
     public class GithubAssociationManager
     {
+        public static string[] requireScopes = {"repo:status","user","repo","gist"};
+
+        private Dictionary<string,GitHubClient> clientCache=new Dictionary<string, GitHubClient>(); 
+
         private ApplicationDbContext applicationDbContext;
 
         private ApplicationUserManager userManager;
@@ -38,24 +46,22 @@ namespace UnitusCore.Util
 
         public GitHubClient GetAuthenticatedClientFromToken(string token)
         {
+            if (clientCache.ContainsKey(token)) return clientCache[token];
             var github = new GitHubClient(applicationHeaderValue,
                 new InMemoryCredentialStore(new Credentials(token)));
+            clientCache.Add(token, github);
             return github;
         }
 
         public GitHubClient GetAuthenticatedClient(string userName)
         {
             var user = userManager.FindByName(userName);
-            var github = new GitHubClient(applicationHeaderValue,
-                new InMemoryCredentialStore(new Credentials(user.GithubAccessToken)));
-            return github;
+            return GetAuthenticatedClient(user);
         }
 
         public GitHubClient GetAuthenticatedClient(ApplicationUser user)
         {
-            var github = new GitHubClient(applicationHeaderValue,
-                new InMemoryCredentialStore(new Credentials(user.GithubAccessToken)));
-            return github;
+            return GetAuthenticatedClientFromToken(user.GithubAccessToken);
         }
 
         private Int32 GetCurrentWeekHead()
@@ -72,16 +78,18 @@ namespace UnitusCore.Util
 
         
 
-        public bool IsAssociationEnabled(ApplicationUser user)
+        public async Task<bool> IsAssociationEnabled(ApplicationUser user)
         {
-            return IsAssociationEnabled(user.GithubAccessToken);
+            return await IsAssociationEnabled(user.GithubAccessToken);
         }
 
-        public bool IsAssociationEnabled(string userName)
+        public async Task<bool> IsAssociationEnabled(string accessToken)
         {
-            if (string.IsNullOrWhiteSpace(userName) || userName.Length != 40) return false;
+            if (string.IsNullOrWhiteSpace(accessToken) || accessToken.Length != 40) return false;
             else
             {
+                var client = GetAuthenticatedClientFromToken(accessToken);
+                var user =await client.User.Current();
                 return true;
             }
         }
@@ -89,7 +97,7 @@ namespace UnitusCore.Util
 
         public async Task<string> GetAvatarUri(string userName)
         {
-            if (IsAssociationEnabled(userName))
+            if (await IsAssociationEnabled(userName))
             {
                 var github = GetAuthenticatedClient(userName);
                 var user = await github.User.Current();
@@ -134,13 +142,10 @@ namespace UnitusCore.Util
 
         public async Task<GithubCollaboratorStatisticData> GetAllRepositoryCommit(GitHubClient client, ContributeStatisticsByDay contributeStatistics)
         {
-            Stopwatch st=new Stopwatch();
-            st.Start();
             var user = await client.User.Current();
             var repoIdentities = await GetAllRepositoriesList(client);
             GithubCollaboratorStatisticData statistic=new GithubCollaboratorStatisticData();
             statistic.StatisticDateTime = DateTime.Now;
-            int repositoryCount=0;
             IEnumerable<GithubRepositoryIdentity> githubRepositoryIdentities = repoIdentities as IList<GithubRepositoryIdentity> ?? repoIdentities.ToList();
             statistic.RepositoryCount = githubRepositoryIdentities.Count();
             ConcurrentDictionary<string, int> commitLangDictionary = new ConcurrentDictionary<string, int>();
@@ -151,7 +156,27 @@ namespace UnitusCore.Util
             var GetContributerBlock = new TransformBlock<GithubRepositoryIdentity, Tuple<IEnumerable<Contributor>,GithubRepositoryIdentity>>(
                 async ident =>
                 {
-                    return new Tuple<IEnumerable<Contributor>,GithubRepositoryIdentity>(await client.Repository.Statistics.GetContributors(ident.OwnerName, ident.RepoName),ident);
+                    try
+                    {
+                        //Console.WriteLine("{0}/{1} will be esitimated.", ident.OwnerName, ident.RepoName);
+                        var d =
+                            new Tuple<IEnumerable<Contributor>, GithubRepositoryIdentity>(
+                                await client.Repository.Statistics.GetContributors(ident.OwnerName, ident.RepoName),
+                                ident);
+                        Console.WriteLine("{0}/{1},○", ident.OwnerName, ident.RepoName);
+                        return d;
+                    }
+                    catch (ApiException apiEx)
+                    {
+                        if (apiEx.StatusCode == HttpStatusCode.NoContent)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 },new ExecutionDataflowBlockOptions()
                 {
                     MaxDegreeOfParallelism =DataflowBlockOptions.Unbounded
@@ -159,6 +184,10 @@ namespace UnitusCore.Util
             //追加する
             var sumActionBlock = new ActionBlock<Tuple<IEnumerable<Contributor>,GithubRepositoryIdentity>>(initData =>
             {
+                
+                if (initData == null) return;
+                if(initData.Item2.TargetRepository.Fork)contributeStatistics.SumForking++;
+                contributeStatistics.SumForked += initData.Item2.TargetRepository.ForksCount;
                 var contributors = initData.Item1;
                 int c = 0, a = 0, d = 0;
                 foreach (var contributor in contributors)
@@ -175,7 +204,6 @@ namespace UnitusCore.Util
                         break;
                     }
                 }
-                Console.WriteLine(" a:{0} d{1} c{2}", a, d, c);
                 lock (statistic)
                 {
                     AppendLangStatistics(commitLangDictionary,initData.Item2.TargetRepository.Language,c);
@@ -197,11 +225,6 @@ namespace UnitusCore.Util
             }
             GetContributerBlock.Complete();
             sumActionBlock.Completion.Wait();
-            st.Stop();
-           WriteDict(commitLangDictionary);
-           WriteDict(additionLangDictionary);
-           WriteDict(deletionLangDictionary);
-           WriteDict(repositoryLangDictionary);
             double aSum = CalcSum(additionLangDictionary);
             double dSum = CalcSum(deletionLangDictionary);
             double cSum = CalcSum(commitLangDictionary);
@@ -215,9 +238,13 @@ namespace UnitusCore.Util
                         additionLangDictionary[pairs.Key]/aSum, deletionLangDictionary[pairs.Key]/dSum,
                         commitLangDictionary[pairs.Key]/cSum, repositoryLangDictionary[pairs.Key]/rSum));
             }
-            Console.WriteLine(statistic);
-            Console.WriteLine(st.ElapsedMilliseconds);
+            Console.WriteLine("Forking{0},Forked{1}",contributeStatistics.SumForking,contributeStatistics.SumForked);
             return statistic;
+        }
+
+        public async Task GetGists(GitHubClient client)
+        {
+            var g=await client.Gist.GetAll();
         }
 
         private double CalcSum(IDictionary<string, int> init)
@@ -230,22 +257,6 @@ namespace UnitusCore.Util
             return sumval;
         }
 
-        private void WriteDict(IDictionary<string, int> init)
-        {
-            int sumval = 0;
-            foreach (KeyValuePair<string, int> data in init)
-            {
-                sumval += data.Value;
-            }
-
-            foreach (KeyValuePair<string, int> data in init)
-            {
-                Console.WriteLine("{0}:{1}  {2}%",data.Key,data.Value,data.Value/(double)sumval*100d);
-            }
-            Console.WriteLine();
-        }
-////
-//
         public class GithubCollaboratorStatisticData
         {
             public GithubCollaboratorStatisticData()
