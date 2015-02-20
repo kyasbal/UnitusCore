@@ -28,7 +28,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/update/{cronId}")]
         [HttpPost]
-        public async Task<IHttpActionResult> UpdateCircleStatistics(string cronId)
+        public async Task<IHttpActionResult> UpdateCircleStatisticsAction(string cronId)
         {
             if (cronId !=ValidCronId) return null;
             int circleSum = 0;
@@ -50,7 +50,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/queue/{cronId}")]
         [HttpPost]
-        public async Task<IHttpActionResult> ExecuteQueue(string cronId)
+        public async Task<IHttpActionResult> ExecuteQueueAction(string cronId)
         {
             if (!cronId.Equals(ValidCronId)) return null;
             var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
@@ -75,7 +75,17 @@ namespace UnitusCore.Controllers
                         &&
                 await
                     st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
-                        StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, async q =>
+                       StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, 5, 
+                       async q =>
+                       {
+                           await
+                               ExecuteQueues(q, st);
+                       })
+                &&
+                await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
+                        StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
+                        async q =>
                         {
                             await
                                 ExecuteQueues(q, st);
@@ -104,7 +114,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/generate/{cronId}")]
         [HttpPost]
-        public async Task<IHttpActionResult> GenerateMembersStatisticsQueue(string cronId)
+        public async Task<IHttpActionResult> GenerateMembersStatisticsQueueAction(string cronId)
         {
             if (!cronId.Equals(ValidCronId)) return null;
             StatisticTaskQueueStorage taskQueueStorage = new StatisticTaskQueueStorage(new QueueStorageConnection());
@@ -121,6 +131,12 @@ namespace UnitusCore.Controllers
                 await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, Url.Content("/cron/queue/member/achivement"),
                     new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
+            foreach (Circle circle in DbSession.Circles)
+            {
+                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
+                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, Url.Content("/cron/queue/circle/achivement"),
+                    new CircleAchivementStatisticsArgument(circle.Id.ToString(), ValidCronId));
+            }
             foreach (string achivementName in acStorage.GetAchivementNames())
             {
                 StatisticTaskQueueStorage queueStorage = taskQueueStorage;
@@ -132,7 +148,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/queue/member/stat")]
         [HttpPost]
-        public async Task<IHttpActionResult> RunMembersStatistics(MemberStatisticsArgument arg)
+        public async Task<IHttpActionResult> RunMembersStatisticsAction(MemberStatisticsArgument arg)
         {
             StatisticJobLogStorage jobLog=new StatisticJobLogStorage(new TableStorageConnection());
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SingleUserStatisticGithubContribution,System.Web.Helpers.Json.Encode(arg));
@@ -157,7 +173,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/queue/member/achivement")]
         [HttpPost]
-        public async Task<IHttpActionResult> RunMembersAchivement(MemberStatisticsArgument arg)
+        public async Task<IHttpActionResult> RunMembersAchivementAction(MemberStatisticsArgument arg)
         {
             var tableStorageConnection = new TableStorageConnection();
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
@@ -171,7 +187,7 @@ namespace UnitusCore.Controllers
 
         [Route("cron/queue/system/achivement")]
         [HttpPost]
-        public async Task<IHttpActionResult> RunSystemAchivement(SystemAchivementStatisticsArgument arg)
+        public async Task<IHttpActionResult> RunSystemAchivementAction(SystemAchivementStatisticsArgument arg)
         {
             var tableStorageConnection = new TableStorageConnection();
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
@@ -179,6 +195,20 @@ namespace UnitusCore.Controllers
             AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
             await storage.ExecuteAchivementStatisticsBySystemTask(arg.AchivementId);
             await logger.End("Success" + arg.AchivementId);
+            return Json(true);
+        }
+
+        [Route("cron/queue/circle/achivement")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunCircleAchivementAction(CircleAchivementStatisticsArgument arg)
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.CircleAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            Circle circle = await DbSession.Circles.FindAsync(arg.CircleId);
+            await storage.UpdateCircleStatistics(DbSession, circle);
+            await logger.End("Success" + arg.CircleId);
             return Json(true);
         }
 
@@ -213,6 +243,23 @@ namespace UnitusCore.Controllers
             }
 
             public string AchivementId { get; set; }
+
+            public string CronId { get; set; }
+        }
+
+        public class CircleAchivementStatisticsArgument
+        {
+            public CircleAchivementStatisticsArgument()
+            {
+            }
+
+            public CircleAchivementStatisticsArgument(string circleId, string cronId)
+            {
+                CircleId = circleId;
+                CronId = cronId;
+            }
+
+            public string CircleId { get; set; }
 
             public string CronId { get; set; }
         }

@@ -325,6 +325,8 @@
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
+    <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatistics.cs" />
+    <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForCircle.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />

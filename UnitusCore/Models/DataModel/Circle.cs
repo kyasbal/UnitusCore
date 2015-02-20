@@ -84,5 +84,18 @@ namespace UnitusCore.Models.DataModel
             if (!memberStatus.IsLoaded) await memberStatus.LoadAsync();
         }
 
+        public async Task<IEnumerable<string>> GetMemberUserIds(ApplicationDbContext dbContext)
+        {
+            await this.LoadMembers(dbContext);
+            HashSet<string> userIds=new HashSet<string>();
+            foreach (MemberStatus member in this.Members)
+            {
+                await member.LoadReferencesAsync(dbContext);
+                await member.TargetUser.LoadApplicationUser(dbContext);
+                userIds.Add(member.TargetUser.ApplicationUser.Id);
+            }
+            return userIds;
+        }
+
     }
 }

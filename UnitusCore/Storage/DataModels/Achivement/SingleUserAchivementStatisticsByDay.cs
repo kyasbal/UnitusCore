@@ -18,7 +18,7 @@ namespace UnitusCore.Storage.DataModels.Achivement
 
         public SingleUserAchivementStatisticsByDay()
         {
-            
+            ProgressRecords=new HashSet<AchivementProgressStatisticsByDay>();
         }
 
         public SingleUserAchivementStatisticsByDay(string achivementId, string userId,bool isAwarded,double currentProgress)
@@ -28,6 +28,7 @@ namespace UnitusCore.Storage.DataModels.Achivement
             PartitionKey = achivementId;
             RowKey = userId;
             if (isAwarded) AwardedDate = DateTime.Now.ToDateCode();
+            ProgressRecords=new HashSet<AchivementProgressStatisticsByDay>();
         }
 
         [IgnoreProperty]
@@ -47,5 +48,8 @@ namespace UnitusCore.Storage.DataModels.Achivement
         {
             get{return PartitionKey;}
         }
+
+        [IgnoreProperty]
+        public HashSet<AchivementProgressStatisticsByDay> ProgressRecords { get; set; } 
     }
 }

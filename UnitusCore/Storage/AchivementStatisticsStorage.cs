@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels;
@@ -17,6 +18,10 @@ namespace UnitusCore.Storage
         private const string SingleUserAchivementStatisticsByDayName = "SingleUserAchivementStatisticsByDay";
 
         private const string AchivementBodyName = "AchivementBody";
+
+        private const string AchivementProgressStatisticsByDayName = "AchivementProgressStatisticsByDay";
+
+        private const string AchivementProgressStatisticsForCircleName = "AchivementStatisticsForCircleName";
 
         private static Dictionary<string, Func<ContributeStatisticsByDay, double>> _achivementsByContributesStatistics = new Dictionary
             <string, Func<ContributeStatisticsByDay, double>>()
@@ -58,18 +63,37 @@ namespace UnitusCore.Storage
 
         private readonly ContributeStatisticsByDayStorage _contributeStorage;
 
-        private readonly CloudTable _singleUserAchivementStatisticsByDay;
+        private readonly CloudTable _singleUserAchivementStatisticsByDayTable;
 
         private readonly CloudTable _achivementBodyTable;
+
+        private readonly CloudTable _achivementProgressStatisticsByDayTable;
+
+        private readonly CloudTable _achivementStatisticsForCircleTable;
+
+        public IEnumerable<string> GetAchivementNames()
+        {
+            foreach (var achivement in _achivementsByContributesStatistics)
+            {
+                yield return achivement.Key;
+            }
+        }
 
         public AchivementStatisticsStorage(TableStorageConnection storageConnection)
         {
             _storageConnection = storageConnection;
             _contributeStorage=new ContributeStatisticsByDayStorage(storageConnection);
-            _singleUserAchivementStatisticsByDay=_storageConnection.TableClient.GetTableReference(SingleUserAchivementStatisticsByDayName);
-            _singleUserAchivementStatisticsByDay.CreateIfNotExists();
-            _achivementBodyTable = _storageConnection.TableClient.GetTableReference(AchivementBodyName);
-            _achivementBodyTable.CreateIfNotExists();
+            _singleUserAchivementStatisticsByDayTable = InitCloudTable(SingleUserAchivementStatisticsByDayName);
+            _achivementBodyTable = InitCloudTable(AchivementBodyName);
+            _achivementProgressStatisticsByDayTable = InitCloudTable(AchivementProgressStatisticsByDayName);
+            _achivementStatisticsForCircleTable = InitCloudTable(AchivementProgressStatisticsForCircleName);
+        }
+
+        private CloudTable InitCloudTable(string referenceName)
+        {
+            var table = _storageConnection.TableClient.GetTableReference(referenceName);
+            table.CreateIfNotExists();
+            return table;
         }
 
         /// <summary>
@@ -94,7 +118,7 @@ namespace UnitusCore.Storage
                 string achivementName = achivement.Key;
                 //一つ前の統計データを持ってきて、既に付与されているなら以降考慮しない
                 SingleUserAchivementStatisticsByDay achivementData = (SingleUserAchivementStatisticsByDay) (await
-                    _singleUserAchivementStatisticsByDay.ExecuteAsync(
+                    _singleUserAchivementStatisticsByDayTable.ExecuteAsync(
                         TableOperation.Retrieve<SingleUserAchivementStatisticsByDay>(achivementName, user.Id))).Result;
                 if(achivementData!=null&&achivementData.IsAwarded)continue;
                 //実際に実績を評価していく。
@@ -102,7 +126,9 @@ namespace UnitusCore.Storage
                 if (double.IsNaN(progress)) progress = 0;
                 progress = Math.Min(Math.Max(progress,0), 1);
                 SingleUserAchivementStatisticsByDay newAchivementData=new SingleUserAchivementStatisticsByDay(achivementName,user.Id,progress==1,progress);
-                await _singleUserAchivementStatisticsByDay.ExecuteAsync(TableOperation.InsertOrReplace(newAchivementData));
+                await _singleUserAchivementStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(newAchivementData));
+                AchivementProgressStatisticsByDay todayRecord=new AchivementProgressStatisticsByDay(achivementData.UniqueId,progress);
+                await _achivementProgressStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(todayRecord));
             }
         }
 
@@ -113,14 +139,14 @@ namespace UnitusCore.Storage
 
         public async Task ExecuteAchivementStatisticsBySystemTask(string achivementName)
         {
-            AchivementBody body = await RetriveAchivementBody(achivementName);
+            AchivementBody body = await RetrieveAchivementBody(achivementName);
             if (body == null) return;
             string query = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, achivementName);
             TableQuery<SingleUserAchivementStatisticsByDay> executableQuery=new TableQuery<SingleUserAchivementStatisticsByDay>().Where(query);
             int count = 0;
             double sumPercentage = 0;
             int sumAwarded = 0;
-            foreach (SingleUserAchivementStatisticsByDay entities in _singleUserAchivementStatisticsByDay.ExecuteQuery(executableQuery))
+            foreach (SingleUserAchivementStatisticsByDay entities in _singleUserAchivementStatisticsByDayTable.ExecuteQuery(executableQuery))
             {
                 count++;
                 if (entities.IsAwarded) sumAwarded++;
@@ -133,14 +159,6 @@ namespace UnitusCore.Storage
             await _achivementBodyTable.ExecuteAsync(TableOperation.Replace(body));
         }
 
-        public IEnumerable<string> GetAchivementNames()
-        {
-            foreach (var achivement in _achivementsByContributesStatistics)
-            {
-                yield return achivement.Key;
-            }
-        }
-
         /// <summary>
         /// Achivementを追加したとき用
         /// </summary>
@@ -149,7 +167,7 @@ namespace UnitusCore.Storage
         {
             foreach (string achivementNames in GetAchivementNames())
             {
-                var achivementRetrieveResult = await RetriveAchivementBody(achivementNames);
+                var achivementRetrieveResult = await RetrieveAchivementBody(achivementNames);
                 if (achivementRetrieveResult == null)
                 {
                     AchivementBody achivementBody=new AchivementBody(achivementNames);
@@ -159,11 +177,46 @@ namespace UnitusCore.Storage
             }
         }
 
-        private async Task<AchivementBody> RetriveAchivementBody(string achivementNames)
+        private async Task<AchivementBody> RetrieveAchivementBody(string achivementNames)
         {
             TableResult achivementRetrieveResult =
                 await _achivementBodyTable.ExecuteAsync(TableOperation.Retrieve<AchivementBody>("AchivementBody", achivementNames));
             return (AchivementBody) achivementRetrieveResult.Result;
+        }
+
+        private async Task<SingleUserAchivementStatisticsByDay> RetrieveAchivementProgressForUser(string achivementName,
+            string userId)
+        {
+            TableResult retrieveResult =
+                await
+                    _achivementStatisticsForCircleTable.ExecuteAsync(
+                        TableOperation.Retrieve<SingleUserAchivementStatisticsByDay>(achivementName, userId));
+            return (SingleUserAchivementStatisticsByDay) retrieveResult.Result;
+        }
+
+        public async Task UpdateCircleStatistics(ApplicationDbContext dbContext,Circle targetCircle)
+        {
+            IEnumerable<string> memberUserIds =await targetCircle.GetMemberUserIds(dbContext);
+            foreach (string achivementId in GetAchivementNames())
+            {
+                int memberCount = 0;
+                int awardedCount = 0;
+                double sumProgress = 0;
+                foreach (string userId in memberUserIds)
+                {
+                    SingleUserAchivementStatisticsByDay data = await RetrieveAchivementProgressForUser(achivementId, userId);
+                    if (data != null)
+                    {
+                        memberCount++;
+                        if (data.IsAwarded) awardedCount++;
+                        sumProgress += data.CurrentProgress;
+                    }
+                    AchivementProgressStatisticsForCircle circleData =
+                        new AchivementProgressStatisticsForCircle(achivementId, targetCircle.Id.ToString(),
+                            sumProgress/memberCount, memberCount, awardedCount, awardedCount/(double) memberCount);
+                    await _achivementStatisticsForCircleTable.ExecuteAsync(TableOperation.InsertOrReplace(circleData));
+                }
+            }
         }
     }
 }

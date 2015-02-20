@@ -45,6 +45,7 @@ namespace UnitusCore.Storage.DataModels
     {
         SingleUserStatisticGithubContribution,
         SingleUserAchivementStatistics,
-        SystemAchivementStatistics
+        SystemAchivementStatistics,
+        CircleAchivementStatistics
     }
 }
