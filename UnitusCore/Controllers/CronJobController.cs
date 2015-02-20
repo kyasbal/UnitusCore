@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity.Owin;
@@ -54,10 +55,10 @@ namespace UnitusCore.Controllers
         {
             if (!cronId.Equals(ValidCronId)) return null;
             var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
+            StringBuilder builder=new StringBuilder();
             if (
                 await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
-                        StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
                         async q =>
                         {
                             await
@@ -65,8 +66,7 @@ namespace UnitusCore.Controllers
                         }) 
                         &&
                 await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
-                        StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, 10,
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, 10,
                         async q =>
                         {
                             await
@@ -74,8 +74,7 @@ namespace UnitusCore.Controllers
                         })
                         &&
                 await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
-                       StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, 5, 
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, 5, 
                        async q =>
                        {
                            await
@@ -83,8 +82,7 @@ namespace UnitusCore.Controllers
                        })
                 &&
                 await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(
-                        StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
                         async q =>
                         {
                             await
@@ -93,7 +91,7 @@ namespace UnitusCore.Controllers
             {//タスクが全くない時
                 return Json("All Tasks were completed!");
             }
-            return Json(true);
+            return Content(HttpStatusCode.OK, builder.ToString());
         }
 
         private static async Task ExecuteQueues(IEnumerable<StatisticTaskQueueStorage.QueueMessageContainer> tasks, StatisticTaskQueueStorage st)
@@ -206,7 +204,7 @@ namespace UnitusCore.Controllers
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.CircleAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
             AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
-            Circle circle = await DbSession.Circles.FindAsync(arg.CircleId);
+            Circle circle = await DbSession.Circles.FindAsync(Guid.Parse(arg.CircleId));
             await storage.UpdateCircleStatistics(DbSession, circle);
             await logger.End("Success" + arg.CircleId);
             return Json(true);

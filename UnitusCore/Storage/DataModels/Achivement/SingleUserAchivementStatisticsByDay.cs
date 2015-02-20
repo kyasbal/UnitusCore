@@ -16,17 +16,20 @@ namespace UnitusCore.Storage.DataModels.Achivement
 
         public long AwardedDate { get; set; }
 
+        public double ProgressDiff { get; set; }
+
         public SingleUserAchivementStatisticsByDay()
         {
             ProgressRecords=new HashSet<AchivementProgressStatisticsByDay>();
         }
 
-        public SingleUserAchivementStatisticsByDay(string achivementId, string userId,bool isAwarded,double currentProgress)
+        public SingleUserAchivementStatisticsByDay(string achivementId, string userId,bool isAwarded,double currentProgress,double progressDiff)
         {
             IsAwarded = isAwarded;
             CurrentProgress = currentProgress;
             PartitionKey = achivementId;
             RowKey = userId;
+            ProgressDiff = progressDiff;
             if (isAwarded) AwardedDate = DateTime.Now.ToDateCode();
             ProgressRecords=new HashSet<AchivementProgressStatisticsByDay>();
         }

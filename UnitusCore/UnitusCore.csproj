@@ -243,6 +243,7 @@
     <Compile Include="Attributes\UnitusActionFilterAttribute.cs" />
     <Compile Include="Controllers\AccountApiController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AchivementController.cs" />
     <Compile Include="Controllers\CircleController.cs" />
     <Compile Include="Controllers\CircleInvitationController.cs" />
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
@@ -325,8 +326,10 @@
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
+    <Compile Include="Storage\DataModels\Achivement\AchivementCircleRankingStatistics.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatistics.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForCircle.cs" />
+    <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForSystem.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />

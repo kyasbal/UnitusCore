@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using Microsoft.WindowsAzure.Storage.Queue;
+using UnitusCore.Controllers;
 using UnitusCore.Storage.Base;
 
 namespace UnitusCore.Storage
@@ -56,12 +59,18 @@ namespace UnitusCore.Storage
             }
         }
 
-        public async Task<bool> CheckNeedOfFinishedTaskExecuteWhenExisiting(QueuedTaskType taskType, int count,
-    Func<IEnumerable<QueueMessageContainer>,Task> f)
+        public async Task<bool> CheckNeedOfFinishedTaskExecuteWhenExisiting(StringBuilder builder, QueuedTaskType taskType, int count, Func<IEnumerable<QueueMessageContainer>, Task> f)
         {
+            
             var queuedTasks = BeginTask(count, taskType);
             if (queuedTasks.Any())
             {
+                var log = string.Format("{0} TaskType:{1} Count:{2}/{3}(Actual/Request)\n",DateTime.Now,taskType,queuedTasks.Count(),count);
+                foreach (QueueMessageContainer tasks in queuedTasks)
+                {
+                    log += string.Format("TargetAddr:{0} Argument:{1}\n", tasks.TargetAddress, tasks.TargetArguments);
+                }
+                builder.Append(log);
                 await f(queuedTasks);
                 return false;
             }
