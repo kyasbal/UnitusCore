@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashboard/user_profile'], function($, Backbone, UserTemplate, UserProfile) {
+define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashboard/user_profile', 'models/achivement', 'collections/achivements', 'templates/achivement/index'], function($, Backbone, UserTemplate, UserProfile, Achivement, Achivements, AchivementListTemplate) {
   var UserPanelView;
   return UserPanelView = (function(_super) {
     __extends(UserPanelView, _super);
@@ -16,6 +16,7 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
       this.renderUserPanel();
       this.renderUserProfile();
       this.renderCircleList();
+      this.getAjaxAchivement();
       if (this.belongingCircles.length > 0) {
         return this.renderBelongingCircles();
       }
@@ -89,6 +90,38 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
       });
       $("[data-js=userSideList]").append(textSidebar);
       return $("[data-js=userPanelList]").append(textPanel);
+    };
+
+    UserPanelView.prototype.getAjaxAchivement = function() {
+      return $.ajax({
+        type: "GET",
+        url: "https://core.unitus-ac.com/Achivements",
+        success: function(data) {
+          var achivements;
+          achivements = new Achivements();
+          $.each(data.Content.Achivements, function() {
+            var achivement;
+            achivement = new Achivement({
+              Name: this.AchivementName,
+              AwardedDate: this.AwardedDate,
+              BadgeImageUrl: this.BadgeImageUrl,
+              CurrentProgress: this.CurrentProgress.toFixed(2),
+              IsAwarded: this.IsAwarded,
+              ProgressDiff: this.ProgressDiff
+            });
+            achivements.add(achivement);
+            return console.log(this.CurrentProgress.toFixed(2));
+          });
+          return achivements.each(function(a) {
+            return this.$('[data-js=achivementList]').append(AchivementListTemplate({
+              achivement: a
+            }));
+          });
+        },
+        error: function(data) {
+          return console.log(data);
+        }
+      });
     };
 
     UserPanelView.prototype.deleteCircle = function(e) {

@@ -40,7 +40,7 @@ namespace UnitusCore.Controllers
                     (a) =>
                     {
                         var body=Task.Run(async()=>await achivementStatistics.RetrieveAchivementBody(a.AchivementId)).Result;
-                        return new AchivementListElement(a.AchivementId,a.CurrentProgress,a.ProgressDiff,a.IsAwarded,a.IsAwarded?a.AwardedDate.FromUnixTime().ToString("d"):"",body.BadgeImageUrl);
+                        return new AchivementListElement(a.AchivementId,a.CurrentProgress,a.ProgressDiff,a.IsAwarded,a.IsAwarded?a.AwardedDate.FromUnixTime().ToString("d"):"",a.IsAwarded ? body.BadgeImageUrl : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
                     }
                     )).ToArray();
 
@@ -64,7 +64,7 @@ namespace UnitusCore.Controllers
                         AchivementResponse result = new AchivementResponse();
                         result.AchivementName = body.AchivementName;
                         result.AchivementDescription = body.AchivementDescription;
-                        result.BadgeImageUrl = body.BadgeImageUrl;
+                        result.BadgeImageUrl = forUser.IsAwarded ? body.BadgeImageUrl : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1";
                         result.CurrentProgress = forUser.CurrentProgress;
                         result.ProgressDiff = forUser.ProgressDiff;
                         result.IsAwarded = forUser.IsAwarded;

@@ -333,6 +333,7 @@
     <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\CircleMemberCache.cs" />
+    <Compile Include="Storage\DataModels\CollaboratorCountByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
@@ -707,10 +708,15 @@
     <Content Include="Global.asax" />
     <Content Include="img\loading.gif" />
     <Content Include="img\loading2.gif" />
+    <Content Include="js\lib\collections\achivements.js" />
     <Content Include="js\lib\index.js" />
+    <Content Include="js\lib\models\achivement.js" />
     <Content Include="js\lib\models\admin_panel.js" />
+    <Content Include="js\lib\models\circle.js" />
     <Content Include="js\lib\models\dashboard.js" />
     <Content Include="js\lib\models\user.js" />
+    <Content Include="js\lib\templates\achivement\index.js" />
+    <Content Include="js\lib\templates\dashboard\achivement.js" />
     <Content Include="js\lib\templates\dashboard\admin_menu.js" />
     <Content Include="js\lib\templates\dashboard\admin_panel.js" />
     <Content Include="js\lib\templates\dashboard\dashboard.js" />

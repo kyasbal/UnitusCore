@@ -193,6 +193,7 @@ namespace UnitusCore.Util
                 if (initData == null) return;
                 if(initData.Item2.TargetRepository.Fork)contributeStatistics.SumForking++;
                 contributeStatistics.SumForked += initData.Item2.TargetRepository.ForksCount;
+                contributeStatistics.SumStared += initData.Item2.TargetRepository.StargazersCount;
                 var contributors = initData.Item1;
                 int c = 0, a = 0, d = 0;
                 foreach (var contributor in contributors)
@@ -325,6 +326,8 @@ namespace UnitusCore.Util
             public int SumForked { get; set; }
 
             public int SumForking { get; set; }
+
+            public int SumStared { set;get; }
         }
         
 

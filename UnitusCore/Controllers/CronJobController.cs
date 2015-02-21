@@ -190,6 +190,7 @@ namespace UnitusCore.Controllers
                 contributeStatistics.SumCommit = st.SumCommit;
                 contributeStatistics.SumForked = st.SumForked;
                 contributeStatistics.SumForking = st.SumForking;
+                contributeStatistics.SumStaring = st.SumStared;
                 ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection(),DbSession);
                 await storage.Add(contributeStatistics,st.CollaboratorLog);
             }

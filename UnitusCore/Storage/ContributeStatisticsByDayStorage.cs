@@ -23,6 +23,8 @@ namespace UnitusCore.Storage
 
         private const string SingleUserLanguageStatisticsByDayDiffTableName = "StatisticsSingleUserLanguageByDayDiff";
 
+        private const string CollabolatorCountByDayTableName = "CollabolatorCountByDayTable";
+
         private readonly TableStorageConnection _connection;
         private readonly ApplicationDbContext _dbContext;
 
@@ -33,6 +35,8 @@ namespace UnitusCore.Storage
         private readonly CloudTable _contributeStatisticsByDayDiffTable;
 
         private readonly CloudTable _singleUserLanguageStatisticsByDayDiffTable;
+
+        private readonly CloudTable _collaboratorCountByDayTable;
 
         private Dictionary<string,string> ReplaceTables=new Dictionary<string, string>()
             {{"#","Sharp"},{"/","Slash"}}; 
@@ -53,6 +57,9 @@ namespace UnitusCore.Storage
                 connection.TableClient.GetTableReference(SingleUserLanguageStatisticsByDayDiffTableName);
             _contributeStatisticsByDayDiffTable.CreateIfNotExists();
             _singleUserLanguageStatisticsByDayDiffTable.CreateIfNotExists();
+            _collaboratorCountByDayTable = connection.TableClient.GetTableReference(CollabolatorCountByDayTableName);
+            _collaboratorCountByDayTable.CreateIfNotExists();
+
         }
 
         public async Task Add(ContributeStatisticsByDay day, ConcurrentDictionary<string, ConcurrentDictionary<string, int>> collaboratorLog)
@@ -80,6 +87,7 @@ namespace UnitusCore.Storage
             foreach (var loginLangPair in collaboratorLog)
             {
                 bool isUnitus = false, isCircle = false;
+                int countOfThisCollaborator=0;
                 count++;
                 if (await idPairStorage.IsStored(loginLangPair.Key, IdPairContainer.GithubLogin, IdPairContainer.UserId))
                 {
@@ -93,14 +101,18 @@ namespace UnitusCore.Storage
                 }
                 foreach (var langCountPair in loginLangPair.Value)
                 {
+                    countOfThisCollaborator += langCountPair.Value;
                     cumlutiveCount += langCountPair.Value;
                     if (isCircle) cumlutiveCircleCount += langCountPair.Value;
                     if (isUnitus) cumlutiveUnitusCount += langCountPair.Value;
                 }
+                await _collaboratorCountByDayTable.ExecuteAsync(
+                    TableOperation.InsertOrReplace(new CollaboratorCountByDay(day.PartitionKey, loginLangPair.Key,
+                        countOfThisCollaborator)));
             }
             day.CumlutiveCollaboratorCount = cumlutiveCount;
             day.CumlutiveCollaboratorCircleMemberCount = cumlutiveCircleCount;
-            day.CumlutiveUnitusCollaboratorMemberCount = cumlutiveCircleCount;
+            day.CumlutiveUnitusCollaboratorMemberCount = cumlutiveUnitusCount;
             day.CollaboratorCount = count;
             day.UnitusCollaboratorMemberCount = unitusCount;
             day.CircleCollaboratorMemberCount = circleCount;

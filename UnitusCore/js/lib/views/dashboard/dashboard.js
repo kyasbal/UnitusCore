@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/user', 'models/admin_panel'], function($, Backbone, template, HeaderView, PanelView, User, AdminPanel) {
+define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/user', 'models/admin_panel', 'models/circle'], function($, Backbone, template, HeaderView, PanelView, User, AdminPanel, Circle) {
   var DashboadView;
   return DashboadView = (function(_super) {
     __extends(DashboadView, _super);
@@ -11,11 +11,14 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
     }
 
     DashboadView.prototype.initialize = function(option) {
+      this.circle = new Circle();
+      console.log(this.circle.get("CircleName"));
       this.user = new User();
       $.ajaxSetup({
         xhrFields: {
           withCredentials: true
         },
+        dataType: 'json',
         data: {
           ValidationToken: 'abc'
         }
@@ -61,9 +64,10 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
             return _this.$el.fadeIn();
           };
         })(this),
-        error: function(msg) {
-          console.log(msg);
-          if (msg.statusText === "Unauthorized API Access") {
+        error: function(XMLHttpRequest, textStatus) {
+          console.log(XMLHttpRequest);
+          console.log(textStatus);
+          if (textStatus === "error" || XMLHttpRequest.ErrorMessage === "Unauthorized API Access") {
             return location.assign("https://core.unitus-ac.com/Account/Login");
           }
         }
