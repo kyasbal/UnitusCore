@@ -93,10 +93,10 @@ namespace UnitusCore.Storage
             }
         }
 
-        public AchivementStatisticsStorage(TableStorageConnection storageConnection)
+        public AchivementStatisticsStorage(TableStorageConnection storageConnection,ApplicationDbContext dbSession)
         {
             _storageConnection = storageConnection;
-            _contributeStorage=new ContributeStatisticsByDayStorage(storageConnection);
+            _contributeStorage=new ContributeStatisticsByDayStorage(storageConnection,dbSession);
             _singleUserAchivementStatisticsByDayTable = InitCloudTable(SingleUserAchivementStatisticsByDayName);
             _achivementBodyTable = InitCloudTable(AchivementBodyName);
             _achivementProgressStatisticsByDayTable = InitCloudTable(AchivementProgressStatisticsByDayName);
@@ -233,7 +233,7 @@ namespace UnitusCore.Storage
             }
         }
 
-        private async Task<AchivementBody> RetrieveAchivementBody(string achivementNames)
+        public async Task<AchivementBody> RetrieveAchivementBody(string achivementNames)
         {
             TableResult achivementRetrieveResult =
                 await _achivementBodyTable.ExecuteAsync(TableOperation.Retrieve<AchivementBody>("AchivementBody", achivementNames));

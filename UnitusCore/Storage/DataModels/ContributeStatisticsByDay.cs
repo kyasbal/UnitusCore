@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -47,6 +48,22 @@ namespace UnitusCore.Storage.DataModels
 
         public int SumForked { get; set; }
 
+        public int SumStaring { get; set; }
+
+        public int SumStared { get; set; }
+
+        public int CumlutiveCollaboratorCount { get; set; }
+
+        public int CumlutiveUnitusCollaboratorMemberCount { get; set; }
+
+        public int CumlutiveCollaboratorCircleMemberCount { get; set; }
+
+        public int CollaboratorCount { get; set; }
+
+        public int UnitusCollaboratorMemberCount { get; set; }
+
+        public int CircleCollaboratorMemberCount { get; set; }
+
         [IgnoreProperty]
         public HashSet<SingleUserLanguageStatisticsByDay> LanguageStatistics { get; set; }
 
@@ -55,5 +72,6 @@ namespace UnitusCore.Storage.DataModels
         {
             get { return PartitionKey + "-" + RowKey; }
         }
+
     }
 }

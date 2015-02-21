@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels;
@@ -22,6 +24,7 @@ namespace UnitusCore.Storage
         private const string SingleUserLanguageStatisticsByDayDiffTableName = "StatisticsSingleUserLanguageByDayDiff";
 
         private readonly TableStorageConnection _connection;
+        private readonly ApplicationDbContext _dbContext;
 
         private readonly CloudTable _contributeStatisticsByDayTable;
 
@@ -34,9 +37,10 @@ namespace UnitusCore.Storage
         private Dictionary<string,string> ReplaceTables=new Dictionary<string, string>()
             {{"#","Sharp"},{"/","Slash"}}; 
 
-        public ContributeStatisticsByDayStorage(TableStorageConnection connection)
+        public ContributeStatisticsByDayStorage(TableStorageConnection connection,ApplicationDbContext dbContext)
         {
             _connection = connection;
+            _dbContext = dbContext;
             _contributeStatisticsByDayTable =
                 connection.TableClient.GetTableReference(ContributeStatisticsByDayTableName);
             _singleUserLanguageStatisticsByDayTable =
@@ -51,8 +55,10 @@ namespace UnitusCore.Storage
             _singleUserLanguageStatisticsByDayDiffTable.CreateIfNotExists();
         }
 
-        public async Task Add(ContributeStatisticsByDay day)
+        public async Task Add(ContributeStatisticsByDay day, ConcurrentDictionary<string, ConcurrentDictionary<string, int>> collaboratorLog)
         {
+            //Collaborator関連
+            await StatCollaborators(day, collaboratorLog);
             foreach (SingleUserLanguageStatisticsByDay statEntity in day.LanguageStatistics)
             {
                 foreach (KeyValuePair<string, string> replacePair in ReplaceTables)
@@ -63,6 +69,41 @@ namespace UnitusCore.Storage
             }
             await _contributeStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(day));
             await GenerateDiff(day);
+        }
+
+        private async Task StatCollaborators(ContributeStatisticsByDay day, ConcurrentDictionary<string, ConcurrentDictionary<string, int>> collaboratorLog)
+        {
+            IdPairContainerStorage idPairStorage=new IdPairContainerStorage(new TableStorageConnection());
+            DbCacheStorage cacheStorage=new DbCacheStorage(new TableStorageConnection(), _dbContext);
+            HashSet<string> circleMember = await cacheStorage.GetCircleMemberGitLogins(day.PartitionKey);
+            int cumlutiveCount = 0,cumlutiveUnitusCount=0,cumlutiveCircleCount=0,count=0,unitusCount=0,circleCount=0;
+            foreach (var loginLangPair in collaboratorLog)
+            {
+                bool isUnitus = false, isCircle = false;
+                count++;
+                if (await idPairStorage.IsStored(loginLangPair.Key, IdPairContainer.GithubLogin, IdPairContainer.UserId))
+                {
+                    unitusCount++;
+                    isUnitus = true;
+                }
+                if (circleMember.Contains(loginLangPair.Key))
+                {
+                    circleCount++;
+                    isCircle = true;
+                }
+                foreach (var langCountPair in loginLangPair.Value)
+                {
+                    cumlutiveCount += langCountPair.Value;
+                    if (isCircle) cumlutiveCircleCount += langCountPair.Value;
+                    if (isUnitus) cumlutiveUnitusCount += langCountPair.Value;
+                }
+            }
+            day.CumlutiveCollaboratorCount = cumlutiveCount;
+            day.CumlutiveCollaboratorCircleMemberCount = cumlutiveCircleCount;
+            day.CumlutiveUnitusCollaboratorMemberCount = cumlutiveCircleCount;
+            day.CollaboratorCount = count;
+            day.UnitusCollaboratorMemberCount = unitusCount;
+            day.CircleCollaboratorMemberCount = circleCount;
         }
 
         public async Task<ContributeStatisticsByDay> Get(ApplicationUser user, DateTime time)

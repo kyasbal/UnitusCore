@@ -31,6 +31,8 @@ namespace UnitusCore.Storage.DataModels.Achivement
 
         public double AvarageProgress { get; set; }
 
+        public string BadgeImageUrl { get; set; }
+
         [IgnoreProperty]
         public string AchivementName
         {

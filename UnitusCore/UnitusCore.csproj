@@ -332,12 +332,14 @@
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForSystem.cs" />
     <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\CircleMemberCache.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
+    <Compile Include="Storage\DbCacheStorage.cs" />
     <Compile Include="Storage\IdPairContainerStorage.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
     <Compile Include="Storage\StatisticJobLogStorage.cs" />

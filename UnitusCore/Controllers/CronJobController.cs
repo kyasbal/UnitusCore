@@ -56,7 +56,14 @@ namespace UnitusCore.Controllers
             if (!cronId.Equals(ValidCronId)) return null;
             var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
             StringBuilder builder=new StringBuilder();
-            if (
+            if (await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.GenerateCacheBeforeStat, 1,
+                        async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        })
+                        &&
                 await
                     st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub, 1,
                         async q =>
@@ -132,7 +139,10 @@ namespace UnitusCore.Controllers
         {
             if (!cronId.Equals(ValidCronId)) return null;
             StatisticTaskQueueStorage taskQueueStorage = new StatisticTaskQueueStorage(new QueueStorageConnection());
-            AchivementStatisticsStorage acStorage=new AchivementStatisticsStorage(new TableStorageConnection());
+            AchivementStatisticsStorage acStorage=new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
+            await
+    taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.GenerateCacheBeforeStat,
+        Url.Content("/cron/queue/cache"), "");
             await
                 taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub,
                     Url.Content("/cron/queue/preinit/github"), "");
@@ -178,8 +188,10 @@ namespace UnitusCore.Controllers
                 contributeStatistics.SumDeletion = st.SumDeletion;
                 contributeStatistics.SumRepository = st.RepositoryCount;
                 contributeStatistics.SumCommit = st.SumCommit;
-                ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection());
-                await storage.Add(contributeStatistics);
+                contributeStatistics.SumForked = st.SumForked;
+                contributeStatistics.SumForking = st.SumForking;
+                ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection(),DbSession);
+                await storage.Add(contributeStatistics,st.CollaboratorLog);
             }
             await logger.End("Success" + user.Id);
             return Json(true);
@@ -193,7 +205,7 @@ namespace UnitusCore.Controllers
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SingleUserAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
             ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
-            AchivementStatisticsStorage storage=new AchivementStatisticsStorage(tableStorageConnection);
+            AchivementStatisticsStorage storage=new AchivementStatisticsStorage(tableStorageConnection,DbSession);
             await storage.ExecuteAchivementTask(user);
             await logger.End("Success" + user.Id);
             return Json(true);
@@ -206,7 +218,7 @@ namespace UnitusCore.Controllers
             var tableStorageConnection = new TableStorageConnection();
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SystemAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
-            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection,DbSession);
             await storage.ExecuteAchivementStatisticsBySystemTask(arg.AchivementId);
             await logger.End("Success" + arg.AchivementId);
             return Json(true);
@@ -219,7 +231,7 @@ namespace UnitusCore.Controllers
             var tableStorageConnection = new TableStorageConnection();
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.CircleAchivementStatistics, System.Web.Helpers.Json.Encode(arg));
-            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection,DbSession);
             Circle circle = await DbSession.Circles.FindAsync(Guid.Parse(arg.CircleId));
             await storage.UpdateCircleStatistics(DbSession, circle);
             await logger.End("Success" + arg.CircleId);
@@ -233,7 +245,7 @@ namespace UnitusCore.Controllers
             var tableStorageConnection = new TableStorageConnection();
             StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.FinalizeAchivement,"");
-            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection,DbSession);
             await storage.RemoveAllCachedResult();
             await logger.End("Success achivement finalize");
             return Json(true);
@@ -266,6 +278,19 @@ namespace UnitusCore.Controllers
                 await pairStorage.MakePair(people.Id.ToString(), githubUser.Login, IdPairContainer.PersonId, IdPairContainer.GithubLogin);
                 await pairStorage.MakePair(people.ApplicationUser.Id, githubUser.Login, IdPairContainer.UserId, IdPairContainer.GithubLogin);
             }
+            await logger.End("Success achivement finalize");
+            return Json(true);
+        }
+
+        [Route("cron/queue/cache")]
+        [HttpPost]
+        public async Task<IHttpActionResult> GenerateCaches()
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.GenerateCaches, "");
+            DbCacheStorage cacheStorage=new DbCacheStorage(tableStorageConnection,DbSession);
+            await cacheStorage.UpdateAllCircles(await DbSession.Circles.ToArrayAsync());
             await logger.End("Success achivement finalize");
             return Json(true);
         }

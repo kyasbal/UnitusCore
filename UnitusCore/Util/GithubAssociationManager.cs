@@ -97,11 +97,12 @@ namespace UnitusCore.Util
 
         public async Task<string> GetAvatarUri(string userName)
         {
-            if (await IsAssociationEnabled(userName))
+            var user = userManager.FindByName(userName);
+            if (await IsAssociationEnabled(user.GithubAccessToken))
             {
                 var github = GetAuthenticatedClient(userName);
-                var user = await github.User.Current();
-                return user.AvatarUrl;
+                var githubUser = await github.User.Current();
+                return githubUser.AvatarUrl;
             }
             else
             {
@@ -129,7 +130,10 @@ namespace UnitusCore.Util
 
         private void AppendLangStatistics(ConcurrentDictionary<string, int> dict, string lang, int coefficient)
         {
-            if (string.IsNullOrWhiteSpace(lang)) return;
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = "(分類不可)";
+            }
             if (dict.ContainsKey(lang))
             {
                 dict[lang] += coefficient;
@@ -152,6 +156,7 @@ namespace UnitusCore.Util
             ConcurrentDictionary<string, int> additionLangDictionary = new ConcurrentDictionary<string, int>();
             ConcurrentDictionary<string, int> deletionLangDictionary = new ConcurrentDictionary<string, int>();
             ConcurrentDictionary<string, int> repositoryLangDictionary = new ConcurrentDictionary<string, int>();
+            ConcurrentDictionary<string,ConcurrentDictionary<string,int>> collaboratorLog=new ConcurrentDictionary<string, ConcurrentDictionary<string, int>>();
             //全レポジトリの情報を取得
             var GetContributerBlock = new TransformBlock<GithubRepositoryIdentity, Tuple<IEnumerable<Contributor>,GithubRepositoryIdentity>>(
                 async ident =>
@@ -192,7 +197,7 @@ namespace UnitusCore.Util
                 int c = 0, a = 0, d = 0;
                 foreach (var contributor in contributors)
                 {
-                    
+
                     if (contributor.Author.Login.Equals(user.Login))
                     {
                         c += contributor.Total;
@@ -202,6 +207,35 @@ namespace UnitusCore.Util
                             d += w.Deletions;
                         }
                         break;
+                    }
+                    else
+                    {
+                        string contributorLogin = contributor.Author.Login;
+                        string langName = initData.Item2.TargetRepository.Language;
+                        if (string.IsNullOrWhiteSpace(langName)) langName = "(分類不可)";
+                        if (collaboratorLog.ContainsKey(contributorLogin))
+                        {
+                            if (collaboratorLog[contributorLogin].ContainsKey(langName))
+                            {
+                                collaboratorLog[contributorLogin][langName]++;
+                            }
+                            else
+                            {
+                                collaboratorLog[contributorLogin].TryAdd(langName, 1);
+                            }
+                        }
+                        else
+                        {
+                            collaboratorLog.TryAdd(contributorLogin,new ConcurrentDictionary<string, int>());
+                            if (collaboratorLog[contributorLogin].ContainsKey(langName))
+                            {
+                                collaboratorLog[contributorLogin][langName]++;
+                            }
+                            else
+                            {
+                                collaboratorLog[contributorLogin].TryAdd(langName, 1);
+                            }
+                        }
                     }
                 }
                 lock (statistic)
@@ -215,6 +249,7 @@ namespace UnitusCore.Util
                     statistic.SumDeletion += d;
                 }
             });
+            statistic.CollaboratorLog = collaboratorLog;
             GetContributerBlock.LinkTo(sumActionBlock, new DataflowLinkOptions()
             {
                 PropagateCompletion = true
@@ -283,7 +318,13 @@ namespace UnitusCore.Util
 
             public int RepositoryCount { get; set; }
 
-            public Dictionary<string,int> LanguageCommitcount { get; set; } 
+            public Dictionary<string,int> LanguageCommitcount { get; set; }
+
+            public ConcurrentDictionary<string, ConcurrentDictionary<string, int>> CollaboratorLog { get; set; }
+
+            public int SumForked { get; set; }
+
+            public int SumForking { get; set; }
         }
         
 

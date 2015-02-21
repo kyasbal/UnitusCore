@@ -16,7 +16,7 @@ namespace UnitusCore.Controllers
         [Route("Maintenance/Achivements/AdjustBody")]
         public async Task<IHttpActionResult> GenerateToAdjustAchivementBody()
         {
-            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(new TableStorageConnection());
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
             await storage.GenerateToAdjustAchivementBody();
             return Json(true);
         }

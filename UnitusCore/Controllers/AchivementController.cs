@@ -34,12 +34,13 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(validationToken, async () =>
             {
                 AchivementListResponse response=new AchivementListResponse();
-                AchivementStatisticsStorage achivementStatistics=new AchivementStatisticsStorage(new TableStorageConnection());
+                AchivementStatisticsStorage achivementStatistics=new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
                 response.Achivements = (await achivementStatistics.EachForUserAchivements<AchivementListElement>(
                     CurrentUser.Id,
                     (a) =>
                     {
-                        return new AchivementListElement(a.AchivementId,a.CurrentProgress,a.ProgressDiff,a.IsAwarded,a.IsAwarded?a.AwardedDate.FromUnixTime().ToString("d"):"");
+                        var body=Task.Run(async()=>await achivementStatistics.RetrieveAchivementBody(a.AchivementId)).Result;
+                        return new AchivementListElement(a.AchivementId,a.CurrentProgress,a.ProgressDiff,a.IsAwarded,a.IsAwarded?a.AwardedDate.FromUnixTime().ToString("d"):"",body.BadgeImageUrl);
                     }
                     )).ToArray();
 
@@ -55,7 +56,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-                AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(new TableStorageConnection());
+                AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
                 var responseString=await achivementStatistics.GetCacheOrCalculate(achivementName, CurrentUser.Id,async () =>
                 {
                     var response = await await achivementStatistics.RetrieveUserAchivement(CurrentUser.Id, achivementName, async (body, forUser, pg) =>
@@ -63,6 +64,7 @@ namespace UnitusCore.Controllers
                         AchivementResponse result = new AchivementResponse();
                         result.AchivementName = body.AchivementName;
                         result.AchivementDescription = body.AchivementDescription;
+                        result.BadgeImageUrl = body.BadgeImageUrl;
                         result.CurrentProgress = forUser.CurrentProgress;
                         result.ProgressDiff = forUser.ProgressDiff;
                         result.IsAwarded = forUser.IsAwarded;
@@ -126,13 +128,14 @@ namespace UnitusCore.Controllers
 
         public class AchivementListElement
         {
-            public AchivementListElement(string achivementName, double currentProgress, double progressDiff, bool isAwarded, string awardedDate)
+            public AchivementListElement(string achivementName, double currentProgress, double progressDiff, bool isAwarded, string awardedDate,string badgeImageUrl)
             {
                 AchivementName = achivementName;
                 CurrentProgress = currentProgress;
                 ProgressDiff = progressDiff;
                 IsAwarded = isAwarded;
                 AwardedDate = awardedDate;
+                BadgeImageUrl = badgeImageUrl;
             }
 
             public AchivementListElement()
@@ -148,6 +151,8 @@ namespace UnitusCore.Controllers
             public bool IsAwarded { get; set; }
 
             public string AwardedDate { get; set; }
+
+            public string BadgeImageUrl { get; set; }
         }
 
         public class AchivementResponse
@@ -155,6 +160,8 @@ namespace UnitusCore.Controllers
             public string AchivementName { get; set; }
 
             public string AchivementDescription { get; set; }
+
+            public string BadgeImageUrl { get; set; }
 
             public double CurrentProgress { get; set; }
 

@@ -49,6 +49,7 @@ namespace UnitusCore.Storage.DataModels
         CircleAchivementStatistics,
         FinalizeAchivement,
         InitializeGithubAssociation,
-        InitializeGithubAssociationChrckUserIdPair
+        InitializeGithubAssociationChrckUserIdPair,
+        GenerateCaches
     }
 }
