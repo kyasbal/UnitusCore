@@ -19,7 +19,9 @@ namespace UnitusCore.Storage
             {QueuedTaskType.SingleUserAchivementStatistics, "singleuser-achivement-stat"},
             {QueuedTaskType.SingleUserContributionStatistics, "singleuser-contribution-stat"},
             {QueuedTaskType.SystemAchivementStatistics, "system-achivement-stat"},
-            {QueuedTaskType.CircleAchivementStatistics, "circle-achivement-stat"}
+            {QueuedTaskType.CircleAchivementStatistics, "circle-achivement-stat"},
+            {QueuedTaskType.FinalizeAchivementStatistics,"finalize-achivement-stat"},
+            {QueuedTaskType.PreInitializeForGithub, "preinitialize-github-stat"}
         }; 
 
         private Dictionary<QueuedTaskType,CloudQueue> QueueDictionary=new Dictionary<QueuedTaskType, CloudQueue>(); 
@@ -142,7 +144,9 @@ namespace UnitusCore.Storage
             SingleUserContributionStatistics,
             SingleUserAchivementStatistics,
             SystemAchivementStatistics,
-            CircleAchivementStatistics
+            CircleAchivementStatistics,
+            FinalizeAchivementStatistics,
+            PreInitializeForGithub
         }
     }
 }

@@ -85,5 +85,11 @@ namespace UnitusCore.Models.DataModel
             var applicationUserLoadingStatus = dbSession.Entry(this).Reference(a => a.ApplicationUser);
             if (!applicationUserLoadingStatus.IsLoaded) await applicationUserLoadingStatus.LoadAsync();
         }
+
+        public async Task LoadBelongingCircles(ApplicationDbContext dbSession)
+        {
+            var circlesLoadingStatus = dbSession.Entry(this).Collection(a => a.BelongedCircles);
+            if (!circlesLoadingStatus.IsLoaded) await circlesLoadingStatus.LoadAsync();
+        }
     }
 }

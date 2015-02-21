@@ -21,6 +21,8 @@ namespace UnitusCore.Models.DataModel
             if (!memberTargetUserStatus.IsLoaded) await memberTargetUserStatus.LoadAsync();
             var userTargetStatus = dbContext.Entry(this.TargetUser).Reference(a => a.ApplicationUser);
             if (!userTargetStatus.IsLoaded) await userTargetStatus.LoadAsync();
+            var circleStatus = dbContext.Entry(this).Reference(a => a.TargetCircle);
+            if (!circleStatus.IsLoaded) await circleStatus.LoadAsync();
         }
     }
 }

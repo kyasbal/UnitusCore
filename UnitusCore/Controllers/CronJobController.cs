@@ -58,6 +58,14 @@ namespace UnitusCore.Controllers
             StringBuilder builder=new StringBuilder();
             if (
                 await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub, 1,
+                        async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        })
+                        &&
+                await
                     st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
                         async q =>
                         {
@@ -83,6 +91,14 @@ namespace UnitusCore.Controllers
                 &&
                 await
                     st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
+                        async q =>
+                        {
+                            await
+                                ExecuteQueues(q, st);
+                        })
+                 &&
+                await
+                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics,1, 
                         async q =>
                         {
                             await
@@ -117,30 +133,30 @@ namespace UnitusCore.Controllers
             if (!cronId.Equals(ValidCronId)) return null;
             StatisticTaskQueueStorage taskQueueStorage = new StatisticTaskQueueStorage(new QueueStorageConnection());
             AchivementStatisticsStorage acStorage=new AchivementStatisticsStorage(new TableStorageConnection());
+            await
+                taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub,
+                    Url.Content("/cron/queue/preinit/github"), "");
             foreach (ApplicationUser user in DbSession.Users)
             {
-                StatisticTaskQueueStorage queueStorage=taskQueueStorage;
-                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics,Url.Content("/cron/queue/member/stat"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics,Url.Content("/cron/queue/member/stat"),
                     new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
             foreach (ApplicationUser user in DbSession.Users)
             {
-                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
-                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, Url.Content("/cron/queue/member/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, Url.Content("/cron/queue/member/achivement"),
                     new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
             foreach (Circle circle in DbSession.Circles)
             {
-                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
-                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, Url.Content("/cron/queue/circle/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, Url.Content("/cron/queue/circle/achivement"),
                     new CircleAchivementStatisticsArgument(circle.Id.ToString(), ValidCronId));
             }
             foreach (string achivementName in acStorage.GetAchivementNames())
             {
-                StatisticTaskQueueStorage queueStorage = taskQueueStorage;
-                await queueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics, Url.Content("/cron/queue/system/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics, Url.Content("/cron/queue/system/achivement"),
                     new SystemAchivementStatisticsArgument(achivementName, ValidCronId));
             }
+            await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics, Url.Content("/cron/queue/finalize/achivement"),"");
             return Json(true);
         }
 
@@ -207,6 +223,50 @@ namespace UnitusCore.Controllers
             Circle circle = await DbSession.Circles.FindAsync(Guid.Parse(arg.CircleId));
             await storage.UpdateCircleStatistics(DbSession, circle);
             await logger.End("Success" + arg.CircleId);
+            return Json(true);
+        }
+
+        [Route("cron/queue/finalize/achivement")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunFinalizeAchivementAction()
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.FinalizeAchivement,"");
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(tableStorageConnection);
+            await storage.RemoveAllCachedResult();
+            await logger.End("Success achivement finalize");
+            return Json(true);
+        }
+
+        [Route("cron/queue/preinit/github")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunPreInitializeGithubAssociationCheckUserIdPair()
+        {
+            var tableStorageConnection = new TableStorageConnection();
+            StatisticJobLogStorage jobLog = new StatisticJobLogStorage(tableStorageConnection);
+            var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.InitializeGithubAssociationChrckUserIdPair, "");
+            IdPairContainerStorage pairStorage=new IdPairContainerStorage(new TableStorageConnection());
+            GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
+            HashSet<Person> p=new HashSet<Person>();
+            foreach (var people in DbSession.People)
+            {
+                if (await pairStorage.IsStored(people.Id.ToString(), IdPairContainer.PersonId, IdPairContainer.GithubLogin))
+                {
+                    continue;
+                }
+                p.Add(people);
+            }
+            foreach (Person people in p)
+            {
+                await people.LoadApplicationUser(DbSession);
+                if(!await associationManager.IsAssociationEnabled(people.ApplicationUser))continue;
+                var client = associationManager.GetAuthenticatedClient(people.ApplicationUser);
+                var githubUser = await client.User.Current();
+                await pairStorage.MakePair(people.Id.ToString(), githubUser.Login, IdPairContainer.PersonId, IdPairContainer.GithubLogin);
+                await pairStorage.MakePair(people.ApplicationUser.Id, githubUser.Login, IdPairContainer.UserId, IdPairContainer.GithubLogin);
+            }
+            await logger.End("Success achivement finalize");
             return Json(true);
         }
 

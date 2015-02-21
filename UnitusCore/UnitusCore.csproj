@@ -330,12 +330,15 @@
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatistics.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForCircle.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForSystem.cs" />
+    <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\IdPairContainer.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
+    <Compile Include="Storage\IdPairContainerStorage.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
     <Compile Include="Storage\StatisticJobLogStorage.cs" />
     <Compile Include="Storage\StatisticTaskQueueStorage.cs" />
@@ -378,6 +381,7 @@
     <Compile Include="Util\IdGenerator.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
+    <Compile Include="Util\RawJsonMediaTypeFormatter.cs" />
     <Compile Include="Util\SendGridManager.cs" />
     <Compile Include="Util\StorageUtil.cs" />
     <Compile Include="Util\UtilExtensions.cs" />
