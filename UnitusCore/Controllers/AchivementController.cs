@@ -7,8 +7,10 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.Identity;
 using Octokit.Helpers;
 using UnitusCore.Attributes;
+using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
 using UnitusCore.Storage;
@@ -31,22 +33,51 @@ namespace UnitusCore.Controllers
         [Authorize]
         public async Task<IHttpActionResult> GetAchivementList(string validationToken)
         {
+            return await AchivementListResult(validationToken, DbSession, CurrentUser);
+        }
+
+        [HttpGet]
+        [UnitusCorsEnabled]
+        [Route("Achivements")]
+        public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName)
+        {
+            ApplicationUser user = await UserManager.FindByNameAsync(userName);
+            return await AchivementListResult(validationToken,DbSession, user);
+        }
+
+        private async Task<IHttpActionResult> AchivementListResult(string validationToken,ApplicationDbContext dbSession, ApplicationUser user)
+        {
             return await this.OnValidToken(validationToken, async () =>
             {
-                AchivementListResponse response=new AchivementListResponse();
-                AchivementStatisticsStorage achivementStatistics=new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
+                AchivementListResponse response = new AchivementListResponse();
+                AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(
+                    new TableStorageConnection(),dbSession);
                 response.Achivements = (await achivementStatistics.EachForUserAchivements<AchivementListElement>(
-                    CurrentUser.Id,
-                    (a) =>
-                    {
-                        var body=Task.Run(async()=>await achivementStatistics.RetrieveAchivementBody(a.AchivementId)).Result;
-                        return new AchivementListElement(a.AchivementId,a.CurrentProgress,a.ProgressDiff,a.IsAwarded,a.IsAwarded?a.AwardedDate.FromUnixTime().ToString("d"):"",a.IsAwarded ? body.BadgeImageUrl : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
-                    }
+                    user.Id,
+                    getAsAchivementListElement
                     )).ToArray();
 
                 return Json(ResultContainer<AchivementListResponse>.GenerateSuccessResult(response));
             });
         }
+
+        private AchivementListElement getAsAchivementListElement(SingleUserAchivementStatisticsByDay a,AchivementStatisticsStorage ass)
+        {
+            var body =
+                Task.Run(async ()=>await DebugTask(ass,a.AchivementId)).Result;
+            return new AchivementListElement(a.AchivementId, a.CurrentProgress, a.ProgressDiff, a.IsAwarded,
+                a.IsAwarded ? a.AwardedDate.FromUnixTime().ToString("d") : "",
+                a.IsAwarded
+                    ? body.BadgeImageUrl
+                    : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
+        }
+
+        private async Task<AchivementBody> DebugTask(AchivementStatisticsStorage ass,string achivementId)
+        {
+            return await ass.RetrieveAchivementBody(achivementId);
+        }
+
+
 
         [HttpGet]
         [UnitusCorsEnabled]
@@ -72,8 +103,8 @@ namespace UnitusCore.Controllers
                         result.AwardedRate = body.AwardedRate;
                         result.AwardedPerson = body.AwardedCount;
                         result.SumPerson = body.SumPeople;
-                        result.ProgressGraphPoints = await pg.GenerateFromLastForUser(5, new TimeSpan(1, 0, 0, 0));
-                        result.AcuireRateGraphPoints = await pg.GenerateFromLastForSystem(5, new TimeSpan(1, 0, 0, 0));
+                        result.ProgressGraphPoints = await pg.GenerateFromLastForUser(12, new TimeSpan(1, 0, 0, 0));
+                        result.AcuireRateGraphPoints = await pg.GenerateFromLastForSystem(12, new TimeSpan(1, 0, 0, 0));
                         await CurrentUserWithPerson.PersonData.LoadBelongingCircles(DbSession);
                         List<AchivementResponseCircleElement> circleElements = new List<AchivementResponseCircleElement>();
                         foreach (MemberStatus stat in CurrentUser.PersonData.BelongedCircles)
@@ -128,7 +159,7 @@ namespace UnitusCore.Controllers
 
         public class AchivementListElement
         {
-            public AchivementListElement(string achivementName, double currentProgress, double progressDiff, bool isAwarded, string awardedDate,string badgeImageUrl)
+            public AchivementListElement(string achivementName, double? currentProgress, double? progressDiff, bool isAwarded, string awardedDate,string badgeImageUrl)
             {
                 AchivementName = achivementName;
                 CurrentProgress = currentProgress;
@@ -144,9 +175,9 @@ namespace UnitusCore.Controllers
 
             public string AchivementName { get; set; }
 
-            public double CurrentProgress { get; set; }
+            public double? CurrentProgress { get; set; }
 
-            public double ProgressDiff { get; set; }
+            public double? ProgressDiff { get; set; }
 
             public bool IsAwarded { get; set; }
 
@@ -177,9 +208,9 @@ namespace UnitusCore.Controllers
 
             public int SumPerson { get; set; }
 
-            public string[][] ProgressGraphPoints { get; set; }
+            public dynamic ProgressGraphPoints { get; set; }
 
-            public string[][] AcuireRateGraphPoints { get; set; }
+            public dynamic AcuireRateGraphPoints { get; set; }
 
             public AchivementResponseCircleElement[] CircleStatistics { get; set; }
         }

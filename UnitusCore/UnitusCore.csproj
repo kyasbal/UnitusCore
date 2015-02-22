@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitusCore</RootNamespace>
     <AssemblyName>UnitusCore</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
@@ -41,10 +41,12 @@
         </ObjectGroup>
       </Objects>
     </PublishDatabaseSettings>
+    <PublishDatabases>false</PublishDatabases>
+    <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -60,6 +62,9 @@
         </ObjectGroup>
       </Objects>
     </PublishDatabaseSettings>
+    <ExcludeGeneratedDebugSymbol>false</ExcludeGeneratedDebugSymbol>
+    <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -340,6 +345,7 @@
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
+    <Compile Include="Storage\DataModels\TimeLine\CircleTimeLineEntity.cs" />
     <Compile Include="Storage\DbCacheStorage.cs" />
     <Compile Include="Storage\IdPairContainerStorage.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
@@ -428,6 +434,8 @@
     <Content Include="bower_components\bootstrap\js\tab.js" />
     <Content Include="bower_components\bootstrap\js\tooltip.js" />
     <Content Include="bower_components\bootstrap\js\transition.js" />
+    <Content Include="bower_components\highcharts\highcharts.js" />
+    <Content Include="bower_components\highcharts\theme.js" />
     <Content Include="bower_components\jade\.gitignore" />
     <Content Include="bower_components\jade\.gitmodules" />
     <Content Include="bower_components\jade\bin\jade.js" />
@@ -716,6 +724,7 @@
     <Content Include="js\lib\models\dashboard.js" />
     <Content Include="js\lib\models\user.js" />
     <Content Include="js\lib\templates\achivement\index.js" />
+    <Content Include="js\lib\templates\achivement\show.js" />
     <Content Include="js\lib\templates\dashboard\achivement.js" />
     <Content Include="js\lib\templates\dashboard\admin_menu.js" />
     <Content Include="js\lib\templates\dashboard\admin_panel.js" />
@@ -724,6 +733,7 @@
     <Content Include="js\lib\templates\dashboard\user_circleList.js" />
     <Content Include="js\lib\templates\dashboard\user_panel.js" />
     <Content Include="js\lib\templates\dashboard\user_profile.js" />
+    <Content Include="js\lib\views\dashboard\achivement.js" />
     <Content Include="js\lib\views\dashboard\admin_panel.js" />
     <Content Include="js\lib\views\dashboard\basic_panel.js" />
     <Content Include="js\lib\views\dashboard\dashboard.js" />

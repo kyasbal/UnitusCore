@@ -41,7 +41,7 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel'], function($, Ba
       this.admin_panel = option.admin_panel;
       this.admin_panel.on("change:isOpen", (function(_this) {
         return function() {
-          return _this.$el.toggleClass("hidden_panel");
+          return _this.$el.toggleClass("hidden_panel_l");
         };
       })(this));
       return this.renderAdminPanel();

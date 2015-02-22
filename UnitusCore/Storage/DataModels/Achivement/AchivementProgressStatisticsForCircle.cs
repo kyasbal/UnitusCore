@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using Octokit.Helpers;
+using UnitusCore.Util;
 
 namespace UnitusCore.Storage.DataModels.Achivement
 {
@@ -39,10 +41,29 @@ namespace UnitusCore.Storage.DataModels.Achivement
         }
 
         [IgnoreProperty]
-        public string AchivementName
+        public  string AchivementName
         {
             get { return RowKey; }
             set { RowKey = value; }
         }
+    }
+
+    public class AchivementProgressStatisticsForCircleLog : AchivementProgressStatisticsForCircle
+    {
+        public AchivementProgressStatisticsForCircleLog()
+        {
+            
+        }
+
+        public AchivementProgressStatisticsForCircleLog(AchivementProgressStatisticsForCircle circleStat) : base(circleStat.AchivementName,circleStat.CircleId,circleStat.AvrProgress,circleStat.SumPeople,circleStat.AwardedCount,circleStat.AwardedRate)
+        {
+            LoggedTime = DateTime.Today;
+            PartitionKey = AchivementName + "-" + CircleId;
+            RowKey = LoggedTime.ToUnixTime().ToString();
+        }
+
+        public DateTime LoggedTime { get; set; }
+
+        
     }
 }

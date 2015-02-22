@@ -1,6 +1,7 @@
 .table {
   display: table;
   width: 100%;
+  margin-bottom: 0px;
   height: 100%; }
 
 .table-cell {
@@ -20,6 +21,20 @@
   background-color: rgba(0, 0, 0, 0.2);
   left: 0px;
   top: 0px; }
+
+.hidden_panel_r {
+  -webkit-transform: translateX(100%);
+  -moz-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  -o-transform: translateX(100%);
+  transform: translateX(100%); }
+
+.hidden_panel_l {
+  -webkit-transform: translateX(-100%);
+  -moz-transform: translateX(-100%);
+  -ms-transform: translateX(-100%);
+  -o-transform: translateX(-100%);
+  transform: translateX(-100%); }
 
 body, html {
   height: 100%;
@@ -61,13 +76,6 @@ section#panel {
   -ms-transition: -ms-transform 0.5s ease-out;
   -o-transition: -o-transform 0.5s ease-out;
   transition: transform 0.5s ease-out; }
-
-#adminUser.hidden_panel {
-  -webkit-transform: translateX(-100%);
-  -moz-transform: translateX(-100%);
-  -ms-transform: translateX(-100%);
-  -o-transform: translateX(-100%);
-  transform: translateX(-100%); }
 
 #adminUser {
   z-index: 10; }
@@ -460,10 +468,18 @@ section#header {
     padding: 0px 15px;
     border-right: solid 2px #888;
     border-bottom: solid 2px #888;
-    min-height: 216px; }
-    #allUserAchivement .achive_badge:nth-child(4n+1) {
+    min-height: 216px;
+    cursor: pointer; }
+    #allUserAchivement .achive_badge:hover .image-wrap {
+      margin-top: -4px; }
+    #allUserAchivement .achive_badge:nth-of-type(4n+2) {
       border-right: none; }
     #allUserAchivement .achive_badge .image-wrap {
+      -webkit-transition: margin 0.2s ease-out;
+      -moz-transition: margin 0.2s ease-out;
+      -ms-transition: margin 0.2s ease-out;
+      -o-transition: margin 0.2s ease-out;
+      transition: margin 0.2s ease-out;
       width: 100%; }
       #allUserAchivement .achive_badge .image-wrap img {
         display: block;
@@ -500,22 +516,220 @@ section#header {
   @media (max-width: 1200px) {
     #allUserAchivement .achive_badge {
       width: 33.33%; }
-      #allUserAchivement .achive_badge:nth-child(4n+1) {
+      #allUserAchivement .achive_badge:nth-of-type(4n+2) {
         border-right: solid 2px #888; }
-      #allUserAchivement .achive_badge:nth-child(3n+1) {
+      #allUserAchivement .achive_badge:nth-of-type(3n+2) {
         border-right: none; } }
   @media (max-width: 984px) {
     #allUserAchivement .achive_badge {
       width: 50%; }
-      #allUserAchivement .achive_badge:nth-child(3n+1) {
+      #allUserAchivement .achive_badge:nth-of-type(3n+2) {
         border-right: solid 2px #888; }
-      #allUserAchivement .achive_badge:nth-child(2n+1) {
+      #allUserAchivement .achive_badge:nth-of-type(2n+2) {
         border-right: none; } }
   @media (max-width: 784px) {
     #allUserAchivement .achive_badge {
       width: 100%;
       border-right: none;
       border-bottom: none; } }
+
+#achivementPanel {
+  -webkit-transition: -webkit-transform 0.5s ease-out;
+  -moz-transition: -moz-transform 0.5s ease-out;
+  -ms-transition: -ms-transform 0.5s ease-out;
+  -o-transition: -o-transform 0.5s ease-out;
+  transition: transform 0.5s ease-out;
+  position: fixed;
+  right: 0;
+  left: 460px;
+  top: 42px;
+  bottom: 0;
+  padding-left: 240px;
+  background-color: #39414D;
+  z-index: 50;
+  border-right: 2px solid #888; }
+  #achivementPanel .optionbar {
+    position: absolute;
+    background-color: #262b34;
+    height: 100%;
+    color: #888;
+    border-right: 2px solid #888;
+    width: 48px;
+    left: 0px; }
+    #achivementPanel .optionbar .close_btn {
+      font-size: 24px;
+      padding: 11px;
+      cursor: pointer; }
+    #achivementPanel .optionbar .option_title {
+      -webkit-font-smoothing: antialiased;
+      width: 224px;
+      margin: 0px 24px;
+      font-size: 24px;
+      color: whitesmoke;
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      transform: rotate(90deg);
+      -webkit-transform-origin: 1px;
+      -moz-transform-origin: 1px;
+      -ms-transform-origin: 1px;
+      -o-transform-origin: 1px;
+      transform-origin: 1px; }
+      #achivementPanel .optionbar .option_title span {
+        font-size: 19px;
+        color: #888; }
+  #achivementPanel .main {
+    position: absolute;
+    right: 0;
+    left: 48px;
+    bottom: 0;
+    top: 0; }
+    #achivementPanel .main .main_title {
+      -webkit-font-smoothing: antialiased;
+      background-color: #39414d;
+      color: whitesmoke;
+      position: relative;
+      text-align: center;
+      padding: 8px;
+      font-size: 18px; }
+      #achivementPanel .main .main_title .sub {
+        color: #ddd;
+        font-size: 16px; }
+      #achivementPanel .main .main_title .achive_progress {
+        position: absolute;
+        height: 4px;
+        left: 0px;
+        bottom: 0px;
+        z-index: 2; }
+      #achivementPanel .main .main_title .achive_progress-wrap {
+        position: absolute;
+        background-color: #676767;
+        height: 4px;
+        left: 0px;
+        bottom: 0px;
+        width: 100%;
+        z-index: 1; }
+    #achivementPanel .main .main_content {
+      height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden; }
+      #achivementPanel .main .main_content .info_panel {
+        position: relative;
+        vertical-align: top;
+        display: inline-block;
+        width: 33.3%;
+        min-width: 248px;
+        border-right: solid 2px #888;
+        border-bottom: solid 2px #888;
+        height: 264px;
+        cursor: pointer; }
+        #achivementPanel .main .main_content .info_panel.nbr {
+          border-right: none; }
+        #achivementPanel .main .main_content .info_panel.graph {
+          width: 100%;
+          border: none;
+          border-bottom: 2px solid #888;
+          height: 296px; }
+          #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container {
+            margin: 0 auto; }
+            #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container rect {
+              fill: transparent; }
+            #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container svg > text:nth-child(16) {
+              display: none; }
+        #achivementPanel .main .main_content .info_panel .info_title {
+          border-bottom: 2px solid #888;
+          background-color: #262b34;
+          color: whitesmoke;
+          text-align: center;
+          padding: 6px;
+          -webkit-font-smoothing: antialiased; }
+        #achivementPanel .main .main_content .info_panel .info_content {
+          color: whitesmoke;
+          -webkit-font-smoothing: antialiased;
+          position: relative;
+          height: 100%;
+          top: -34px;
+          padding: 8px;
+          padding-top: 42px; }
+        #achivementPanel .main .main_content .info_panel .info_content.type-pict {
+          padding: 0px;
+          padding-top: 0px; }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .percent {
+            font-size: 30px;
+            position: absolute;
+            top: 40px;
+            color: whitesmoke;
+            text-align: center;
+            width: 100%; }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box.type-2:before {
+            background-image: url("../img/pictgrams-02.png"); }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box.type-2:after {
+            background-image: url("../img/pictgrams-colored-02.png"); }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box.type-1:before {
+            background-image: url("../img/pictgrams-01.png"); }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box.type-1:after {
+            background-image: url("../img/pictgrams-colored-01.png"); }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box {
+            height: 96px;
+            width: 96px;
+            display: block;
+            margin: 0 auto;
+            position: relative; }
+            #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box:before {
+              display: block;
+              content: "";
+              position: absolute;
+              right: 0;
+              left: 0;
+              top: 0;
+              bottom: 0;
+              background-repeat: no-repeat;
+              background-size: contain;
+              background-position: center;
+              z-index: 1; }
+            #achivementPanel .main .main_content .info_panel .info_content.type-pict .img_box:after {
+              display: block;
+              content: "";
+              position: absolute;
+              right: 0;
+              left: 0;
+              top: 0;
+              bottom: 0;
+              background-repeat: no-repeat;
+              background-size: cover;
+              background-position: bottom;
+              z-index: 2;
+              background-clip: padding-box; }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .sum {
+            display: block;
+            position: absolute;
+            bottom: 18px;
+            font-size: 12px;
+            color: #888;
+            width: 100%;
+            text-align: center; }
+            #achivementPanel .main .main_content .info_panel .info_content.type-pict .sum .value {
+              font-size: 24px;
+              color: whitesmoke; }
+              #achivementPanel .main .main_content .info_panel .info_content.type-pict .sum .value span {
+                font-size: 16px;
+                color: #888;
+                text-indent: 6px;
+                display: inline-block;
+                vertical-align: bottom; }
+          #achivementPanel .main .main_content .info_panel .info_content.type-pict .diff {
+            position: absolute;
+            width: 100%;
+            bottom: 18px;
+            color: #888;
+            font-size: 12px; }
+            #achivementPanel .main .main_content .info_panel .info_content.type-pict .diff .value {
+              font-size: 20px;
+              color: whitesmoke;
+              display: absolute;
+              line-height: 20px;
+              padding: 4px; }
 
 #adminUserList table {
   width: 100%;

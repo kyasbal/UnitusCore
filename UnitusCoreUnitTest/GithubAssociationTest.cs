@@ -47,10 +47,38 @@ namespace UnitusCoreUnitTest
         [Test]
         public async void GistTest()
         {
-            var client = manager.GetAuthenticatedClientFromToken("b1526091539cf5d2ddf9b0076b68c80138cb08b8");
+            var client = manager.GetAuthenticatedClientFromToken("731dc5b4f7d2346f28751b00436df0178402a2a2");
             var user = await client.User.Current();
-            var auth=await client.Authorization.Update(user.Id, new AuthorizationUpdate());
-            var token=await manager.IsAssociationEnabled("731dc5b4f7d2346f28751b00436df0178402a2a2");
+            var repos=await manager.GetAllRepositoriesList(client);
+            foreach (var githubRepositoryIdentity in repos)
+            {
+                Console.WriteLine("{0}/{1}", githubRepositoryIdentity.OwnerName, githubRepositoryIdentity.RepoName);
+                if (client.Repository == null)
+                {
+                    Console.WriteLine("repository is null");
+                    continue;
+                }
+                try
+                {
+                    var source =
+                        await
+                            client.Repository.GetAllLanguages(githubRepositoryIdentity.OwnerName,
+                                githubRepositoryIdentity.RepoName);
+                    if (source == null)
+                    {
+                        Console.WriteLine("source is null");
+                        continue;
+                    }
+                    foreach (var allLanguage in source)
+                    {
+                        Console.WriteLine("{0}  ---{1} bytes", allLanguage.Name, allLanguage.NumberOfBytes);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("cant fetch data");
+                }
+            }
             await manager.GetGists(client);
         }
     }

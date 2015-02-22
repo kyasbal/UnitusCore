@@ -179,7 +179,7 @@ namespace UnitusCore.Storage
                 double progressDiff = achivementData != null ? progress - achivementData.CurrentProgress : double.NaN;
                 SingleUserAchivementStatisticsByDay newAchivementData=new SingleUserAchivementStatisticsByDay(achivementName,user.Id,progress==1,progress,progressDiff);
                 await _singleUserAchivementStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(newAchivementData));
-                AchivementProgressStatisticsByDay todayRecord=new AchivementProgressStatisticsByDay(achivementData.UniqueId,progress);
+                AchivementProgressStatisticsByDay todayRecord=new AchivementProgressStatisticsByDay(newAchivementData.UniqueId,progress);
                 await _achivementProgressStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(todayRecord));
             }
         }
@@ -323,13 +323,17 @@ namespace UnitusCore.Storage
         /// <param name="userIds"></param>
         /// <param name="f"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> EachForUserAchivements<T>(string userIds,Func<SingleUserAchivementStatisticsByDay,T> f)
+        public async Task<IEnumerable<T>> EachForUserAchivements<T>(string userIds,Func<SingleUserAchivementStatisticsByDay,AchivementStatisticsStorage,T> f)
         {
             HashSet<T> result = new HashSet<T>();
             foreach (string achivement in GetAchivementNames())
             {
                 var achivementData=await RetrieveAchivementProgressForUser(achivement, userIds);
-                result.Add(f(achivementData));
+                if (achivementData == null)
+                {
+                    achivementData=new SingleUserAchivementStatisticsByDay(achivement,userIds,false,double.NaN,double.NaN);
+                }
+                result.Add(f(achivementData,this));
             }
             return result;
         }

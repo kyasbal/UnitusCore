@@ -117,7 +117,7 @@ namespace UnitusCore.Controllers
             return Content(HttpStatusCode.OK, builder.ToString());
         }
 
-        private static async Task ExecuteQueues(IEnumerable<StatisticTaskQueueStorage.QueueMessageContainer> tasks, StatisticTaskQueueStorage st)
+        private  async Task ExecuteQueues(IEnumerable<StatisticTaskQueueStorage.QueueMessageContainer> tasks, StatisticTaskQueueStorage st)
         {
             foreach (StatisticTaskQueueStorage.QueueMessageContainer q in tasks)
             {
@@ -125,7 +125,7 @@ namespace UnitusCore.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var argumentObject = System.Web.Helpers.Json.Decode<object>(q.TargetArguments);
-                var response = await client.PostAsJsonAsync(q.TargetAddress, argumentObject);
+                var response = await client.PostAsJsonAsync(Url.Content(q.TargetAddress), argumentObject);
                 if (response.IsSuccessStatusCode)
                 {
                     await st.EndTask(q);
@@ -142,31 +142,31 @@ namespace UnitusCore.Controllers
             AchivementStatisticsStorage acStorage=new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
             await
     taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.GenerateCacheBeforeStat,
-        Url.Content("/cron/queue/cache"), "");
+        "/cron/queue/cache", "");
             await
                 taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub,
-                    Url.Content("/cron/queue/preinit/github"), "");
+                    "/cron/queue/preinit/github", "");
             foreach (ApplicationUser user in DbSession.Users)
             {
-                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics,Url.Content("/cron/queue/member/stat"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics,"/cron/queue/member/stat",
                     new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
             foreach (ApplicationUser user in DbSession.Users)
             {
-                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, Url.Content("/cron/queue/member/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, "/cron/queue/member/achivement",
                     new MemberStatisticsArgument(user.Id.ToString(), ValidCronId));
             }
             foreach (Circle circle in DbSession.Circles)
             {
-                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, Url.Content("/cron/queue/circle/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, "/cron/queue/circle/achivement",
                     new CircleAchivementStatisticsArgument(circle.Id.ToString(), ValidCronId));
             }
             foreach (string achivementName in acStorage.GetAchivementNames())
             {
-                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics, Url.Content("/cron/queue/system/achivement"),
+                await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics, "/cron/queue/system/achivement",
                     new SystemAchivementStatisticsArgument(achivementName, ValidCronId));
             }
-            await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics, Url.Content("/cron/queue/finalize/achivement"),"");
+            await taskQueueStorage.AddQueue(StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics, "/cron/queue/finalize/achivement","");
             return Json(true);
         }
 
@@ -279,6 +279,7 @@ namespace UnitusCore.Controllers
                 await pairStorage.MakePair(people.Id.ToString(), githubUser.Login, IdPairContainer.PersonId, IdPairContainer.GithubLogin);
                 await pairStorage.MakePair(people.ApplicationUser.Id, githubUser.Login, IdPairContainer.UserId, IdPairContainer.GithubLogin);
             }
+            await DbSession.SaveChangesAsync();
             await logger.End("Success achivement finalize");
             return Json(true);
         }
