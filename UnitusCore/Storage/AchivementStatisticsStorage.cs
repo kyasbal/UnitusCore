@@ -17,19 +17,21 @@ namespace UnitusCore.Storage
 {
     public class AchivementStatisticsStorage
     {
-        private const string SingleUserAchivementStatisticsByDayName = "SingleUserAchivementStatisticsByDay";
+        private const string SingleUserAchivementStatisticsByDayTableName = "SingleUserAchivementStatisticsByDay";
 
-        private const string AchivementBodyName = "AchivementBody";
+        private const string AchivementBodyTableName = "AchivementBody";
 
-        private const string AchivementProgressStatisticsByDayName = "AchivementProgressStatisticsByDay";
+        private const string AchivementProgressStatisticsByDayTableName = "AchivementProgressStatisticsByDay";
 
-        private const string AchivementProgressStatisticsForCircleName = "AchivementStatisticsForCircle";
+        private const string AchivementProgressStatisticsForCircleTableName = "AchivementStatisticsForCircle";
 
-        private const string AchivementRankingForCircle = "AchivementRankingForCircle";
+        private const string AchivementRankingForCircleTableName = "AchivementRankingForCircle";
 
-        private const string AchivementProgressStatisticsForSystemName = "AchivementStatisticsForSystem";
+        private const string AchivementProgressStatisticsForSystemTableName = "AchivementStatisticsForSystem";
 
         private const string AchivementDetailCacheTableName = "AchivementDetailCache";
+
+        private const string AchivementProgressLogForCircleTableName = "AchivementProgressLogForCircle";
 
         private static Dictionary<string, Func<ContributeStatisticsByDay, double>> _achivementsByContributesStatistics = new Dictionary
             <string, Func<ContributeStatisticsByDay, double>>()
@@ -85,6 +87,8 @@ namespace UnitusCore.Storage
 
         private readonly CloudTable _achivementDetailCacheTable;
 
+        private readonly CloudTable _achivementProgressLogForCircleTable;
+
         public IEnumerable<string> GetAchivementNames()
         {
             foreach (var achivement in _achivementsByContributesStatistics)
@@ -97,13 +101,14 @@ namespace UnitusCore.Storage
         {
             _storageConnection = storageConnection;
             _contributeStorage=new ContributeStatisticsByDayStorage(storageConnection,dbSession);
-            _singleUserAchivementStatisticsByDayTable = InitCloudTable(SingleUserAchivementStatisticsByDayName);
-            _achivementBodyTable = InitCloudTable(AchivementBodyName);
-            _achivementProgressStatisticsByDayTable = InitCloudTable(AchivementProgressStatisticsByDayName);
-            _achivementStatisticsForCircleTable = InitCloudTable(AchivementProgressStatisticsForCircleName);
-            _achivementRankingForCircleTable = InitCloudTable(AchivementRankingForCircle);
-            _achivementStatisticsForSystemTable = InitCloudTable(AchivementProgressStatisticsForSystemName);
+            _singleUserAchivementStatisticsByDayTable = InitCloudTable(SingleUserAchivementStatisticsByDayTableName);
+            _achivementBodyTable = InitCloudTable(AchivementBodyTableName);
+            _achivementProgressStatisticsByDayTable = InitCloudTable(AchivementProgressStatisticsByDayTableName);
+            _achivementStatisticsForCircleTable = InitCloudTable(AchivementProgressStatisticsForCircleTableName);
+            _achivementRankingForCircleTable = InitCloudTable(AchivementRankingForCircleTableName);
+            _achivementStatisticsForSystemTable = InitCloudTable(AchivementProgressStatisticsForSystemTableName);
             _achivementDetailCacheTable = InitCloudTable(AchivementDetailCacheTableName);
+            _achivementProgressLogForCircleTable = InitCloudTable(AchivementProgressLogForCircleTableName);
         }
 
         private CloudTable InitCloudTable(string referenceName)
@@ -261,6 +266,17 @@ namespace UnitusCore.Storage
             return (AchivementProgressStatisticsForSystem)retrieveResult.Result;
         }
 
+        private async Task<AchivementProgressStatisticsForCircleLog> RetrieveProgressForCircle(string achivementName,string circleId,
+            DateTime time)
+        {
+            TableResult retrieveResult =
+                await
+                    _achivementProgressLogForCircleTable.ExecuteAsync(
+                        TableOperation.Retrieve<AchivementProgressStatisticsForCircleLog>(
+                            achivementName + "-" + circleId, time.ToUnixTime().ToString()));
+            return (AchivementProgressStatisticsForCircleLog) retrieveResult.Result;
+        }
+
 
         public async Task UpdateCircleStatistics(ApplicationDbContext dbContext,Circle targetCircle)
         {
@@ -272,9 +288,10 @@ namespace UnitusCore.Storage
                 int awardedCount = 0;
                 double sumProgress = 0;
                 List<SingleUserAchivementStatisticsByDay> userAchivementStatistics=new List<SingleUserAchivementStatisticsByDay>();
-                foreach (string userId in memberUserIds)
+                foreach (string userId in memberUserIds) //ユーザー名とってくる
                 {
-                    SingleUserAchivementStatisticsByDay data = await RetrieveAchivementProgressForUser(achivementId, userId);
+                    SingleUserAchivementStatisticsByDay data =
+                        await RetrieveAchivementProgressForUser(achivementId, userId);//ユーザーの前回のログ
                     if (data != null)
                     {
                         memberCount++;
@@ -282,11 +299,17 @@ namespace UnitusCore.Storage
                         sumProgress += data.CurrentProgress;
                         userAchivementStatistics.Add(data);
                     }
-                    AchivementProgressStatisticsForCircle circleData =
+                }
+                //データの作成&挿入
+                AchivementProgressStatisticsForCircle circleData =
                         new AchivementProgressStatisticsForCircle(achivementId, targetCircle.Id.ToString(),
                             sumProgress/memberCount, memberCount, awardedCount, awardedCount/(double) memberCount);
-                    await _achivementStatisticsForCircleTable.ExecuteAsync(TableOperation.InsertOrReplace(circleData));
-                }
+                await _achivementStatisticsForCircleTable.ExecuteAsync(TableOperation.InsertOrReplace(circleData));
+                
+                //時間ベースのほうのデータも作成
+                AchivementProgressStatisticsForCircleLog circleDataLog=new AchivementProgressStatisticsForCircleLog(circleData);
+                await _achivementProgressLogForCircleTable.ExecuteAsync(TableOperation.InsertOrReplace(circleDataLog));
+
                     userAchivementStatistics.Sort(comparator);
                 int rank = 1;
                 foreach (var achivementStat in userAchivementStatistics)
@@ -300,11 +323,11 @@ namespace UnitusCore.Storage
             }
         }
 
-        public async Task<T> RetrieveUserAchivement<T>(string userId,string achivementName,Func<AchivementBody,SingleUserAchivementStatisticsByDay,ProgressGraphPointGenerator,T> f)
+        public async Task<T> RetrieveUserAchivement<T>(string userId, string achivementName, Func<AchivementBody, SingleUserAchivementStatisticsByDay, ProgressGraphPointGenerator, T> f, ApplicationDbContext dbContext, ApplicationUser user)
         {
             AchivementBody b = await RetrieveAchivementBody(achivementName);
             SingleUserAchivementStatisticsByDay a = await RetrieveAchivementProgressForUser(achivementName, userId);
-            return f(b,a,new ProgressGraphPointGenerator(this,a));
+            return f(b,a,new ProgressGraphPointGenerator(user,dbContext,this,a));
         }
 
         public async Task<AchivementProgressStatisticsByDay> RetrieveAchivementProgress(SingleUserAchivementStatisticsByDay parent,DateTime time)
@@ -361,42 +384,119 @@ namespace UnitusCore.Storage
 
         public class ProgressGraphPointGenerator
         {
+            private class NameDataPair
+            {
+                public NameDataPair(string[] data, string name)
+                {
+                    this.data = data;
+                    this.name = name;
+                }
+
+                public string[] data;
+
+                public string name;
+            }
+
+            private const string UserProgressHistoryLabelName = "進捗率";
+            private const string SystemProgressAvarageHistoryLabelName = "UNITUS全体の平均";
+
+            private readonly ApplicationUser _user;
+            private readonly ApplicationDbContext _dbContext;
             private readonly AchivementStatisticsStorage _storage;
             private readonly SingleUserAchivementStatisticsByDay _achivementData;
 
-            public ProgressGraphPointGenerator(AchivementStatisticsStorage storage,SingleUserAchivementStatisticsByDay achivementData)
+            public ProgressGraphPointGenerator(ApplicationUser user,ApplicationDbContext dbContext,AchivementStatisticsStorage storage,SingleUserAchivementStatisticsByDay achivementData)
             {
+                _user = user;
+                _dbContext = dbContext;
                 _storage = storage;
                 _achivementData = achivementData;
             }
-            /// <summary>
+
+            private async Task<NameDataPair> GetUserProgressHistory(DateTime beginTime,int count,TimeSpan duration)
+            {
+                List<string> progressHistory=new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    DateTime sampleTime = beginTime - MultiplyTimeSpan(duration, i);//サンプルする時刻を取得
+                    var sampledData = await _storage.RetrieveAchivementProgress(_achivementData, sampleTime);
+                    if (sampledData == null) progressHistory.Add("0");
+                    else
+                    {
+                        progressHistory.Add(sampledData.Progress.ToString());
+                    }
+                }
+                progressHistory.Reverse();
+                return new NameDataPair(progressHistory.ToArray(), UserProgressHistoryLabelName);
+            }
+
+            private async Task<NameDataPair> GetSystemProgressAverageHistory(DateTime beginTime, int count, TimeSpan duration)
+            {
+                List<string> progressHistory=new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    DateTime sampleTime = beginTime - MultiplyTimeSpan(duration, i);
+                    var sampledData =
+                        await _storage.RetrieveAchivementProgressForSystem(_achivementData.AchivementId, sampleTime);
+                    progressHistory.Add(sampledData==null?"0":sampledData.AveragePercentage.ToString());
+                }
+                progressHistory.Reverse();
+                return new NameDataPair(progressHistory.ToArray(), SystemProgressAvarageHistoryLabelName);
+            }
+
+            private async Task<NameDataPair> GetCircleProgressAverageHistory(DateTime beginTime,int count,TimeSpan duration,Circle circle)
+            {
+                List<string> progressHistory = new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    DateTime sampleTime = beginTime - MultiplyTimeSpan(duration, i);
+                    var sampledData =
+                        await _storage.RetrieveProgressForCircle(_achivementData.AchivementId,circle.Id.ToString(), sampleTime);
+                    progressHistory.Add(sampledData == null ? "0" : sampledData.AvrProgress.ToString());
+                }
+                progressHistory.Reverse();
+                return new NameDataPair(progressHistory.ToArray(),string.Format("「{0}」内の平均進捗率",circle.Name));
+            }
+
+          /// <summary>
             /// 進捗率のグラフ用の配列を作成
             /// </summary>
             /// <param name="count"></param>
             /// <param name="duration"></param>
             /// <returns></returns>
-            public async Task<string[][]> GenerateFromLastForUser(int count, TimeSpan duration)
+            public async Task<dynamic> GenerateFromLastForUser(int count, TimeSpan duration)
             {
+                //統計をとる最初の日を決める
                 var lastStat=await _storage.GetTodayOrYesterdayStat(_achivementData.UserId);
                 DateTime beginTime = lastStat == null ? DateTime.Today : lastStat.Timestamp.Date;
-                Func<DateTime, Task<double>> progressInjection = FromDateTimeForUserAchivementProgress;
-                if (lastStat == null) progressInjection = AlwaysZero;
+                //X軸のラベルを決定
                 List<string> dateLabels=new List<string>();
-                List<string> data=new List<string>();
                 for (int i = 0; i < count; i++)
                 {
                     DateTime sampleTime = beginTime - MultiplyTimeSpan(duration, i);
                     dateLabels.Add(sampleTime.ToString("M月d日"));
-                    data.Add((await progressInjection(sampleTime)).ToString());
                 }
                 dateLabels.Add("日付");
-                data.Add("進捗率");
                 dateLabels.Reverse();
-                data.Reverse();
-                return new string[][]
-                {
-                    dateLabels.ToArray(), data.ToArray()
-                };
+                //グラフのデータを生成する
+                List<NameDataPair> graphPoints=new List<NameDataPair>();
+                graphPoints.Add(await GetUserProgressHistory(beginTime,count,duration));
+                graphPoints.Add(await GetSystemProgressAverageHistory(beginTime,count,duration));
+                //サークルごとのグラフデータ生成
+                IEnumerable<Circle> circles = await _user.RetrieveBelongingCircles(_dbContext);
+              foreach (var circle in circles)
+              {
+                  graphPoints.Add(await GetCircleProgressAverageHistory(beginTime,count,duration,circle));
+              }
+              return new
+              {
+                  xAxis=new
+                  {
+                      categories=dateLabels.ToArray()
+                  },
+                  series=graphPoints.ToArray()
+              };
+
             }
             /// <summary>
             /// 収得率のグラフ用のデータ配列を作成

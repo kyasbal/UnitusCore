@@ -46,16 +46,16 @@ namespace UnitusCore.Models.DataModel
             if (!persondataStatus.IsLoaded)await persondataStatus.LoadAsync();
         }
 
-        public async Task<IEnumerable<string>> RetrieveCircleIds(ApplicationDbContext dbSession)
+        public async Task<IEnumerable<Circle>> RetrieveBelongingCircles(ApplicationDbContext dbSession)
         {
             await LoadPersonData(dbSession);
             var circleMemberStatus = dbSession.Entry(PersonData).Collection(a => a.BelongedCircles);
             if (!circleMemberStatus.IsLoaded) await circleMemberStatus.LoadAsync();
-            HashSet<string> circleIds=new HashSet<string>();
+            HashSet<Circle> circleIds=new HashSet<Circle>();
             foreach (MemberStatus circleStatus in PersonData.BelongedCircles.ToArray())
             {
                 await circleStatus.LoadReferencesAsync(dbSession);
-                circleIds.Add(circleStatus.TargetCircle.Id.ToString());
+                circleIds.Add(circleStatus.TargetCircle);
             }
             return circleIds;
         }

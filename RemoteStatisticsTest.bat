@@ -1,2 +1,2 @@
-REM curl -s --request POST --header "Content-Length: 0" --insecure https://core.unitus-ac.com/cron/generate/fsPh5Mj_xg
+curl -s --request POST --header "Content-Length: 0" --insecure https://core.unitus-ac.com/cron/generate/fsPh5Mj_xg
 for /L %%B in (1,1,100) do (curl -s --request POST --header "Content-Length: 0" --insecure https://core.unitus-ac.com/cron/queue/fsPh5Mj_xg)

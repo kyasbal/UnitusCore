@@ -54,30 +54,23 @@ namespace UnitusCore.Controllers
                     new TableStorageConnection(),dbSession);
                 response.Achivements = (await achivementStatistics.EachForUserAchivements<AchivementListElement>(
                     user.Id,
-                    getAsAchivementListElement
+                    GetAsAchivementListElement
                     )).ToArray();
 
                 return Json(ResultContainer<AchivementListResponse>.GenerateSuccessResult(response));
             });
         }
 
-        private AchivementListElement getAsAchivementListElement(SingleUserAchivementStatisticsByDay a,AchivementStatisticsStorage ass)
+        private AchivementListElement GetAsAchivementListElement(SingleUserAchivementStatisticsByDay a,AchivementStatisticsStorage ass)
         {
             var body =
-                Task.Run(async ()=>await DebugTask(ass,a.AchivementId)).Result;
+                Task.Run(async ()=>await ass.RetrieveAchivementBody(a.AchivementId)).Result;
             return new AchivementListElement(a.AchivementId, a.CurrentProgress, a.ProgressDiff, a.IsAwarded,
                 a.IsAwarded ? a.AwardedDate.FromUnixTime().ToString("d") : "",
                 a.IsAwarded
                     ? body.BadgeImageUrl
                     : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
         }
-
-        private async Task<AchivementBody> DebugTask(AchivementStatisticsStorage ass,string achivementId)
-        {
-            return await ass.RetrieveAchivementBody(achivementId);
-        }
-
-
 
         [HttpGet]
         [UnitusCorsEnabled]
@@ -142,7 +135,7 @@ namespace UnitusCore.Controllers
                         }
                         result.CircleStatistics = circleElements.ToArray();
                         return result;
-                    });
+                    },DbSession,CurrentUser);
                     return
                         System.Web.Helpers.Json.Encode(
                             ResultContainer<AchivementResponse>.GenerateSuccessResult(response));
