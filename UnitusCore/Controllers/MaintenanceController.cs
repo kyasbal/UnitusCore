@@ -20,5 +20,13 @@ namespace UnitusCore.Controllers
             await storage.GenerateToAdjustAchivementBody();
             return Json(true);
         }
+        [HttpPost]
+        [Route("Maintenance/Achivements/AdjustCategories")]
+        public async Task<IHttpActionResult> GenerateToAdjustAchivementCategories()
+        {
+            AchivementStatisticsStorage storage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
+            await storage.Maintenance_GenerateAchivementCategoriesForExisitingAchivementBody();
+            return Json(true);
+        }
     }
 }

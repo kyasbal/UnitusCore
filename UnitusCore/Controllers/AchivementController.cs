@@ -31,21 +31,21 @@ namespace UnitusCore.Controllers
         [UnitusCorsEnabled]
         [Route("Achivements")]
         [Authorize]
-        public async Task<IHttpActionResult> GetAchivementList(string validationToken)
+        public async Task<IHttpActionResult> GetAchivementList(string validationToken,string achivementCategory="全て")
         {
-            return await AchivementListResult(validationToken, DbSession, CurrentUser);
+            return await AchivementListResult(validationToken, DbSession, CurrentUser,achivementCategory);
         }
 
         [HttpGet]
         [UnitusCorsEnabled]
         [Route("Achivements")]
-        public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName)
+        public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName,string achivementCategory="全て")
         {
             ApplicationUser user = await UserManager.FindByNameAsync(userName);
-            return await AchivementListResult(validationToken,DbSession, user);
+            return await AchivementListResult(validationToken,DbSession, user,achivementCategory);
         }
 
-        private async Task<IHttpActionResult> AchivementListResult(string validationToken,ApplicationDbContext dbSession, ApplicationUser user)
+        private async Task<IHttpActionResult> AchivementListResult(string validationToken, ApplicationDbContext dbSession, ApplicationUser user, string achivementCategory)
         {
             return await this.OnValidToken(validationToken, async () =>
             {
@@ -54,7 +54,8 @@ namespace UnitusCore.Controllers
                     new TableStorageConnection(),dbSession);
                 response.Achivements = (await achivementStatistics.EachForUserAchivements<AchivementListElement>(
                     user.Id,
-                    GetAsAchivementListElement
+                    GetAsAchivementListElement,
+                    achivementCategory
                     )).ToArray();
 
                 return Json(ResultContainer<AchivementListResponse>.GenerateSuccessResult(response));

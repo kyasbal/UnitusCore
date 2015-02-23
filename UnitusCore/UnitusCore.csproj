@@ -335,6 +335,7 @@
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatistics.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForCircle.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementProgressStatisticsForSystem.cs" />
+    <Compile Include="Storage\DataModels\Achivement\CategoryAchivementPair.cs" />
     <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\CircleMemberCache.cs" />

@@ -11,6 +11,8 @@ using UnitusCore.Attributes;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
+using UnitusCore.Storage;
+using UnitusCore.Storage.Base;
 using UnitusCore.Util;
 using WebGrease.Css.Extensions;
 
@@ -30,7 +32,7 @@ namespace UnitusCore.Controllers
             {
                 PermissionManager permission = new PermissionManager(DbSession, UserManager);
                 GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
-
+                AchivementStatisticsStorage achivementStatisticsStorage=new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
                 return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
                     new GetDashboardStatusAjaxResponse(
                         permission.CheckPermission("Administrator", User.Identity.Name),
@@ -38,7 +40,7 @@ namespace UnitusCore.Controllers
                         CurrentUserWithPerson.Email,
                         await manager.GetAvatarUri(CurrentUserWithPerson.Email),
                         (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, CurrentUserWithPerson)))
-                        , await GetUserProfile())));
+                        , await GetUserProfile(),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
             });
         }
 
@@ -49,6 +51,7 @@ namespace UnitusCore.Controllers
         [Route("Dashboard/Dummy")]
         public async Task<IHttpActionResult> GetDashboardStatusDummy(string validationToken)
         {
+            AchivementStatisticsStorage achivementStatisticsStorage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
             return await this.OnValidToken(validationToken, async () =>
             {
                 return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
@@ -58,7 +61,7 @@ namespace UnitusCore.Controllers
                         "darafu@gmail.com",
                         "https://avatars2.githubusercontent.com/u/230541?v=3&s=460",
                         new CircleBelongingStatus[] { new CircleBelongingStatus("ダラフ株式会社", "HelloID", true), new CircleBelongingStatus("EspicaCompute", "IDIDIDIDIDIDIDIDIDIID", false), },
-                        new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false),"")))
+                        new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false),""),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray()))
                     );
             });
         }
@@ -107,7 +110,7 @@ namespace UnitusCore.Controllers
 
         public class GetDashboardStatusAjaxResponse
         {
-            public GetDashboardStatusAjaxResponse(bool isAdministrator, string name, string userName, string avatarUri, CircleBelongingStatus[] circleBelonging, DetailedProfile profile)
+            public GetDashboardStatusAjaxResponse(bool isAdministrator, string name, string userName, string avatarUri, CircleBelongingStatus[] circleBelonging, DetailedProfile profile, string[] achivementCategories)
             {
                 IsAdministrator = isAdministrator;
                 Name = name;
@@ -115,6 +118,7 @@ namespace UnitusCore.Controllers
                 AvatarUri = avatarUri;
                 CircleBelonging = circleBelonging;
                 Profile = profile;
+                AchivementCategories = achivementCategories;
             }
 
             public bool IsAdministrator { get; set; }
@@ -128,6 +132,8 @@ namespace UnitusCore.Controllers
             public DetailedProfile Profile { get; set; }
 
             public CircleBelongingStatus[] CircleBelonging { get; set; }
+
+            public string[] AchivementCategories { get; set; }
         }
 
         public class CircleBelongingStatus
