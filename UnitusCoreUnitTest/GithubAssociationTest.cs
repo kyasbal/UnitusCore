@@ -49,8 +49,7 @@ namespace UnitusCoreUnitTest
         public async void GistTest()
         {
             var client = manager.GetAuthenticatedClientFromToken("b47f54c7f2afb543f421ce7a01a4a7db6bb72140");
-            ContributionAnalysis analysis =await ContributionAnalysis.GetContributionAnalysis(client,
-                await manager.GetAllRepositoriesList(client));
+            GistAnalyzer analysis = await GistAnalyzer.GetGistAnalysis(client, "abn");
         }
     }
 }

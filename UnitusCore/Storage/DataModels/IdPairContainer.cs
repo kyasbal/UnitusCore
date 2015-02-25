@@ -14,6 +14,8 @@ namespace UnitusCore.Storage.DataModels
 
         public const string PersonId = "PersonId";
 
+        public const string AvatarAddr = "AvatarAddr";
+
         public IdPairContainer()
         {
             

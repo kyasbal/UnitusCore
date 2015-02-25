@@ -12,7 +12,7 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Storage
 {
-    public class AchivementStatisticsStorage
+    public class AchivementStatisticsStorage:TableStorageBase
     {
         private const string AchivementCategoryTableName = "AchivementCategories";
 
@@ -99,7 +99,7 @@ namespace UnitusCore.Storage
             }
         }
 
-        public AchivementStatisticsStorage(TableStorageConnection storageConnection, ApplicationDbContext dbSession)
+        public AchivementStatisticsStorage(TableStorageConnection storageConnection, ApplicationDbContext dbSession):base(storageConnection)
         {
             _storageConnection = storageConnection;
             _contributeStorage = new ContributeStatisticsByDayStorage(storageConnection, dbSession);
@@ -112,13 +112,6 @@ namespace UnitusCore.Storage
             _achivementDetailCacheTable = InitCloudTable(AchivementDetailCacheTableName);
             _achivementProgressLogForCircleTable = InitCloudTable(AchivementProgressLogForCircleTableName);
             _achivementCategoriesTable = InitCloudTable(AchivementCategoryTableName);
-        }
-
-        private CloudTable InitCloudTable(string referenceName)
-        {
-            var table = _storageConnection.TableClient.GetTableReference(referenceName);
-            table.CreateIfNotExists();
-            return table;
         }
 
         /// <summary>
@@ -479,7 +472,7 @@ namespace UnitusCore.Storage
                 {
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i); //サンプルする時刻を取得
                     var sampledData = await _storage.RetrieveAchivementProgress(_achivementData, sampleTime);
-                    if (sampledData == null) progressHistory.Add(0);;
+                    if (sampledData == null) progressHistory.Add(0);
                     else
                     {
                         progressHistory.Add(sampledData.Progress);
@@ -515,7 +508,7 @@ namespace UnitusCore.Storage
                         await
                             _storage.RetrieveProgressForCircle(_achivementData.AchivementId, circle.Id.ToString(),
                                 sampleTime);
-                    progressHistory.Add(sampledData == null ? 0 : sampledData.AvrProgress;
+                    progressHistory.Add(sampledData == null ? 0 : sampledData.AvrProgress);
                 }
                 progressHistory.Reverse();
                 return new NameDataPair(progressHistory.ToArray(), string.Format("「{0}」内の平均進捗率", circle.Name));

@@ -328,6 +328,7 @@
     <Compile Include="Storage\Base\BlobStorageConnection.cs" />
     <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
     <Compile Include="Storage\Base\QueueStorageConnection.cs" />
+    <Compile Include="Storage\Base\TableStorageBase.cs" />
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
@@ -342,6 +343,7 @@
     <Compile Include="Storage\DataModels\CollaboratorCountByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\GistStatisticsForSingleUser.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
@@ -389,6 +391,7 @@
     <Compile Include="Util\Github\ContributionAnalyzer.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />
+    <Compile Include="Util\Github\GistAnalyzer.cs" />
     <Compile Include="Util\IdGenerator.cs" />
     <Compile Include="Util\IObjectDictionaryEntity.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />

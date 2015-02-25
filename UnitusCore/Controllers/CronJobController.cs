@@ -21,6 +21,7 @@ using UnitusCore.Storage;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
+using UnitusCore.Util.Github;
 
 namespace UnitusCore.Controllers
 {
@@ -184,15 +185,19 @@ namespace UnitusCore.Controllers
                 
                 GitHubClient client = associationManager.GetAuthenticatedClient(user);
                 var st = await associationManager.GetAllRepositoryCommit(client,contributeStatistics);
-                contributeStatistics.SumAddition = st.SumAddition;
-                contributeStatistics.SumDeletion = st.SumDeletion;
+                contributeStatistics.SumAddition = st.AdditionCount;
+                contributeStatistics.SumDeletion = st.DeletionCount;
                 contributeStatistics.SumRepository = st.RepositoryCount;
-                contributeStatistics.SumCommit = st.SumCommit;
-                contributeStatistics.SumForked = st.SumForked;
-                contributeStatistics.SumForking = st.SumForking;
-                contributeStatistics.SumStaring = st.SumStared;
+                contributeStatistics.SumCommit = st.CommitCount;
+                contributeStatistics.SumForked = st.ForkedCount;
+                contributeStatistics.SumForking = st.ForkingCount;
+                contributeStatistics.SumStaring = st.StaredCount;
+                contributeStatistics.SumRepositoryWithOtherComitter = st.RepositoryCountWithOtherCommitter;
+                contributeStatistics.SumRepositoryWithOtherComitterAndAuthority =
+                    st.RepositoryCountWithOtherCommitterAndAuthority;
                 ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection(),DbSession);
-                await storage.Add(contributeStatistics,st.CollaboratorLog);
+                await storage.StoreGistAnalysis(await GistAnalyzer.GetGistAnalysis(client, arg.UserId));
+                await storage.Add(contributeStatistics,st.Collaborators);
             }
             await logger.End("Success" + user.Id);
             return Json(true);

@@ -30,18 +30,37 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(ValidationToken, async () =>
             {
-                PermissionManager permission = new PermissionManager(DbSession, UserManager);
-                GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
-                AchivementStatisticsStorage achivementStatisticsStorage=new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
-                return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
-                    new GetDashboardStatusAjaxResponse(
-                        permission.CheckPermission("Administrator", User.Identity.Name),
-                        CurrentUserWithPerson.PersonData.Name,
-                        CurrentUserWithPerson.Email,
-                        await manager.GetAvatarUri(CurrentUserWithPerson.Email),
-                        (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, CurrentUserWithPerson)))
-                        , await GetUserProfile(),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
+                return await GetDashboardResponse(CurrentUserWithPerson);
             });
+        }
+
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
+        [HttpGet]
+        [Route("Dashboard")]
+        [RoleRestrict("Administrator")]
+        public async Task<IHttpActionResult> GetDashboardStatus(string ValidationToken,string userName)
+        {
+            return await this.OnValidToken(ValidationToken, async () =>
+            {
+                return await GetDashboardResponse(await UserManager.FindByNameAsync(userName));
+            });
+        }
+
+        private async Task<IHttpActionResult> GetDashboardResponse(ApplicationUser user)
+        {
+            await user.LoadPersonData(DbSession);
+            PermissionManager permission = new PermissionManager(DbSession, UserManager);
+            GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
+            AchivementStatisticsStorage achivementStatisticsStorage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
+            return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
+                new GetDashboardStatusAjaxResponse(
+                    permission.CheckPermission("Administrator",user.UserName),
+                    user.PersonData.Name,
+                    user.Email,
+                    await manager.GetAvatarUri(user.Email),
+                    (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, user)))
+                    , await GetUserProfile(), (await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
         }
 
 
