@@ -444,13 +444,13 @@ namespace UnitusCore.Storage
         {
             private class NameDataPair
             {
-                public NameDataPair(string[] data, string name)
+                public NameDataPair(double[] data, string name)
                 {
                     this.data = data;
                     this.name = name;
                 }
 
-                public string[] data;
+                public double[] data;
 
                 public string name;
             }
@@ -474,15 +474,15 @@ namespace UnitusCore.Storage
 
             private async Task<NameDataPair> GetUserProgressHistory(DateTime beginTime, int count, TimeSpan duration)
             {
-                var progressHistory = new List<string>();
+                var progressHistory = new List<double>();
                 for (var i = 0; i < count; i++)
                 {
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i); //サンプルする時刻を取得
                     var sampledData = await _storage.RetrieveAchivementProgress(_achivementData, sampleTime);
-                    if (sampledData == null) progressHistory.Add("0");
+                    if (sampledData == null) progressHistory.Add(0);;
                     else
                     {
-                        progressHistory.Add(sampledData.Progress.ToString());
+                        progressHistory.Add(sampledData.Progress);
                     }
                 }
                 progressHistory.Reverse();
@@ -492,13 +492,13 @@ namespace UnitusCore.Storage
             private async Task<NameDataPair> GetSystemProgressAverageHistory(DateTime beginTime, int count,
                 TimeSpan duration)
             {
-                var progressHistory = new List<string>();
+                var progressHistory = new List<double>();
                 for (var i = 0; i < count; i++)
                 {
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i);
                     var sampledData =
                         await _storage.RetrieveAchivementProgressForSystem(_achivementData.AchivementId, sampleTime);
-                    progressHistory.Add(sampledData == null ? "0" : sampledData.AveragePercentage.ToString());
+                    progressHistory.Add(sampledData == null ? 0 : sampledData.AveragePercentage);
                 }
                 progressHistory.Reverse();
                 return new NameDataPair(progressHistory.ToArray(), SystemProgressAvarageHistoryLabelName);
@@ -507,7 +507,7 @@ namespace UnitusCore.Storage
             private async Task<NameDataPair> GetCircleProgressAverageHistory(DateTime beginTime, int count,
                 TimeSpan duration, Circle circle)
             {
-                var progressHistory = new List<string>();
+                var progressHistory = new List<double>();
                 for (var i = 0; i < count; i++)
                 {
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i);
@@ -515,7 +515,7 @@ namespace UnitusCore.Storage
                         await
                             _storage.RetrieveProgressForCircle(_achivementData.AchivementId, circle.Id.ToString(),
                                 sampleTime);
-                    progressHistory.Add(sampledData == null ? "0" : sampledData.AvrProgress.ToString());
+                    progressHistory.Add(sampledData == null ? 0 : sampledData.AvrProgress;
                 }
                 progressHistory.Reverse();
                 return new NameDataPair(progressHistory.ToArray(), string.Format("「{0}」内の平均進捗率", circle.Name));
@@ -539,7 +539,6 @@ namespace UnitusCore.Storage
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i);
                     dateLabels.Add(sampleTime.ToString("M月d日"));
                 }
-                dateLabels.Add("日付");
                 dateLabels.Reverse();
                 //グラフのデータを生成する
                 var graphPoints = new List<NameDataPair>();
