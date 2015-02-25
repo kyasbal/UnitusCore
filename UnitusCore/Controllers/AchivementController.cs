@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using Octokit.Helpers;
 using UnitusCore.Attributes;
 using UnitusCore.Models;
@@ -24,7 +25,7 @@ namespace UnitusCore.Controllers
     {
         public AchivementController()
         {
-            
+
         }
 
         [HttpGet]
@@ -57,8 +58,8 @@ namespace UnitusCore.Controllers
                     GetAsAchivementListElement,
                     achivementCategory
                     )).ToArray();
-
-                return Json(ResultContainer<AchivementListResponse>.GenerateSuccessResult(response));
+                return Content(HttpStatusCode.OK,  JsonConvert.SerializeObject(
+                                ResultContainer<AchivementListResponse>.GenerateSuccessResult(response), new JsonSerializerSettings() { FloatFormatHandling = FloatFormatHandling.String }), new RawJsonMediaTypeFormatter(), new MediaTypeWithQualityHeaderValue("application/json"));
             });
         }
 
@@ -82,66 +83,87 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(validationToken, async () =>
             {
                 AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
-                var responseString=await achivementStatistics.GetCacheOrCalculate(achivementName, CurrentUser.Id,async () =>
-                {
-                    var response = await await achivementStatistics.RetrieveUserAchivement(CurrentUser.Id, achivementName, async (body, forUser, pg) =>
+                var responseString =
+                    await achivementStatistics.GetCacheOrCalculate(achivementName, CurrentUser.Id, async () =>
                     {
-                        AchivementResponse result = new AchivementResponse();
-                        result.AchivementName = body.AchivementName;
-                        result.AchivementDescription = body.AchivementDescription;
-                        result.BadgeImageUrl = forUser.IsAwarded ? body.BadgeImageUrl : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1";
-                        result.CurrentProgress = forUser.CurrentProgress;
-                        result.ProgressDiff = forUser.ProgressDiff;
-                        result.IsAwarded = forUser.IsAwarded;
-                        result.AwardedDate = forUser.AwardedDate.FromUnixTime().ToString("d");
-                        result.AwardedRate = body.AwardedRate;
-                        result.AwardedPerson = body.AwardedCount;
-                        result.SumPerson = body.SumPeople;
-                        result.ProgressGraphPoints = await pg.GenerateFromLastForUser(12, new TimeSpan(1, 0, 0, 0));
-                        result.AcuireRateGraphPoints = await pg.GenerateFromLastForSystem(12, new TimeSpan(1, 0, 0, 0));
-                        await CurrentUserWithPerson.PersonData.LoadBelongingCircles(DbSession);
-                        List<AchivementResponseCircleElement> circleElements = new List<AchivementResponseCircleElement>();
-                        foreach (MemberStatus stat in CurrentUser.PersonData.BelongedCircles)
-                        {
-                            await stat.LoadReferencesAsync(DbSession);
-                            string circleId = stat.TargetCircle.Id.ToString();
-                            List<AchivementResponseCircleMemberElement> members = new List<AchivementResponseCircleMemberElement>();
-                            await stat.TargetCircle.LoadMembers(DbSession);
-                            Dictionary<string, MemberStatus> membersById = new Dictionary<string, MemberStatus>();
-                            foreach (MemberStatus circleMembers in stat.TargetCircle.Members)
-                            {
-                                await circleMembers.LoadReferencesAsync(DbSession);
-                                await circleMembers.
-                                    TargetUser.LoadApplicationUser(DbSession);
-                                membersById.Add(circleMembers.TargetUser.ApplicationUser.Id, circleMembers);
-                            }
-                            var rankList = await achivementStatistics.GetRankingList(circleId, achivementName);
-                            foreach (AchivementCircleRankingStatistics rankstatistics in rankList)
-                            {
-                                var stdata = membersById[rankstatistics.RowKey];
-                                var statistics = await achivementStatistics.RetrieveAchivementProgressForUser(achivementName,
-                                    rankstatistics.RowKey);
-                                members.Add(new AchivementResponseCircleMemberElement()
-                                {
-                                    UserId = rankstatistics.RowKey,
-                                    UserName = stdata.TargetUser.Name,
-                                    AwardedDate = statistics.IsAwarded ? statistics.AwardedDate.FromUnixTime().ToString("d") : "",
-                                    ProgressDiff = statistics.ProgressDiff,
-                                    CurrentProgress = statistics.CurrentProgress,
-                                    IsAwarded = statistics.IsAwarded,
-                                    RankingInCircle = rankstatistics.Rank
-                                });
-                            }
-                            circleElements.Add(new AchivementResponseCircleElement(stat.TargetCircle.Name, members.ToArray()));
-                        }
-                        result.CircleStatistics = circleElements.ToArray();
-                        return result;
-                    },DbSession,CurrentUser);
-                    return
-                        System.Web.Helpers.Json.Encode(
-                            ResultContainer<AchivementResponse>.GenerateSuccessResult(response));
-                });
-
+                        var response =
+                            await
+                                await
+                                    achivementStatistics.RetrieveUserAchivement(CurrentUser.Id, achivementName,
+                                        async (body, forUser, pg) =>
+                                        {
+                                            AchivementResponse result = new AchivementResponse();
+                                            result.AchivementName = body.AchivementName;
+                                            result.AchivementDescription = body.AchivementDescription;
+                                            result.BadgeImageUrl = forUser.IsAwarded
+                                                ? body.BadgeImageUrl
+                                                : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1";
+                                            result.CurrentProgress = forUser.CurrentProgress;
+                                            result.ProgressDiff = forUser.ProgressDiff;
+                                            result.IsAwarded = forUser.IsAwarded;
+                                            result.AwardedDate = forUser.AwardedDate.FromUnixTime().ToString("d");
+                                            result.AwardedRate = body.AwardedRate;
+                                            result.AwardedPerson = body.AwardedCount;
+                                            result.SumPerson = body.SumPeople;
+                                            result.ProgressGraphPoints =
+                                                await pg.GenerateFromLastForUser(12, new TimeSpan(1, 0, 0, 0));
+                                            result.AcuireRateGraphPoints =
+                                                await pg.GenerateFromLastForSystem(12, new TimeSpan(1, 0, 0, 0));
+                                            await CurrentUserWithPerson.PersonData.LoadBelongingCircles(DbSession);
+                                            List<AchivementResponseCircleElement> circleElements =
+                                                new List<AchivementResponseCircleElement>();
+                                            foreach (MemberStatus stat in CurrentUser.PersonData.BelongedCircles)
+                                            {
+                                                await stat.LoadReferencesAsync(DbSession);
+                                                string circleId = stat.TargetCircle.Id.ToString();
+                                                List<AchivementResponseCircleMemberElement> members =
+                                                    new List<AchivementResponseCircleMemberElement>();
+                                                await stat.TargetCircle.LoadMembers(DbSession);
+                                                Dictionary<string, MemberStatus> membersById =
+                                                    new Dictionary<string, MemberStatus>();
+                                                foreach (MemberStatus circleMembers in stat.TargetCircle.Members)
+                                                {
+                                                    await circleMembers.LoadReferencesAsync(DbSession);
+                                                    await circleMembers.
+                                                        TargetUser.LoadApplicationUser(DbSession);
+                                                    membersById.Add(circleMembers.TargetUser.ApplicationUser.Id,
+                                                        circleMembers);
+                                                }
+                                                var rankList =
+                                                    await achivementStatistics.GetRankingList(circleId, achivementName);
+                                                foreach (AchivementCircleRankingStatistics rankstatistics in rankList)
+                                                {
+                                                    var stdata = membersById[rankstatistics.RowKey];
+                                                    var statistics =
+                                                        await
+                                                            achivementStatistics.RetrieveAchivementProgressForUser(
+                                                                achivementName,
+                                                                rankstatistics.RowKey);
+                                                    members.Add(new AchivementResponseCircleMemberElement()
+                                                    {
+                                                        UserId = rankstatistics.RowKey,
+                                                        UserName = stdata.TargetUser.Name,
+                                                        AwardedDate =
+                                                            statistics.IsAwarded
+                                                                ? statistics.AwardedDate.FromUnixTime().ToString("d")
+                                                                : "",
+                                                        ProgressDiff =statistics.ProgressDiff,
+                                                        CurrentProgress = statistics.CurrentProgress,
+                                                        IsAwarded = statistics.IsAwarded,
+                                                        RankingInCircle = rankstatistics.Rank
+                                                    });
+                                                }
+                                                circleElements.Add(
+                                                    new AchivementResponseCircleElement(stat.TargetCircle.Name,
+                                                        members.ToArray()));
+                                            }
+                                            result.CircleStatistics = circleElements.ToArray();
+                                            return result;
+                                        }, DbSession, CurrentUser);
+                        return
+                             JsonConvert.SerializeObject(
+                                ResultContainer<AchivementResponse>.GenerateSuccessResult(response),new JsonSerializerSettings(){FloatFormatHandling = FloatFormatHandling.String});
+                    });
                 return Content(HttpStatusCode.OK, responseString,new RawJsonMediaTypeFormatter(),new MediaTypeWithQualityHeaderValue("application/json"));
             });
         }

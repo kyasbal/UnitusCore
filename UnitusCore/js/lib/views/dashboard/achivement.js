@@ -28,9 +28,9 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
                 Name: this.AchivementName,
                 AwardedDate: this.AwardedDate,
                 BadgeImageUrl: this.BadgeImageUrl,
-                CurrentProgress: (this.CurrentProgress === "NaN" ? "-" : this.CurrentProgress.toFixed(2)),
+                CurrentProgress: (this.CurrentProgress === "NaN" ? null : this.CurrentProgress.toFixed(2)),
                 IsAwarded: this.IsAwarded,
-                ProgressDiff: (this.ProgressDiff === "NaN" ? "-" : this.ProgressDiff.toFixed(2))
+                ProgressDiff: (this.ProgressDiff === "NaN" ? null : this.ProgressDiff.toFixed(2))
               });
               return achivements.add(achivement);
             });
@@ -70,12 +70,13 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
               _this.achivement.set({
                 isDetailGetting: true
               });
-              values = data.Content;
-              console.log(values.AcuireRateGraphPoints);
+              values = data;
+              console.log("kokodayo");
+              console.log(values);
               _this.achivement.set({
                 Description: values.AchivementDescription,
                 AwardedPerson: values.AwardedPerson,
-                AwardedRate: (values.AwardedRate === "NaN" ? "-" : values.AwardedRate.toFixed(2)),
+                AwardedRate: (values.AwardedRate === "NaN" ? null : values.AwardedRate.toFixed(2)),
                 AcuireRateGraphPoints: values.AcuireRateGraphPoints,
                 AwardedPerson: values.AwardedPerson,
                 CircleStatistics: values.CircleStatistics,

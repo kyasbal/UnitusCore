@@ -386,9 +386,11 @@
     <Compile Include="Storage\Base\AzureStorageConnection.cs" />
     <Compile Include="Util\CircleDatabaseHelper.cs" />
     <Compile Include="Util\CircleInvitationManager.cs" />
+    <Compile Include="Util\Github\ContributionAnalyzer.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />
     <Compile Include="Util\IdGenerator.cs" />
+    <Compile Include="Util\IObjectDictionaryEntity.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\RawJsonMediaTypeFormatter.cs" />
