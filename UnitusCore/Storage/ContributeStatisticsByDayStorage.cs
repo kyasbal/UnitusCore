@@ -29,6 +29,8 @@ namespace UnitusCore.Storage
 
         private const string GistContributeStatisticsForSingleUserTableName = "GistContributionsForSingleUser";
 
+        private const string GistContributeStatisticsByLanguageForSingleUserTablename = "GistContributionsByLanguageForSingleUser";
+
         private readonly TableStorageConnection _connection;
         private readonly ApplicationDbContext _dbContext;
 
@@ -44,8 +46,7 @@ namespace UnitusCore.Storage
 
         private readonly CloudTable _gistContributeStatisticsForSingleUser;
 
-        private Dictionary<string,string> ReplaceTables=new Dictionary<string, string>()
-            {{"#","Sharp"},{"/","Slash"}}; 
+        private readonly CloudTable _gistContributeStatisticsByLanguageForSingleUser;
 
         public ContributeStatisticsByDayStorage(TableStorageConnection connection, ApplicationDbContext dbContext):base(connection)
         {
@@ -57,6 +58,8 @@ namespace UnitusCore.Storage
             _singleUserLanguageStatisticsByDayDiffTable =InitCloudTable(SingleUserLanguageStatisticsByDayDiffTableName);
             _collaboratorCountByDayTable = InitCloudTable(CollabolatorCountByDayTableName);
             _gistContributeStatisticsForSingleUser = InitCloudTable(GistContributeStatisticsForSingleUserTableName);
+            _gistContributeStatisticsByLanguageForSingleUser =
+                InitCloudTable(GistContributeStatisticsByLanguageForSingleUserTablename);
         }
 
         public async Task Add(ContributeStatisticsByDay day, ContributionAnalysis.CollaboratorDictionary collaboratorLog)
@@ -65,10 +68,7 @@ namespace UnitusCore.Storage
             await StatCollaborators(day, collaboratorLog);
             foreach (SingleUserLanguageStatisticsByDay statEntity in day.LanguageStatistics)
             {
-                foreach (KeyValuePair<string, string> replacePair in ReplaceTables)
-                {
-                    statEntity.Language = statEntity.Language.Replace(replacePair.Key, replacePair.Value);
-                }
+                statEntity.Language=statEntity.Language.ToSafeForTable();
                 await _singleUserLanguageStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(statEntity));
             }
             await _contributeStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(day));
@@ -158,11 +158,21 @@ namespace UnitusCore.Storage
             contribute.LanguageStatistics=new HashSet<SingleUserLanguageStatisticsByDay>(result);
         }
 
+        /// <summary>
+        /// Gist関連のデータを永続化します
+        /// </summary>
+        /// <param name="gistAnalyzer"></param>
+        /// <returns></returns>
         public async Task StoreGistAnalysis(GistAnalyzer gistAnalyzer)
         {
             await
                 _gistContributeStatisticsForSingleUser.ExecuteAsync(
                     TableOperation.InsertOrReplace(gistAnalyzer.StatisticsForUser));
+            foreach (KeyValuePair<string, GistStatisticsForSingleUserByLanguage> entity in gistAnalyzer.ByLanguages)
+            {
+                await
+                    _gistContributeStatisticsByLanguageForSingleUser.ExecuteAsync(TableOperation.InsertOrReplace(entity.Value));
+            }
         }
     }
 }

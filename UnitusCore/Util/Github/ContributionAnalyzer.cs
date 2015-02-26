@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Octokit;
+using Octokit.Internal;
 
 namespace UnitusCore.Util.Github
 {
@@ -81,7 +82,7 @@ namespace UnitusCore.Util.Github
                     });
             var secoundBlock = new ActionBlock<ObtainedContributionInfo>((info) =>
             {
-                if(info.RepositoryContributors==null)return;
+                if(info.RepositoryContributors==null||info.RepositoryContributors.Count()==0)return;
                 //レポジトリに対する処理
                 StatForRepository(info.RepositoryIdentity.TargetRepository);
                 int sumCommit = info.RepositoryContributors.Sum(a => a.Total);

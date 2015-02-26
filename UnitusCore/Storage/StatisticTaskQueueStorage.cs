@@ -8,12 +8,15 @@ using System.Web;
 using System.Web.Helpers;
 using Microsoft.WindowsAzure.Storage.Queue;
 using UnitusCore.Controllers;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Storage.Base;
 
 namespace UnitusCore.Storage
 {
     public class StatisticTaskQueueStorage
     {
+        public HashSet<CronErrorLog> ErrorLogger=new HashSet<CronErrorLog>();
+
         private static Dictionary<QueuedTaskType,string> QueueNameDictionary=new Dictionary<QueuedTaskType, string>()
         {
             {QueuedTaskType.SingleUserAchivementStatistics, "singleuser-achivement-stat"},

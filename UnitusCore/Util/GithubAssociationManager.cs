@@ -92,7 +92,6 @@ namespace UnitusCore.Util
                 try
                 {
                     var client = GetAuthenticatedClientFromToken(accessToken);
-                    var user = await client.User.Current();
                     return true;
                 }
                 catch (RateLimitExceededException rlee)

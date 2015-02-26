@@ -254,7 +254,9 @@
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
     <Compile Include="Controllers\CircleUploaderController.cs" />
+    <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
+    <Compile Include="Controllers\Misc\CronErrorLog.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\GistStatisticsForSingleUser.cs" />
+    <Compile Include="Storage\DataModels\GistStatisticsForSingleUserByLanguage.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />

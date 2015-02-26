@@ -48,5 +48,16 @@ namespace UnitusCore.Util
             }
             return result;
         }
+
+        private static Dictionary<string, string> ReplaceTables = new Dictionary<string, string>() { { "#", "Sharp" }, { "/", "Slash" } }; 
+
+        public static string ToSafeForTable(this string args)
+        {
+            foreach (KeyValuePair<string, string> replacePair in ReplaceTables)
+            {
+                args = args.Replace(replacePair.Key, replacePair.Value);
+            }
+            return args;
+        }
     }
 }

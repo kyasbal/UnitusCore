@@ -28,6 +28,12 @@ namespace UnitusCore.Storage
             await _dailyStatisticsJobLogTable.ExecuteAsync(insertOperation);
         }
 
+        public void AddNSync(DailyStatisticJobAction jobType, string argument, double taskTime, string log)
+        {
+            TableOperation insertOperation = TableOperation.InsertOrReplace(new DailyStatisticsJobLog(jobType, argument, taskTime, log));
+            _dailyStatisticsJobLogTable.Execute(insertOperation);
+        }
+
         public StatisticJobLogger GetLogger()
         {
             return new StatisticJobLogger(this);
@@ -59,6 +65,12 @@ namespace UnitusCore.Storage
             {
                 _stopwatch.Stop();
                 await _storage.Add(_jobType, _argument, _stopwatch.ElapsedMilliseconds, log);
+            }
+
+            public void EndNSync(string log)
+            {
+                _stopwatch.Stop();
+                _storage.AddNSync(_jobType, _argument, _stopwatch.ElapsedMilliseconds, log);
             }
         }
     }
