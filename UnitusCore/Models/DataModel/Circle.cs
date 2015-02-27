@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -72,6 +73,12 @@ namespace UnitusCore.Models.DataModel
             }
         }
 
+        public async Task<bool> HaveAuthority(ApplicationUser user,ApplicationDbContext dbContext)
+        {
+            await LoadAdministrators(dbContext);
+            return Administrators.Any(a => a.Id.Equals(user.Id));
+        }
+
         public async Task LoadMemberInvitations(ApplicationDbContext dbContext)
         {
             var invitationStatus = dbContext.Entry(this).Collection(a => a.MemberInvitations);
@@ -81,6 +88,12 @@ namespace UnitusCore.Models.DataModel
         public async Task LoadMembers(ApplicationDbContext dbContext)
         {
             var memberStatus = dbContext.Entry(this).Collection(a => a.Members);
+            if (!memberStatus.IsLoaded) await memberStatus.LoadAsync();
+        }
+
+        public async Task LoadAdministrators(ApplicationDbContext dbContext)
+        {
+            var memberStatus = dbContext.Entry(this).Collection(a => a.Administrators);
             if (!memberStatus.IsLoaded) await memberStatus.LoadAsync();
         }
 

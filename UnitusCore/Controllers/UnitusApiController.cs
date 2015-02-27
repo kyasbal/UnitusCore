@@ -11,13 +11,19 @@ using Microsoft.Owin;
 using UnitusCore.Models;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.DataModel;
 // ReSharper disable ReplaceWithSingleCallToFirstOrDefault
 
 namespace UnitusCore.Controllers
 {
-    public class UnitusApiController : ApiController
+    public class UnitusApiController : ApiController,IUnitusController
     {
+        public UnitusApiController()
+        {
+            Ensure=new ControllerEnsure(this);
+        }
+
         public IOwinContext OwinContext
         {
             get { return Request.GetOwinContext(); }
@@ -68,6 +74,8 @@ namespace UnitusCore.Controllers
         {
             return Json(content);
         }
+
+        public ControllerEnsure Ensure { get; private set; }
 
         public async Task<ApplicationUser> FindUserFromName(string userName,bool allowNotFound=false)
         {

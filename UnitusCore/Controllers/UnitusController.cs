@@ -7,12 +7,13 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Controllers
 {
-    public class UnitusController : Controller
+    public class UnitusController : Controller,IUnitusController
     {
         public IOwinContext OwinContext
         {

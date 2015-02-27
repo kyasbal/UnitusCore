@@ -253,10 +253,13 @@
     <Compile Include="Controllers\CircleInvitationController.cs" />
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
+    <Compile Include="Controllers\CircleTagController.cs" />
     <Compile Include="Controllers\CircleUploaderController.cs" />
     <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
+    <Compile Include="Controllers\Misc\Ensure.cs" />
+    <Compile Include="Controllers\Misc\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
@@ -332,6 +335,7 @@
     <Compile Include="Storage\Base\QueueStorageConnection.cs" />
     <Compile Include="Storage\Base\TableStorageBase.cs" />
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
+    <Compile Include="Storage\CircleTagStorage.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementCircleRankingStatistics.cs" />
@@ -342,6 +346,8 @@
     <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\CircleMemberCache.cs" />
+    <Compile Include="Storage\DataModels\Circle\CircleMemberTagBody.cs" />
+    <Compile Include="Storage\DataModels\Circle\CircleMemberTagGlue.cs" />
     <Compile Include="Storage\DataModels\CollaboratorCountByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />

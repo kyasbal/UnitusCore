@@ -17,6 +17,8 @@ using UnitusCore.Attributes;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
+using UnitusCore.Storage;
+using UnitusCore.Storage.Base;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
@@ -261,13 +263,19 @@ namespace UnitusCore.Controllers
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
             Circle circle = await Circle.FromIdAsync(DbSession, circleId);
+            bool authority = await circle.HaveAuthority(CurrentUser, DbSession);
+            CircleTagStorage stroage=new CircleTagStorage(new TableStorageConnection());
             await circle.LoadMembers(DbSession);
             List<GetMemberListElement> elements = new List<GetMemberListElement>();
             foreach (MemberStatus members in circle.Members)
             {
                 await members.LoadReferencesAsync(DbSession);
-                elements.Add(new GetMemberListElement(members.TargetUser.Id.ToString(), members.TargetUser.Name,
-                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedColledge,members.TargetUser.Faculty,members.TargetUser.Major));
+                await members.TargetUser.LoadApplicationUser(DbSession);
+                GetMemberListElement memberElement = new GetMemberListElement(members.TargetUser.ApplicationUser.Id, members.TargetUser.Name,
+                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedColledge,members.TargetUser.Faculty,members.TargetUser.Major);
+                memberElement.Tags =
+                    await stroage.GetAppliedTags(circle.Id.ToString(), members.TargetUser.ApplicationUser.Id,authority);
+                elements.Add(memberElement);
             }
             return Json(ResultContainer<GetMemberList>.GenerateSuccessResult(new GetMemberList(elements.ToArray())));
         }
@@ -356,10 +364,10 @@ namespace UnitusCore.Controllers
 
         public class GetMemberListElement
         {
-            public GetMemberListElement(string personId, string name, string ocupation, Person.Cource currentGrade,
+            public GetMemberListElement(string userId, string name, string ocupation, Person.Cource currentGrade,
                 bool isActiveMember, string belongedUniversity, string faculty, string major)
             {
-                PersonId = personId;
+                UserId = userId;
                 Ocupation = ocupation;
                 CurrentGrade = currentGrade;
                 IsActiveMember = isActiveMember;
@@ -369,7 +377,7 @@ namespace UnitusCore.Controllers
                 Name = name;
             }
 
-            public string PersonId { get; set; }
+            public string UserId { get; set; }
 
             public string Ocupation { get; set; }
 
@@ -384,6 +392,8 @@ namespace UnitusCore.Controllers
             public string Faculty { get; set; }
 
             public string Major { get; set; }
+
+            public IEnumerable<string> Tags { get; set; } 
 
         }
 

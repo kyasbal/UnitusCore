@@ -59,7 +59,7 @@ namespace UnitusCore.Controllers
                     user.PersonData.Name,
                     user.Email,
                     await manager.GetAvatarUri(user.Email),
-                    (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, user)))
+                    (await GetAsArrayOfResultCircleData(await CircleDatabaseHelper.GetBelongingCircle(DbSession, user)))
                     , await GetUserProfile(), (await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
         }
 
@@ -85,15 +85,18 @@ namespace UnitusCore.Controllers
             });
         }
 
-        private async Task<CircleBelongingStatus[]> GetAsArray(IEnumerable<MemberStatus> status)
+        private async Task<CircleBelongingStatus[]> GetAsArrayOfResultCircleData(IEnumerable<MemberStatus> status)
         {
             HashSet<CircleBelongingStatus> result = new HashSet<CircleBelongingStatus>();
             foreach (var st in status)
             {
-                result.Add(new CircleBelongingStatus(st.TargetCircle.Name, st.TargetCircle.Id.ToString(),
+                var circleBelongingStatus = new CircleBelongingStatus(st.TargetCircle.Name, st.TargetCircle.Id.ToString(),
                     await
                         CircleDatabaseHelper.CheckHaveAuthorityAboutCircle(DbSession, CurrentUserWithPerson,
-                            st.TargetCircle)));
+                            st.TargetCircle));
+                CircleTagStorage stroage = new CircleTagStorage(new TableStorageConnection());
+                circleBelongingStatus.CircleTags = (await stroage.RetrieveTagBodies(circleBelongingStatus.CircleId,circleBelongingStatus.HasAuthority)).Select(a => a.Tag);
+                result.Add(circleBelongingStatus);
             }
             return result.ToArray();
         }
@@ -169,6 +172,8 @@ namespace UnitusCore.Controllers
             public string CircleId { get; set; }
 
             public bool HasAuthority { get; set; }
+
+            public IEnumerable<string> CircleTags { get; set; } 
         }
 
         public class DetailedProfile
