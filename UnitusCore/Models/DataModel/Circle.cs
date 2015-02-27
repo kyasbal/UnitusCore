@@ -85,10 +85,21 @@ namespace UnitusCore.Models.DataModel
             if (!invitationStatus.IsLoaded) await invitationStatus.LoadAsync();
         }
 
-        public async Task LoadMembers(ApplicationDbContext dbContext)
+        public async Task LoadMembers(ApplicationDbContext dbContext,bool loadReferecnces=false,bool loadAppUser=false)
         {
             var memberStatus = dbContext.Entry(this).Collection(a => a.Members);
             if (!memberStatus.IsLoaded) await memberStatus.LoadAsync();
+            if (loadReferecnces)
+            {
+                foreach (MemberStatus member in Members)
+                {
+                    await member.LoadReferencesAsync(dbContext);
+                    if (loadAppUser)
+                    {
+                        await member.TargetUser.LoadApplicationUser(dbContext);
+                    }
+                }
+            }
         }
 
         public async Task LoadAdministrators(ApplicationDbContext dbContext)
@@ -110,5 +121,10 @@ namespace UnitusCore.Models.DataModel
             return userIds;
         }
 
+        public async Task<bool> IsMember(ApplicationDbContext dbSession, string userId)
+        {
+            await LoadMembers(dbSession, true, true);
+            return (await GetMemberUserIds(dbSession)).Contains(userId);
+        }
     }
 }

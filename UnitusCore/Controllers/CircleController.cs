@@ -79,7 +79,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req.ValidationToken, async () =>
             {
-                var circle = await Circle.FromIdAsync(DbSession, req.CircleId);
+                var circle = await Ensure.ExisitingCircleId(req.CircleId);
                 DbSession.Circles.Remove(circle);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
@@ -93,16 +93,14 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         public async Task<IHttpActionResult> GetCircle(string validationToken, int Count = 20, int Offset = 0)
         {
-            return await this.OnValidToken(validationToken, () =>
+            return await this.OnValidToken(validationToken,async () =>
             {
-                DbSession.Entry(CurrentUserWithPerson.PersonData)
-                    .Collection<MemberStatus>(a => a.BelongedCircles)
-                    .Load();
+                await CurrentUserWithPerson.PersonData.LoadBelongingCircles(DbSession);
                 HashSet<Circle> resultCircle = new HashSet<Circle>();
                 HashSet<Circle> circleBelonging = new HashSet<Circle>();
                 foreach (MemberStatus belongedCircles in CurrentUserWithPerson.PersonData.BelongedCircles)
                 {
-                    DbSession.Entry(belongedCircles).Reference<Circle>(a => a.TargetCircle).Load();
+                    await belongedCircles.LoadReferencesAsync(DbSession);
                     circleBelonging.Add(belongedCircles.TargetCircle);
                 } //とりあえず自分の入っているサークルをHashSetに入れておく。
                 if (Offset > resultCircle.Count)
@@ -152,43 +150,14 @@ namespace UnitusCore.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetCircleDetailed(string validationToken, string circleId)
         {
-            Circle circle = null;
+            Circle circle = await Ensure.ExisitingCircleId(circleId);
             return await this.OnValidToken(validationToken, () =>
             {
                 return
                     Json(
                         ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(
                             GetPutCircleDetailBody.FromCircle(circle)));
-            }, (a) =>
-            {
-                return CircleIdConfirmation(circleId, a, out circle);
             });
-        }
-
-
-        private bool CircleIdConfirmation(string circleId, HashSet<string> errorMsgs, out Circle circleOutput)
-        {
-            Guid circleIdInGuid;
-            if (Guid.TryParse(circleId, out circleIdInGuid))
-            {
-                circleOutput = DbSession.Circles.Find(circleIdInGuid);
-                if (circleOutput == null)
-                {
-                    errorMsgs.Add("該当するサークルが見つかりませんでした。");
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                circleOutput = null;
-                errorMsgs.Add("与えられたGUIDが不正です。");
-                return false;
-            }
-
         }
 
         private bool CheckCircleExisiting(string circleName,string belongedTo)
@@ -262,7 +231,7 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
-            Circle circle = await Circle.FromIdAsync(DbSession, circleId);
+            Circle circle = await Ensure.ExisitingCircleId(circleId);
             bool authority = await circle.HaveAuthority(CurrentUser, DbSession);
             CircleTagStorage stroage=new CircleTagStorage(new TableStorageConnection());
             await circle.LoadMembers(DbSession);
@@ -288,8 +257,8 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req,async (r) =>
             {
-                Circle circle = await Circle.FromIdAsync(DbSession, r.CircleId);
-                Person targetUser = await Person.FromIdAsync(DbSession, r.PersonId);
+                Circle circle = await Ensure.ExisitingCircleId(req.CircleId);
+                Person targetUser = await Ensure.ExistingPersonId(req.PersonId);
                 await circle.LoadMembers(DbSession);
                 bool found = false;
                 foreach (MemberStatus memberStatus in circle.Members)
@@ -318,7 +287,7 @@ namespace UnitusCore.Controllers
         [Route("Circle")]
         public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
-            Circle circle = null;
+            Circle circle = await Ensure.ExisitingCircleId(req.CircleId);
             return await this.OnValidToken(req.ValidationToken, async () =>
             {
                 circle.Name = req.CircleName ?? circle.Name;
@@ -333,11 +302,7 @@ namespace UnitusCore.Controllers
 
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
-            },
-                (a) =>
-                {
-                    return CircleIdConfirmation(req.CircleId, a, out circle);
-                });
+            });
         }
 
         public class PutMemberStateRequest:AjaxRequestModelBase

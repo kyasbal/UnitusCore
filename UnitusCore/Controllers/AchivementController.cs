@@ -23,11 +23,6 @@ namespace UnitusCore.Controllers
 {
     public class AchivementController : UnitusApiController
     {
-        public AchivementController()
-        {
-
-        }
-
         [HttpGet]
         [UnitusCorsEnabled]
         [Route("Achivements")]
@@ -42,7 +37,7 @@ namespace UnitusCore.Controllers
         [Route("Achivements")]
         public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName,string achivementCategory="全て")
         {
-            ApplicationUser user = await UserManager.FindByNameAsync(userName);
+            ApplicationUser user = await Ensure.ExistingUserFromEmail(userName);
             return await AchivementListResult(validationToken,DbSession, user,achivementCategory);
         }
 
@@ -83,6 +78,7 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(validationToken, async () =>
             {
                 AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(new TableStorageConnection(),DbSession);
+                await Ensure.ExistingAchivementName(achivementName);
                 var responseString =
                     await achivementStatistics.GetCacheOrCalculate(achivementName, CurrentUser.Id, async () =>
                     {

@@ -45,14 +45,6 @@ namespace UnitusCore.Controllers
             return value;
         }
 
-        private async Task<Circle> GetCircleFromId(string id)
-        {
-            Guid circleGuid;
-            if(!Guid.TryParse(id,out circleGuid))throw new HttpResponseException(HttpStatusCode.BadRequest);
-            var circle=await DbSession.Circles.FindAsync(circleGuid);
-            if(circle==null)throw new HttpResponseException(HttpStatusCode.NotFound);
-            return circle;
-        }
 
         private async Task<bool> IsCircleMember(Circle circle)
         {
@@ -85,7 +77,7 @@ namespace UnitusCore.Controllers
                 UploadRequest requestArgument=new UploadRequest();
                 requestArgument.CircleId = GetFirstHeaderElement("CircleId", request.Headers);
                 requestArgument.ValidationToken = GetFirstHeaderElement("ValidationToken", request.Headers);
-                Circle circle = await GetCircleFromId(requestArgument.CircleId);
+                Circle circle = await Ensure.ExisitingCircleId(requestArgument.CircleId);
                 if(!await IsCircleMember(circle))throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 return await this.OnValidToken(requestArgument.ValidationToken,async () =>
                 {
@@ -122,7 +114,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-                Circle circle =await GetCircleFromId(circleId);
+                Circle circle = await Ensure.ExisitingCircleId(circleId);
                 var uploaderEntitiesStatus = DbSession.Entry(circle).Collection(a => a.UploadedEntities);
                 if (!uploaderEntitiesStatus.IsLoaded) await uploaderEntitiesStatus.LoadAsync();
                 List<UploaderListEntity> entities=new List<UploaderListEntity>();

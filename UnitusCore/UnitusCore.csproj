@@ -258,7 +258,7 @@
     <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
-    <Compile Include="Controllers\Misc\Ensure.cs" />
+    <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
     <Compile Include="Controllers\Misc\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />

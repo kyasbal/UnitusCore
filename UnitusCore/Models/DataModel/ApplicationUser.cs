@@ -59,5 +59,11 @@ namespace UnitusCore.Models.DataModel
             }
             return circleIds;
         }
+
+        public async Task LoadAdministrationCircles(ApplicationDbContext dbSession)
+        {
+            var administrationCircleStatus = dbSession.Entry(this).Collection(a => a.AdministrationCircle);
+            if (!administrationCircleStatus.IsLoaded) await administrationCircleStatus.LoadAsync();
+        }
     }
 }

@@ -94,8 +94,8 @@ namespace UnitusCore.Controllers
                 {
                     DbSession.SaveChanges();
                     var user = UserManager.FindByName(username);
-                    DbSession.Entry(user).Reference(p => p.PersonData).Load();
-                    DbSession.Entry(user.PersonData).Collection(p => p.BelongedCircles);
+                    await user.LoadPersonData(DbSession);
+                    await user.RetrieveBelongingCircles(DbSession);
                     user.PersonData.Name = firstName + " " + lastName;
                     string belongedTo = string.IsNullOrWhiteSpace(NewBelongedUniversity)
                         ? invitationData.InvitedCircle.BelongedSchool
@@ -153,7 +153,7 @@ namespace UnitusCore.Controllers
                 var isAlreadyMember = false;
                 foreach (var member in CurrentUser.PersonData.BelongedCircles)
                 {
-                    DbSession.Entry(member).Reference(a => a.TargetCircle);
+                    await member.LoadReferencesAsync(DbSession);
                     if (member.TargetCircle.Id.Equals(invitationData.InvitedCircle.Id))
                     {
                         isAlreadyMember = true;
