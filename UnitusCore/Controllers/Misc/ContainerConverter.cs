@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using AutoMapper;
+using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Controllers.Misc
 {
-    public static class ContainerConverter
+    public static class MapperHelper
     {
-        public static void Convert<T, TI>(T arg1, TI arg2) where TI:T where T:class
+        public static void Initialize()
         {
-            var properties=typeof(T).GetProperties();
-            foreach (PropertyInfo prop in properties)
-            {
-                if(!prop.CanRead)continue;
-                var targetProperty=typeof (TI).GetProperty(prop.Name);
-                if(!targetProperty.CanRead)continue;
-                targetProperty.SetValue(arg2,prop.GetValue(arg1));
-            }
+            Mapper.CreateMap(typeof (Circle), typeof (CircleController.AddCircleRequest));
+            Mapper.CreateMap(typeof (CircleController.AddCircleRequest), typeof (Circle));
         }
 
         public static void DebugForProperty<T>(T arg) where T : class

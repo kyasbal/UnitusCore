@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using AutoMapper;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -178,25 +179,21 @@ namespace UnitusCore.Controllers
             {
                 try
                 {
-                    
                     MemberStatus memberStatus = new MemberStatus();
                     memberStatus.GenerateId();
                     memberStatus.IsActiveMember = true;
                     memberStatus.Occupation = "代表者";
                     memberStatus.TargetUser = user.PersonData;
                     Circle circle = new Circle();
+                    await circle.LoadAdministrators(DbSession);
+                    await circle.LoadMembers(DbSession);
+                    circle.Administrators.Add(user);
+                    await user.LoadAdministrationCircles(DbSession);
+                    user.AdministrationCircle.Add(circle);
                     memberStatus.TargetCircle = circle;
                     circle.GenerateId();
-                    circle.Name = r.Name;
-                    circle.Description = r.Description;
-                    circle.MemberCount = r.MemberCount;
-                    circle.WebAddress = r.WebAddress;
-                    circle.BelongedSchool = r.BelongedSchool;
-                    circle.Notes = r.Notes;
-                    circle.Contact = r.Contact;
-                    circle.CanInterColledge = r.CanInterColledge;
                     circle.Members.Add(memberStatus);
-                    circle.ActivityDate = req.ActivityDate;
+                    Mapper.Map(req, circle);
                     DbSession.MemberStatuses.Add(memberStatus);
                     DbSession.Circles.Add(circle);
                     DbSession.SaveChanges();

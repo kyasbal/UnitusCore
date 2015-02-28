@@ -80,14 +80,7 @@ namespace UnitusCoreUnitTest
         [TestMethod]
         public void ConverterTest()
         {
-            CircleController.AddCircleRequest circleRequest=new CircleController.AddCircleRequest();
-            circleRequest.Name = "TEST TEST";
-            circleRequest.BelongedSchool = "TEST SCHOOL";
 
-            CircleController.AddCircleRequest test = new CircleController.AddCircleRequest();
-            ContainerConverter.Convert(circleRequest,test);
-            ContainerConverter.DebugForProperty(circleRequest);
-            ContainerConverter.DebugForProperty(test);
         }
         
     }

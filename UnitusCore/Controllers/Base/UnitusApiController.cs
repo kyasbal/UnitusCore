@@ -22,6 +22,7 @@ namespace UnitusCore.Controllers
         public UnitusApiController()
         {
             Ensure=new ControllerEnsure(this);
+            MapperHelper.Initialize();
         }
 
         public IOwinContext OwinContext

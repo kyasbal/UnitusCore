@@ -2,15 +2,15 @@
 {
     internal interface ICircleInfoContainer : IReadonlyCircleInfoContainer
     {
-        new string Name { set; }
-        new string Description { set; }
-        new int MemberCount { set; }
-        new string WebAddress { set; }
-        new string BelongedSchool { set; }
-        new string Notes { set; }
-        new string Contact { set; }
-        new bool CanInterColledge { set; }
-        new string ActivityDate { set; }
+        string Name { set; }
+        string Description { set; }
+        int MemberCount { set; }
+        string WebAddress { set; }
+        string BelongedSchool { set; }
+        string Notes { set; }
+        string Contact { set; }
+        bool CanInterColledge { set; }
+        string ActivityDate { set; }
     }
 
     internal interface IReadonlyCircleInfoContainer
