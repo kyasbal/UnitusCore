@@ -23,7 +23,7 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         [RoleRestrict("Administrator")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetPersonList(string validationToken,int Count=20,int Offset=0)
+        public async Task<IHttpActionResult> GetPersonList(string validationToken, int Count = 20, int Offset = 0)
         {
             return await this.OnValidToken(validationToken, () =>
             {
@@ -31,17 +31,21 @@ namespace UnitusCore.Controllers
                     DbSession.People.OrderBy(o => o.Id)
                         .Skip(Offset)
                         .Take(Count)
-                        .Select(a =>a).ToArray();
-                return Json(ResultContainer<GetPersonListResponse>.GenerateSuccessResult(new GetPersonListResponse(persons.Select(a=>GetPersonListPersonEntity.FromPerson(a)).ToArray())));
+                        .Select(a => a).ToArray();
+                return
+                    Json(
+                        ResultContainer<GetPersonListResponse>.GenerateSuccessResult(
+                            new GetPersonListResponse(
+                                persons.Select(a => GetPersonListPersonEntity.FromPerson(a)).ToArray())));
             });
         }
 
         [UnitusCorsEnabled]
         [Route("Person/Dummy")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetPersonListDummy(int Count=20,int Offset=10)
+        public async Task<IHttpActionResult> GetPersonListDummy(int Count = 20, int Offset = 10)
         {
-            return await this.OnValidToken("",() =>
+            return await this.OnValidToken("", () =>
             {
                 var randomValues = new GetPersonListPersonEntity[178];
                 for (int index = 0; index < randomValues.Length; index++)
@@ -53,74 +57,93 @@ namespace UnitusCore.Controllers
                         .Skip(Offset)
                         .Take(Count)
                         .Select(a => a).ToArray();
-                
-                return Json(ResultContainer<GetPersonListResponse>.GenerateSuccessResult(new GetPersonListResponse(persons.ToArray())));
+
+                return
+                    Json(
+                        ResultContainer<GetPersonListResponse>.GenerateSuccessResult(
+                            new GetPersonListResponse(persons.ToArray())));
             });
         }
+
+//        public async Task<IHttpActionResult> PutPersonInfo()
+//        {
+//
+//        }
+
+        public class PutPersonRequest : AjaxRequestModelBase
+        {
+            public string UserName { get; set; }
+
+            public string UserId { get; set; }
+
+
+        }
+
+
+        public class GetPersonListRequest : AjaxRequestModelBase
+        {
+            public GetPersonListRequest()
+            {
+                Count = 20;
+                Offset = 0;
+            }
+
+            public int Count { get; set; }
+
+            public int Offset { get; set; }
+        }
+
+        public class GetPersonListResponse
+        {
+            public GetPersonListResponse()
+            {
+
+            }
+
+            public GetPersonListResponse(GetPersonListPersonEntity[] persons)
+            {
+                Persons = persons;
+            }
+
+            public GetPersonListPersonEntity[] Persons { get; set; }
+        }
+
+        public class GetPersonListPersonEntity
+        {
+
+            public static GetPersonListPersonEntity FromPerson(Person p)
+            {
+                return new GetPersonListPersonEntity(p.Email, p.BelongedColledge, p.Name, p.CurrentCource);
+            }
+
+            public static GetPersonListPersonEntity GenerateDummy(int index)
+            {
+                return new GetPersonListPersonEntity(index + IdGenerator.GetId(4) + "@gmail.com",
+                    IdGenerator.GetId(4) + "大学", IdGenerator.GetId(4) + " " + IdGenerator.GetId(4),
+                    IdGenerator.GetRandomEnum<Person.Cource>());
+            }
+
+            public string UserName { get; set; }
+
+            public string BelongedTo { get; set; }
+
+            public string Name { get; set; }
+
+            public Person.Cource Grade { get; set; }
+
+
+            public GetPersonListPersonEntity()
+            {
+            }
+
+            public GetPersonListPersonEntity(string userName, string belongedTo, string name, Person.Cource grade)
+            {
+                UserName = userName;
+                BelongedTo = belongedTo;
+                Name = name;
+                Grade = grade;
+            }
+        }
+
     }
-
-    public class GetPersonListRequest :AjaxRequestModelBase
-    {
-        public GetPersonListRequest()
-        {
-            Count = 20;
-            Offset = 0;
-        }
-
-        public int Count { get; set; }
-
-        public int Offset { get; set; }
-    }
-
-    public class GetPersonListResponse
-    {
-        public GetPersonListResponse()
-        {
-            
-        }
-
-        public GetPersonListResponse(GetPersonListPersonEntity[] persons)
-        {
-            Persons = persons;
-        }
-
-        public GetPersonListPersonEntity[] Persons { get; set; }
-    }
-
-    public class GetPersonListPersonEntity
-    {
-
-        public static GetPersonListPersonEntity FromPerson(Person p)
-        {
-            return new GetPersonListPersonEntity(p.Email,p.BelongedColledge,p.Name,p.CurrentCource);
-        }
-
-        public static GetPersonListPersonEntity GenerateDummy(int index)
-        {
-            return new GetPersonListPersonEntity(index+IdGenerator.GetId(4)+"@gmail.com",IdGenerator.GetId(4)+"大学",IdGenerator.GetId(4)+" "+IdGenerator.GetId(4),IdGenerator.GetRandomEnum<Person.Cource>());
-        }
-
-        public string UserName { get; set; }
-
-        public string BelongedTo { get; set; }
-
-        public string Name { get; set; }
-
-        public Person.Cource Grade { get; set; }
-
-
-        public GetPersonListPersonEntity()
-        {
-        }
-
-        public GetPersonListPersonEntity(string userName, string belongedTo, string name, Person.Cource grade)
-        {
-            UserName = userName;
-            BelongedTo = belongedTo;
-            Name = name;
-            Grade = grade;
-        }
-    }
-
-    
 }

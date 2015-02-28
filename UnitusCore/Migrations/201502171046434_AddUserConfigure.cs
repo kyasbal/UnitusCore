@@ -7,17 +7,17 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.UserConfigures",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        ShowOwnProfileToOtherCircle = c.Boolean(nullable: false),
-                        TargetPerson_Id = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.People", t => t.TargetPerson_Id, cascadeDelete: true)
-                .Index(t => t.TargetPerson_Id);
+//            CreateTable(
+//                "dbo.UserConfigures",
+//                c => new
+//                    {
+//                        Id = c.Guid(nullable: false),
+//                        ShowOwnProfileToOtherCircle = c.Boolean(nullable: false),
+//                        TargetPerson_Id = c.Guid(nullable: false),
+//                    })
+//                .PrimaryKey(t => t.Id)
+//                .ForeignKey("dbo.People", t => t.TargetPerson_Id, cascadeDelete: true)
+//                .Index(t => t.TargetPerson_Id);
             
         }
         

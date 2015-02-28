@@ -257,9 +257,12 @@
     <Compile Include="Controllers\CircleUploaderController.cs" />
     <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
+    <Compile Include="Controllers\Misc\ContainerConverter.cs" />
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
     <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
-    <Compile Include="Controllers\Misc\IUnitusController.cs" />
+    <Compile Include="Controllers\Misc\ICircleInfoContainer.cs" />
+    <Compile Include="Controllers\Misc\IPersonInfoContainer.cs" />
+    <Compile Include="Controllers\Base\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
@@ -269,8 +272,8 @@
     <Compile Include="Controllers\GithubController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
-    <Compile Include="Controllers\UnitusApiController.cs" />
-    <Compile Include="Controllers\UnitusController.cs" />
+    <Compile Include="Controllers\Base\UnitusApiController.cs" />
+    <Compile Include="Controllers\Base\UnitusController.cs" />
     <Compile Include="Controllers\UserConfigureController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -315,6 +318,10 @@
     <Compile Include="Migrations\201502172054037_SecoundReset.cs" />
     <Compile Include="Migrations\201502172054037_SecoundReset.Designer.cs">
       <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502280131145_RefactorCircleTable2.cs" />
+    <Compile Include="Migrations\201502280131145_RefactorCircleTable2.Designer.cs">
+      <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
@@ -1223,6 +1230,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502172054037_SecoundReset.resx">
       <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280131145_RefactorCircleTable2.resx">
+      <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

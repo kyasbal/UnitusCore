@@ -7,18 +7,18 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.UserStatistics",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        RepositoryCount = c.Int(nullable: false),
-                        CommitCount = c.Int(nullable: false),
-                        SumDeletion = c.Int(nullable: false),
-                        SumAddition = c.Int(nullable: false),
-                        LanguageRatioJson = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
+//            CreateTable(
+//                "dbo.UserStatistics",
+//                c => new
+//                    {
+//                        Id = c.Guid(nullable: false),
+//                        RepositoryCount = c.Int(nullable: false),
+//                        CommitCount = c.Int(nullable: false),
+//                        SumDeletion = c.Int(nullable: false),
+//                        SumAddition = c.Int(nullable: false),
+//                        LanguageRatioJson = c.String(),
+//                    })
+//                .PrimaryKey(t => t.Id);
             
         }
         

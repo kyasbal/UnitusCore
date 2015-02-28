@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 
-namespace UnitusCore.Controllers.Misc
+namespace UnitusCore.Controllers.Base
 {
     public interface IUnitusController
     {

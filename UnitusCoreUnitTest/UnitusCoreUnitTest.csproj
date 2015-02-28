@@ -131,6 +131,10 @@
       <HintPath>..\packages\Ix-Async.1.2.3-beta\lib\net45\System.Interactive.Async.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
@@ -152,6 +156,14 @@
     <Compile Include="CircleInvitationtest.cs" />
     <Compile Include="GithubAssociationTest.cs" />
     <Compile Include="HomeController.cs" />
+    <Compile Include="Migrations\201502280129368_RefactorCircleTable.cs" />
+    <Compile Include="Migrations\201502280129368_RefactorCircleTable.Designer.cs">
+      <DependentUpon>201502280129368_RefactorCircleTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502280135406_CircleRefactor4.cs" />
+    <Compile Include="Migrations\201502280135406_CircleRefactor4.Designer.cs">
+      <DependentUpon>201502280135406_CircleRefactor4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelTypeCheck.cs" />
     <Compile Include="Account.cs" />
@@ -176,6 +188,14 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201502280129368_RefactorCircleTable.resx">
+      <DependentUpon>201502280129368_RefactorCircleTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280135406_CircleRefactor4.resx">
+      <DependentUpon>201502280135406_CircleRefactor4.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using UnitusCore.Controllers;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.BaseClasses;
 using UnitusCore.Models.DataModel;
@@ -73,6 +75,19 @@ namespace UnitusCoreUnitTest
         public void ConnectionCheck()
         {
             Assert.IsNotNull(DbSession);
+        }
+
+        [TestMethod]
+        public void ConverterTest()
+        {
+            CircleController.AddCircleRequest circleRequest=new CircleController.AddCircleRequest();
+            circleRequest.Name = "TEST TEST";
+            circleRequest.BelongedSchool = "TEST SCHOOL";
+
+            CircleController.AddCircleRequest test = new CircleController.AddCircleRequest();
+            ContainerConverter.Convert(circleRequest,test);
+            ContainerConverter.DebugForProperty(circleRequest);
+            ContainerConverter.DebugForProperty(test);
         }
         
     }

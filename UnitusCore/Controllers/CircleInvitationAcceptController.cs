@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using UnitusCore.Controllers.Base;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Util;

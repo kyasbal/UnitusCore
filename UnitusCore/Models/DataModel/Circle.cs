@@ -5,11 +5,12 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity.EntityFramework;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Circle : ModelBaseWithTimeLogging
+    public class Circle : ModelBaseWithTimeLogging,ICircleInfoContainer
     {
         public Circle()
         {
@@ -45,7 +46,7 @@ namespace UnitusCore.Models.DataModel
 
         public string Contact { get; set; }
 
-        public bool CanInterCollege { get; set; }
+        public bool CanInterColledge { get; set; }
 
         public string ActivityDate { get; set; }
 

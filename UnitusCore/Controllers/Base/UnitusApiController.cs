@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
-using UnitusCore.Models;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using UnitusCore.Controllers.Base;
 using UnitusCore.Controllers.Misc;
+using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
+
 // ReSharper disable ReplaceWithSingleCallToFirstOrDefault
 
 namespace UnitusCore.Controllers

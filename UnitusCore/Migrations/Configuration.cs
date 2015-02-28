@@ -9,7 +9,7 @@ namespace UnitusCore.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
         }
 
         protected override void Seed(UnitusCore.Models.ApplicationDbContext context)

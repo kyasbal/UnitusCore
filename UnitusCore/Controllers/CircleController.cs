@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using UnitusCore.Attributes;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
@@ -186,14 +187,14 @@ namespace UnitusCore.Controllers
                     Circle circle = new Circle();
                     memberStatus.TargetCircle = circle;
                     circle.GenerateId();
-                    circle.Name = r.CircleName;
-                    circle.Description = r.CircleDescription;
+                    circle.Name = r.Name;
+                    circle.Description = r.Description;
                     circle.MemberCount = r.MemberCount;
-                    circle.WebAddress = r.WebSiteAddress;
+                    circle.WebAddress = r.WebAddress;
                     circle.BelongedSchool = r.BelongedSchool;
                     circle.Notes = r.Notes;
                     circle.Contact = r.Contact;
-                    circle.CanInterCollege = r.CanInterColledge;
+                    circle.CanInterColledge = r.CanInterColledge;
                     circle.Members.Add(memberStatus);
                     circle.ActivityDate = req.ActivityDate;
                     DbSession.MemberStatuses.Add(memberStatus);
@@ -208,7 +209,7 @@ namespace UnitusCore.Controllers
                 }
             },async (r,set) =>
             {
-                if (CheckCircleExisiting(req.CircleName, req.BelongedSchool))
+                if (CheckCircleExisiting(req.Name, req.BelongedSchool))
                 {
                     set.Add("その団体は既に存在します。");
                     return false;
@@ -298,7 +299,7 @@ namespace UnitusCore.Controllers
                 circle.Notes = req.Notes ?? circle.Notes;
                 circle.Contact = req.Contact ?? circle.Contact;
                 circle.ActivityDate = req.ActivityDate ?? circle.ActivityDate;
-                circle.CanInterCollege = req.CanInterColledge;
+                circle.CanInterColledge = req.CanInterColledge;
 
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
@@ -363,16 +364,16 @@ namespace UnitusCore.Controllers
         }
 
 
-        public class AddCircleRequest : AjaxRequestModelBase
+        public class AddCircleRequest : AjaxRequestModelBase,ICircleInfoContainer
         {
             
-            public string CircleName { get; set; }
+            public string Name { get; set; }
 
-            public string CircleDescription { get; set; }
+            public string Description { get; set; }
 
             public int MemberCount { get; set; }
 
-            public string WebSiteAddress { get; set; }
+            public string WebAddress { get; set; }
 
             public string BelongedSchool { get; set; }
 
@@ -458,7 +459,7 @@ namespace UnitusCore.Controllers
             public static GetPutCircleDetailBody FromCircle(Circle circle)
             {
                 return new GetPutCircleDetailBody(circle.Name, circle.Description, circle.MemberCount,
-                    circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterCollege,
+                    circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterColledge,
                     circle.ActivityDate);
             }
         }

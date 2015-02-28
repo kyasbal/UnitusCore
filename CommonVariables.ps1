@@ -9,7 +9,7 @@ function global:Update-RemoteDatabase()
 }
 function global:Add-RemoteMigration([String]$mn)
 {
-	Add-Migration $mn -ProjectName $global:RemoteProjectName -ConnectionString $global:RemoteConnectionString -ConnectionProviderName $global:RemoteProviderName
+	Add-Migration $mn -ProjectName $global:RemoteProjectName -ConnectionString $global:RemoteConnectionString -ConnectionProviderName $global:RemoteProviderName 
 }
 function global:Enable-RemoteMigrations([String] $tn)
 {

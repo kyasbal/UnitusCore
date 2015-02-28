@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Octokit;
+using UnitusCore.Controllers.Base;
 using UnitusCore.Models;
 using UnitusCore.Util;
 

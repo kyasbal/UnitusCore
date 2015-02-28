@@ -7,7 +7,7 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Circles", "ActivityDate", c => c.String());
+//            AddColumn("dbo.Circles", "ActivityDate", c => c.String());
         }
         
         public override void Down()

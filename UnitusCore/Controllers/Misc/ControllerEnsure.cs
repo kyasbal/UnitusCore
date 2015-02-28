@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using UnitusCore.Controllers.Base;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage;
 using UnitusCore.Storage.Base;
