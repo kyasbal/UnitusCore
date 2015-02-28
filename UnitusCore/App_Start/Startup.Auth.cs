@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
@@ -10,6 +11,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using UnitusCore.Providers;
 using UnitusCore.Models;
+using UnitusCore.Models.DataModel;
 
 namespace UnitusCore
 {
@@ -44,6 +46,11 @@ namespace UnitusCore
                         {
                             ctx.Response.Redirect(ctx.RedirectUri);
                         }
+                    },OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager,ApplicationUser>
+                    (validateInterval:TimeSpan.FromHours(1),regenerateIdentity: (manager, user) =>user.GenerateUserIdentityAsync(manager,DefaultAuthenticationTypes.ApplicationCookie)),
+                    OnException = context =>
+                    {
+                        throw context.Exception;
                     }
                 }
             });

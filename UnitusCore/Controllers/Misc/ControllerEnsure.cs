@@ -84,5 +84,10 @@ namespace UnitusCore.Controllers.Misc
             if(!Guid.TryParse(guid,out guidResult))throw new HttpResponseException(HttpStatusCode.BadRequest);
             return guidResult;
         }
+
+        public void NotEmptyString(string str)
+        {
+            if(string.IsNullOrWhiteSpace(str))throw new HttpResponseException(HttpStatusCode.BadRequest);
+        }
     }
 }

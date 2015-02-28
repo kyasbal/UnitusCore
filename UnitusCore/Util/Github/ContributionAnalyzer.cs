@@ -201,7 +201,7 @@ namespace UnitusCore.Util.Github
                     throw;
                 }
             }
-            catch (ArgumentNullException argnull)
+            catch (ArgumentNullException)
             {
                 return new RepositoryLanguage[0];
             }

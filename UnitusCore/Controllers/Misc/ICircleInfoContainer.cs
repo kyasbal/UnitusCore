@@ -1,4 +1,6 @@
-﻿namespace UnitusCore.Controllers.Misc
+﻿// ReSharper disable UnusedMemberInSuper.Global
+#pragma warning disable 108,114
+namespace UnitusCore.Controllers.Misc
 {
     internal interface ICircleInfoContainer : IReadonlyCircleInfoContainer
     {

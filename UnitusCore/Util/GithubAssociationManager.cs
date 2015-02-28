@@ -94,7 +94,7 @@ namespace UnitusCore.Util
                     var client = GetAuthenticatedClientFromToken(accessToken);
                     return true;
                 }
-                catch (RateLimitExceededException rlee)
+                catch (RateLimitExceededException)
                 {
                     return true;
                 }
@@ -112,7 +112,7 @@ namespace UnitusCore.Util
                     var github = GetAuthenticatedClient(userName);
                     var githubUser = await github.User.Current();
                     return githubUser.AvatarUrl;
-                }catch(RateLimitExceededException rlee)
+                }catch(RateLimitExceededException)
                 {
                     return "https://core.unitus-ac.com/Uploader/Download?imageId=jlTKlJU7xTQwaEH5";
                 }

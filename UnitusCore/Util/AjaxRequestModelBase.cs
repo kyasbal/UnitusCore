@@ -16,7 +16,7 @@ namespace UnitusCore.Util
         public static bool NoCheckAntiFogery = true;
         public string ValidationToken { get; set; }
 
-        public async Task<IHttpActionResult> OnValidToken<T>(UnitusApiController controller,T arg,Func<T,IHttpActionResult> f) where T :AjaxRequestModelBase
+        public IHttpActionResult OnValidToken<T>(UnitusApiController controller,T arg,Func<T,IHttpActionResult> f) where T :AjaxRequestModelBase
         {
             if (NoCheckAntiFogery) return f(arg);//for debug
             string[] tokens = arg.ValidationToken.Split(':');
@@ -49,10 +49,10 @@ namespace UnitusCore.Util
 
     public static class AjaxRequestExtension
     {
-        public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
+        public static IHttpActionResult OnValidToken<T>(this UnitusApiController controller, T arg,
             Func<T, IHttpActionResult> f) where T : AjaxRequestModelBase
         {
-            return await arg.OnValidToken(controller, arg, f);
+            return arg.OnValidToken(controller, arg, f);
         }
 
         public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
@@ -61,10 +61,10 @@ namespace UnitusCore.Util
             return await arg.OnValidToken(controller, arg, f);
         }
 
-        public static async Task<IHttpActionResult> OnValidToken<T>(this UnitusApiController controller, T arg,
+        public static IHttpActionResult OnValidToken<T>(this UnitusApiController controller, T arg,
             Func<T, IHttpActionResult> f,Func<T,HashSet<string>,bool> vFunc) where T : AjaxRequestModelBase
         {
-            return await arg.OnValidToken(controller, arg, (r) =>
+            return arg.OnValidToken(controller, arg, (r) =>
             {
                 HashSet<string> err = new HashSet<string>();
                 if (vFunc(r, err))

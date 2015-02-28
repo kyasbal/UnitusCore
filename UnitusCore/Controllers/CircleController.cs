@@ -17,6 +17,7 @@ using Microsoft.Owin.Security;
 using UnitusCore.Attributes;
 using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
+using UnitusCore.Models.BaseClasses;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
 using UnitusCore.Storage;
@@ -162,12 +163,6 @@ namespace UnitusCore.Controllers
             });
         }
 
-        private bool CheckCircleExisiting(string circleName,string belongedTo)
-        {
-            return DbSession.Circles.Where(a => a.Name.Equals(circleName) && a.BelongedSchool.Equals(belongedTo)).Any();
-        }
-
-
         [HttpPost]
         [ApiAuthorized]
         [RoleRestrict("Administrator")]
@@ -177,49 +172,41 @@ namespace UnitusCore.Controllers
             ApplicationUser user = null;
             return this.OnValidToken(req, async (r) =>
             {
-                try
-                {
-                    MemberStatus memberStatus = new MemberStatus();
-                    memberStatus.GenerateId();
-                    memberStatus.IsActiveMember = true;
-                    memberStatus.Occupation = "代表者";
-                    memberStatus.TargetUser = user.PersonData;
-                    Circle circle = new Circle();
-                    await circle.LoadAdministrators(DbSession);
-                    await circle.LoadMembers(DbSession);
-                    circle.Administrators.Add(user);
-                    await user.LoadAdministrationCircles(DbSession);
-                    user.AdministrationCircle.Add(circle);
-                    memberStatus.TargetCircle = circle;
-                    circle.GenerateId();
-                    circle.Members.Add(memberStatus);
-                    Mapper.Map(req, circle);
-                    DbSession.MemberStatuses.Add(memberStatus);
-                    DbSession.Circles.Add(circle);
-                    DbSession.SaveChanges();
-                    return await GetCircleDetailed(req.ValidationToken, circle.Id.ToString());
-                }
-                catch (Exception exe)
-                {
-                    Trace.WriteLine(exe.ToString());
-                    return Json(ResultContainer.GenerateFaultResult(exe.ToString()));
-                }
-            },async (r,set) =>
-            {
-                if (CheckCircleExisiting(req.Name, req.BelongedSchool))
-                {
-                    set.Add("その団体は既に存在します。");
-                    return false;
-                }
-                user = await UserManager.FindByNameAsync(req.LeaderUserName);
-                
-                if (user == null)
-                {
-                    set.Add("ユーザーIDが存在しません。");
-                    return false;
-                }
+                Ensure.NotEmptyString(req.LeaderUserName);
+                Ensure.NotEmptyString(req.Name);
+                Ensure.NotEmptyString(req.BelongedSchool);
+                EnsureNotExistingCircle(req.Name,req.BelongedSchool);
+                user = await Ensure.ExistingUserFromEmail(req.LeaderUserName);
                 await user.LoadPersonData(DbSession);
-                return true;
+                MemberStatus memberStatus = ModelBase.CreateNewEntity<MemberStatus>();
+                memberStatus.IsActiveMember = true;
+                memberStatus.Occupation = "代表者";
+                memberStatus.TargetUser = user.PersonData;
+                user.PersonData.BelongedCircles.Add(memberStatus);
+                Circle circle = ModelBase.CreateNewEntity<Circle>();
+                circle.Administrators.Add(user);
+                await user.LoadAdministrationCircles(DbSession);
+                user.AdministrationCircle.Add(circle);
+                memberStatus.TargetCircle = circle;
+                circle.Members.Add(memberStatus);
+                Mapper.Map(req, circle);
+                DbSession.MemberStatuses.Add(memberStatus);
+                DbSession.Circles.Add(circle);
+                DbSession.SaveChanges();
+                return await GetCircleDetailed(req.ValidationToken, circle.Id.ToString());
+            });
+        }
+
+        [HttpGet]
+        [ApiAuthorized]
+        [RoleRestrict("Administrator")]
+        [Route("Circle/CheckExist")]
+        public async Task<IHttpActionResult> GetIsExisting(string validationToken, string circleName,string universityName)
+        {
+            return await this.OnValidToken(validationToken, () =>
+            {
+                EnsureNotExistingCircle(circleName,universityName);
+                return StatusCode(HttpStatusCode.OK);
             });
         }
 
@@ -301,6 +288,12 @@ namespace UnitusCore.Controllers
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
             });
+        }
+
+        private void EnsureNotExistingCircle(string circleName,string belongingUniversity)
+        {
+            if(DbSession.Circles.Where(c => c.Name.Equals(circleName) && c.BelongedSchool.Equals(belongingUniversity))
+                .Any())throw new HttpResponseException(HttpStatusCode.Conflict);
         }
 
         public class PutMemberStateRequest:AjaxRequestModelBase

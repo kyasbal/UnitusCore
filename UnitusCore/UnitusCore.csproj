@@ -263,7 +263,7 @@
     <Compile Include="Controllers\CircleUploaderController.cs" />
     <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
-    <Compile Include="Controllers\Misc\ContainerConverter.cs" />
+    <Compile Include="Controllers\Misc\MapperHelper.cs" />
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
     <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
     <Compile Include="Controllers\Misc\ICircleInfoContainer.cs" />
@@ -281,6 +281,7 @@
     <Compile Include="Controllers\Base\UnitusApiController.cs" />
     <Compile Include="Controllers\Base\UnitusController.cs" />
     <Compile Include="Controllers\UserConfigureController.cs" />
+    <Compile Include="Controllers\ValidationController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

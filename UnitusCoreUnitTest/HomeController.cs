@@ -11,7 +11,6 @@ namespace UnitusCoreUnitTest
     [TestFixture]
     public class HomeControllerTest
     {
-        private HomeController controller;
 
         [TestFixtureSetUp]
         public void PreTest()

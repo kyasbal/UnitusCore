@@ -38,7 +38,6 @@ namespace UnitusCore.Controllers
                 {
                     return new BadRequestErrorMessageResult("権限が無効です",this);
                 }
-                return Json(true);
             });
         }
 

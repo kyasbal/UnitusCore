@@ -78,7 +78,7 @@ namespace UnitusCore.Controllers
                     this.AddNotification(NotificationType.Success,"Github連携完了","OAuth認証処理は正常に終了しました。");
                     return RedirectToAction("Index", "Home");
                 }
-                catch (Exception antifogeryError)
+                catch (Exception)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 }

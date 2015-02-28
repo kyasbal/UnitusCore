@@ -68,9 +68,6 @@ namespace UnitusCore.Storage
                 {"累計被フォーク数:中級者", s => s.SumForked/8d},
                 {"累計被フォーク数:上級者", s => s.SumForked/15d}
             };
-
-        private readonly TableStorageConnection _storageConnection;
-
         private readonly ContributeStatisticsByDayStorage _contributeStorage;
 
         private readonly CloudTable _singleUserAchivementStatisticsByDayTable;
