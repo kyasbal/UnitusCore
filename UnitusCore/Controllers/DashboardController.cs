@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Octokit;
 using UnitusCore.Attributes;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
@@ -109,7 +110,7 @@ namespace UnitusCore.Controllers
             var p = targetUser.PersonData;
             var disclosureConfig = new ProfileDisclosureConfigStorage(new TableStorageConnection(),targetUser.Id);
 
-            return new DetailedProfile(await disclosureConfig.FetchProtectedProperty(ProfileProperty.University,AccessBy.Owner,()=>p.BelongedColledge)
+            return new DetailedProfile(await disclosureConfig.FetchProtectedProperty(ProfileProperty.University,AccessBy.Owner,()=>p.BelongedSchool)
                 , await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, AccessBy.Owner, () => p.Faculty),
                 await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, AccessBy.Owner, () => p.Major),
                 p.CurrentCource, await GetGithubProfile(),p.Notes);
@@ -176,11 +177,11 @@ namespace UnitusCore.Controllers
             public IEnumerable<string> CircleTags { get; set; } 
         }
 
-        public class DetailedProfile
+        public class DetailedProfile:IProtectedSchoolInfoContainer
         {
-            public DetailedProfile(DisclosureProtectedResponse belongingColledge, DisclosureProtectedResponse faculty, DisclosureProtectedResponse major, Person.Cource currentGrade, GithubProfile githubProfie, string notes)
+            public DetailedProfile(DisclosureProtectedResponse belongedSchool, DisclosureProtectedResponse faculty, DisclosureProtectedResponse major, Person.Cource currentGrade, GithubProfile githubProfie, string notes)
             {
-                BelongingColledge = belongingColledge;
+                BelongedSchool = belongedSchool;
                 Faculty = faculty;
                 Major = major;
                 CurrentGrade = currentGrade;
@@ -190,7 +191,7 @@ namespace UnitusCore.Controllers
 
             public GithubProfile GithubProfie { get; set; }
 
-            public DisclosureProtectedResponse BelongingColledge { get; set; }
+            public DisclosureProtectedResponse BelongedSchool { get; set; }
 
             public DisclosureProtectedResponse Faculty { get; set; }
 

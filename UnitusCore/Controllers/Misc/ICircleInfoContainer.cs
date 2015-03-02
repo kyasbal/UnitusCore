@@ -2,13 +2,12 @@
 #pragma warning disable 108,114
 namespace UnitusCore.Controllers.Misc
 {
-    internal interface ICircleInfoContainer : IReadonlyCircleInfoContainer
+    internal interface ICircleInfoContainer : IReadonlyCircleInfoContainer,ISchoolInfoContainer
     {
         string Name { set; }
         string Description { set; }
         int MemberCount { set; }
         string WebAddress { set; }
-        string BelongedSchool { set; }
         string Notes { set; }
         string Contact { set; }
         bool CanInterColledge { set; }
@@ -21,7 +20,6 @@ namespace UnitusCore.Controllers.Misc
         string Description { get; }
         int MemberCount { get; }
         string WebAddress { get; }
-        string BelongedSchool { get; }
         string Notes { get; }
         string Contact { get; }
         bool CanInterColledge { get; }

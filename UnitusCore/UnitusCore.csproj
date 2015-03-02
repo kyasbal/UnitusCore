@@ -263,6 +263,8 @@
     <Compile Include="Controllers\CircleUploaderController.cs" />
     <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
+    <Compile Include="Controllers\Misc\IProtectedSchoolInfoContainer.cs" />
+    <Compile Include="Controllers\Misc\ISchoolInfoContainer.cs" />
     <Compile Include="Controllers\Misc\MapperHelper.cs" />
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
     <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
@@ -333,6 +335,10 @@
     <Compile Include="Migrations\201503020242170_RemoveUserConfigure.cs" />
     <Compile Include="Migrations\201503020242170_RemoveUserConfigure.Designer.cs">
       <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503020840261_RenameSchoolColmun.cs" />
+    <Compile Include="Migrations\201503020840261_RenameSchoolColmun.Designer.cs">
+      <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
@@ -1260,6 +1266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503020242170_RemoveUserConfigure.resx">
       <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503020840261_RenameSchoolColmun.resx">
+      <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

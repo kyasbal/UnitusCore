@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Microsoft.AspNet.Identity.Owin;
 using UnitusCore.Attributes;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
@@ -65,10 +66,6 @@ namespace UnitusCore.Controllers
             });
         }
 
-//        public async Task<IHttpActionResult> PutPersonInfo()
-//        {
-//
-//        }
 
         public class PutPersonRequest : AjaxRequestModelBase
         {
@@ -108,12 +105,12 @@ namespace UnitusCore.Controllers
             public GetPersonListPersonEntity[] Persons { get; set; }
         }
 
-        public class GetPersonListPersonEntity
+        public class GetPersonListPersonEntity:ISchoolInfoContainer
         {
 
             public static GetPersonListPersonEntity FromPerson(Person p)
             {
-                return new GetPersonListPersonEntity(p.Email, p.BelongedColledge, p.Name, p.CurrentCource);
+                return new GetPersonListPersonEntity(p.Email, p.BelongedSchool, p.Name, p.CurrentCource);
             }
 
             public static GetPersonListPersonEntity GenerateDummy(int index)
@@ -125,7 +122,7 @@ namespace UnitusCore.Controllers
 
             public string UserName { get; set; }
 
-            public string BelongedTo { get; set; }
+            public string BelongedSchool { get; set; }
 
             public string Name { get; set; }
 
@@ -136,10 +133,10 @@ namespace UnitusCore.Controllers
             {
             }
 
-            public GetPersonListPersonEntity(string userName, string belongedTo, string name, Person.Cource grade)
+            public GetPersonListPersonEntity(string userName, string belongedSchool, string name, Person.Cource grade)
             {
                 UserName = userName;
-                BelongedTo = belongedTo;
+                BelongedSchool = belongedSchool;
                 Name = name;
                 Grade = grade;
             }

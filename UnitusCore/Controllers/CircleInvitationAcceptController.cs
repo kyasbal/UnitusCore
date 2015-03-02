@@ -101,7 +101,7 @@ namespace UnitusCore.Controllers
                     string belongedTo = string.IsNullOrWhiteSpace(NewBelongedUniversity)
                         ? invitationData.InvitedCircle.BelongedSchool
                         : NewBelongedUniversity;
-                    user.PersonData.BelongedColledge = belongedTo;
+                    user.PersonData.BelongedSchool = belongedTo;
                     var status = new MemberStatus();
                     status.GenerateId();
                     status.Occupation = "新入生";

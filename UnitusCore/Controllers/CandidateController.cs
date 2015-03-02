@@ -23,7 +23,7 @@ namespace UnitusCore.Controllers
                 {
                     HashSet<string> universities=new HashSet<string>();
                     var circleUniversities = DbSession.Circles.Select(a => a.BelongedSchool).Distinct();
-                    var userUniversities = DbSession.People.Select(a => a.BelongedColledge).Distinct();
+                    var userUniversities = DbSession.People.Select(a => a.BelongedSchool).Distinct();
                     foreach (string university in circleUniversities)
                     {
                         if (string.IsNullOrWhiteSpace(university)) continue;

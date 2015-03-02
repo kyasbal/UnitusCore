@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using UnitusCore.Attributes;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
 using UnitusCore.Util;
@@ -24,7 +25,7 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(req, async (a) =>
             {
                 Person personData = CurrentUserWithPerson.PersonData;
-                personData.BelongedColledge = req.BelongedUniversity ?? personData.BelongedColledge;
+                personData.BelongedSchool = req.BelongedSchool ?? personData.BelongedSchool;
                 personData.Faculty = req.Faculty ?? personData.Faculty;
                 personData.Major = req.Major ?? personData.Major;
                 personData.CurrentCource = req.CurrentGrade;
@@ -47,7 +48,7 @@ namespace UnitusCore.Controllers
                 await applicationUser.LoadPersonData(DbSession);
                 Person personData = applicationUser.PersonData;
                 personData.Name = req.Name ?? personData.Name;
-                personData.BelongedColledge = req.BelongedUniversity ?? personData.BelongedColledge;
+                personData.BelongedSchool = req.BelongedSchool ?? personData.BelongedSchool;
                 personData.Faculty = req.Faculty ?? personData.Faculty;
                 personData.Major = req.Major ?? personData.Major;
                 personData.CurrentCource = req.CurrentGrade;
@@ -64,11 +65,11 @@ namespace UnitusCore.Controllers
             public string Name { get; set; }
         }
 
-        public class PutPersonalRequest : AjaxRequestModelBase
+        public class PutPersonalRequest : AjaxRequestModelBase,IMajorInfoContainer
         {
             [Required]
             [MaxLength(32)]
-            public string BelongedUniversity { get; set; }
+            public string BelongedSchool { get; set; }
             [Required]
             [MaxLength(32)]
             public string Faculty { get; set; }

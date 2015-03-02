@@ -203,11 +203,11 @@ namespace UnitusCore.Controllers
         [RoleRestrict("Administrator")]
         [Route("Circle/CheckExist")]
         [UnitusCorsEnabled]
-        public async Task<IHttpActionResult> GetIsExisting(string validationToken, string circleName,string universityName)
+        public async Task<IHttpActionResult> GetIsExisting(string validationToken, string circleName,string belongedSchool)
         {
             return await this.OnValidToken(validationToken, () =>
             {
-                EnsureNotExistingCircle(circleName,universityName);
+                EnsureNotExistingCircle(circleName,belongedSchool);
                 return StatusCode(HttpStatusCode.OK);
             });
         }
@@ -229,7 +229,7 @@ namespace UnitusCore.Controllers
                 await members.LoadReferencesAsync(DbSession);
                 await members.TargetUser.LoadApplicationUser(DbSession);
                 GetMemberListElement memberElement = new GetMemberListElement(members.TargetUser.ApplicationUser.Id, members.TargetUser.Name,
-                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedColledge,members.TargetUser.Faculty,members.TargetUser.Major);
+                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedSchool,members.TargetUser.Faculty,members.TargetUser.Major);
                 memberElement.Tags =
                     await stroage.GetAppliedTags(circle.Id.ToString(), members.TargetUser.ApplicationUser.Id,authority);
                 elements.Add(memberElement);
@@ -321,16 +321,16 @@ namespace UnitusCore.Controllers
             public GetMemberListElement[] Members { get; set; }
         }
 
-        public class GetMemberListElement
+        public class GetMemberListElement:IMajorInfoContainer
         {
             public GetMemberListElement(string userId, string name, string ocupation, Person.Cource currentGrade,
-                bool isActiveMember, string belongedUniversity, string faculty, string major)
+                bool isActiveMember, string belongedSchool, string faculty, string major)
             {
                 UserId = userId;
                 Ocupation = ocupation;
                 CurrentGrade = currentGrade;
                 IsActiveMember = isActiveMember;
-                BelongedUniversity = belongedUniversity;
+                BelongedSchool = belongedSchool;
                 Faculty = faculty;
                 Major = major;
                 Name = name;
@@ -346,7 +346,7 @@ namespace UnitusCore.Controllers
 
             public string Name { get; set; }
 
-            public string BelongedUniversity { get; set; }
+            public string BelongedSchool { get; set; }
 
             public string Faculty { get; set; }
 
@@ -409,7 +409,7 @@ namespace UnitusCore.Controllers
             }
         }
 
-        public class GetPutCircleDetailBody
+        public class GetPutCircleDetailBody:ISchoolInfoContainer
         {
             public GetPutCircleDetailBody()
             {
@@ -468,7 +468,7 @@ namespace UnitusCore.Controllers
 
         }
 
-        public class GetCircleResponseCircleEntity
+        public class GetCircleResponseCircleEntity:ISchoolInfoContainer
         {
             public static GetCircleResponseCircleEntity FromCircle(Circle circle, bool isBelonging)
             {
@@ -476,12 +476,12 @@ namespace UnitusCore.Controllers
                     circle.LastModefied.ToString("yyyy年M月d日"), isBelonging, circle.Id.ToString());
             }
 
-            public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedUniversity,
+            public GetCircleResponseCircleEntity(string circleName, int memberCount, string belongedSchool,
                 string lastUpdateDate, bool isBelonged, string circleId)
             {
                 CircleName = circleName;
                 MemberCount = memberCount;
-                BelongedUniversity = belongedUniversity;
+                BelongedSchool = belongedSchool;
                 this.LastUpdateDate = lastUpdateDate;
                 IsBelonging = isBelonged;
                 CircleId = circleId;
@@ -495,7 +495,7 @@ namespace UnitusCore.Controllers
 
             public int MemberCount { get; set; }
 
-            public string BelongedUniversity { get; set; }
+            public string BelongedSchool { get; set; }
 
             public string LastUpdateDate { get; set; }
         }

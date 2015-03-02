@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnitusCore.Controllers;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.BaseClasses;
 using UnitusCore.Util;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Person : ModelBaseWithTimeLogging
+    public class Person : ModelBaseWithTimeLogging,IMajorInfoContainer
     {
         public Person()
         {
@@ -31,7 +32,7 @@ namespace UnitusCore.Models.DataModel
 
         public Cource CurrentCource { get; set; }
 
-        public string BelongedColledge { get; set; }
+        public string BelongedSchool { get; set; }
 
         public string Faculty { get; set; }
 
