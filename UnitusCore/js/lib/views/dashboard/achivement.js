@@ -70,8 +70,8 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
               _this.achivement.set({
                 isDetailGetting: true
               });
-              values = data;
-              console.log("kokodayo");
+              values = data.Content;
+              console.log("koayo");
               console.log(values);
               _this.achivement.set({
                 Description: values.AchivementDescription,
@@ -85,6 +85,7 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
               });
               return $(_this.$el.children("[data-js=achivementPanel]")[0]).html(AchivementShowTemplate({
                 achivement: _this.achivement,
+                data: JSON.stringify(_this.achivement),
                 user: _this.user
               })).removeClass("hidden_panel_r");
             };

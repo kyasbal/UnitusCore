@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/admin_panel'], function($, Backbone, AdminTemplate) {
+define(['jquery', 'backbone', 'templates/dashboard/admin_panel', 'views/admin/new_circle'], function($, Backbone, AdminTemplate, AdminNewCircle) {
   var AdminPanelView;
   return AdminPanelView = (function(_super) {
     __extends(AdminPanelView, _super);
@@ -13,8 +13,7 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel'], function($, Ba
     AdminPanelView.prototype.initialize = function(option) {
       var sendData;
       sendData = {
-        count: 40,
-        validationToken: "abc"
+        count: 40
       };
       $.ajax({
         type: "GET",
@@ -44,11 +43,17 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel'], function($, Ba
           return _this.$el.toggleClass("hidden_panel_l");
         };
       })(this));
-      return this.renderAdminPanel();
+      this.renderAdminPanel();
+      return new AdminNewCircle({
+        el: $("[data-js=adminNewCircle]")
+      });
     };
 
     AdminPanelView.prototype.events = {
-      "click [data-js=close_admin]": "closePanel"
+      "click [data-js=close_admin]": "closePanel",
+      "focus #adminNewCircle input": "watchChangeValue",
+      "focus #adminNewCircle textarea": "watchChangeValue",
+      "click [data-js=createCircle]": "createCircle"
     };
 
     AdminPanelView.prototype.renderAdminPanel = function() {

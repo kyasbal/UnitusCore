@@ -1,4 +1,5 @@
-var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
 define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashboard/user_profile', 'views/dashboard/achivement'], function($, Backbone, UserTemplate, UserProfile, AchivementView) {
@@ -7,12 +8,14 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
     __extends(UserPanelView, _super);
 
     function UserPanelView() {
+      this.deleteCircle = __bind(this.deleteCircle, this);
       return UserPanelView.__super__.constructor.apply(this, arguments);
     }
 
     UserPanelView.prototype.initialize = function(option) {
       this.user = option.user;
       this.belongingCircles = this.user.attributes.circles;
+      this.notyHelper = new NotyHelper();
       this.renderUserPanel();
       this.renderUserProfile();
       this.renderCircleList();
@@ -45,7 +48,6 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
         url: "https://core.unitus-ac.com/Circle",
         data: sendData,
         success: function(msg) {
-          console.log(msg.Content.Circle);
           return $.each(msg.Content.Circle, function() {
             var text;
             text = '';
@@ -108,14 +110,19 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
           type: "DELETE",
           url: "https://core.unitus-ac.com/Circle",
           data: sendData,
-          success: function(msg) {
-            var target;
-            target = "[data-commonId=" + $circleRow.attr("data-circleId") + "]";
-            return $(target).remove();
-          },
-          error: function(msg) {
-            return console.log("削除できませんでした。");
-          }
+          success: (function(_this) {
+            return function(msg) {
+              var target;
+              _this.notyHelper.generate('info', '削除成功', "サークルを削除しました。");
+              target = "[data-commonId=" + $circleRow.attr("data-circleId") + "]";
+              return $(target).remove();
+            };
+          })(this),
+          error: (function(_this) {
+            return function(msg) {
+              return _this.notyHelper.generate('error', '削除失敗', "何らかの理由でサークルを削除できませんでした。");
+            };
+          })(this)
         });
       }
     };

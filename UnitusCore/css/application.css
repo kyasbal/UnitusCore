@@ -1,3 +1,43 @@
+.animated {
+  height: auto !important;
+  background-color: white !important;
+  border: none !important; }
+
+.animated .noty_title {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 8px; }
+
+.animated .noty_type_info {
+  border: solid 1px #4f95d8;
+  color: #0094ff; }
+
+.animated .noty_type_info .noty_title {
+  color: rgba(0, 110, 255, 0.8); }
+
+.animated .noty_type_error {
+  color: #c86464 !important;
+  border: solid 1px darkred; }
+
+.animated .noty_type_success {
+  color: #72bb72 !important;
+  border: solid 1px #008b17; }
+
+.animated .noty_title i {
+  margin-right: 8px; }
+
+.animated .noty_type_error .noty_title {
+  color: darkred; }
+
+.animated .noty_type_success .noty_title {
+  color: #419341; }
+
+.animated .noty_content {
+  padding-left: 24px; }
+
+.form-danger {
+  border: solid 2px #ed3b3b; }
+
 .table {
   display: table;
   width: 100%;
@@ -353,6 +393,23 @@ section#header {
   padding: 0px 2px; }
 #adminNewCircle .checkbox label {
   margin-left: 20px; }
+#adminNewCircle select {
+  margin-bottom: 18px; }
+#adminNewCircle .form-wrap {
+  height: 0px;
+  overflow: hidden;
+  -webkit-transition: height 0.2s ease-out;
+  -moz-transition: height 0.2s ease-out;
+  -ms-transition: height 0.2s ease-out;
+  -o-transition: height 0.2s ease-out;
+  transition: height 0.2s ease-out; }
+#adminNewCircle .form-wrap.open {
+  height: 34px; }
+#adminNewCircle button {
+  width: 82px; }
+  #adminNewCircle button img {
+    margin: 0 auto;
+    height: 18px; }
 
 #profile.fade.active.in .profilebar {
   left: 0px; }
@@ -631,11 +688,11 @@ section#header {
           border: none;
           border-bottom: 2px solid #888;
           height: 296px; }
-          #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container {
+          #achivementPanel .main .main_content .info_panel.graph #ProgressGraphPoints .highcharts-container {
             margin: 0 auto; }
-            #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container rect {
+            #achivementPanel .main .main_content .info_panel.graph #ProgressGraphPoints .highcharts-container rect {
               fill: transparent; }
-            #achivementPanel .main .main_content .info_panel.graph #AcuireRateGraph .highcharts-container svg > text:nth-child(16) {
+            #achivementPanel .main .main_content .info_panel.graph #ProgressGraphPoints .highcharts-container svg > text:nth-child(16) {
               display: none; }
         #achivementPanel .main .main_content .info_panel .info_title {
           border-bottom: 2px solid #888;
@@ -727,7 +784,6 @@ section#header {
             #achivementPanel .main .main_content .info_panel .info_content.type-pict .diff .value {
               font-size: 20px;
               color: whitesmoke;
-              display: absolute;
               line-height: 20px;
               padding: 4px; }
 

@@ -281,7 +281,7 @@
     <Compile Include="Controllers\Base\UnitusApiController.cs" />
     <Compile Include="Controllers\Base\UnitusController.cs" />
     <Compile Include="Controllers\UserConfigureController.cs" />
-    <Compile Include="Controllers\ValidationController.cs" />
+    <Compile Include="Controllers\CandidateController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -330,6 +330,10 @@
     <Compile Include="Migrations\201502280131145_RefactorCircleTable2.Designer.cs">
       <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503020242170_RemoveUserConfigure.cs" />
+    <Compile Include="Migrations\201503020242170_RemoveUserConfigure.Designer.cs">
+      <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
@@ -368,6 +372,7 @@
     <Compile Include="Storage\DataModels\GistStatisticsForSingleUser.cs" />
     <Compile Include="Storage\DataModels\GistStatisticsForSingleUserByLanguage.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
+    <Compile Include="Storage\DataModels\Profile\DisclosureConfig.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
@@ -377,6 +382,7 @@
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
     <Compile Include="Storage\StatisticJobLogStorage.cs" />
     <Compile Include="Storage\StatisticTaskQueueStorage.cs" />
+    <Compile Include="Storage\ProfileDisclosureConfigStorage.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />
@@ -721,6 +727,7 @@
     <Content Include="bower_components\jquery\src\var\support.js" />
     <Content Include="bower_components\jquery\src\var\toString.js" />
     <Content Include="bower_components\jquery\src\wrap.js" />
+    <Content Include="bower_components\noty\noty.js" />
     <Content Include="bower_components\requirejs\require.js" />
     <Content Include="bower_components\underscore\.gitignore" />
     <Content Include="bower_components\underscore\underscore-min.js" />
@@ -739,21 +746,30 @@
     <Content Include="Content\ZeroClipboard.js" />
     <Content Include="Content\ZeroClipboard.min.js" />
     <Content Include="Content\ZeroClipboard.swf" />
+    <Content Include="css\animate.css" />
     <Content Include="css\application.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="img\loading.gif" />
     <Content Include="img\loading2.gif" />
+    <Content Include="img\pictgrams-01.png" />
+    <Content Include="img\pictgrams-02.png" />
+    <Content Include="img\pictgrams-colored-01.png" />
+    <Content Include="img\pictgrams-colored-02.png" />
+    <Content Include="img\send.gif" />
     <Content Include="js\lib\collections\achivements.js" />
+    <Content Include="js\lib\helpers\notyHelper.js" />
     <Content Include="js\lib\index.js" />
     <Content Include="js\lib\models\achivement.js" />
     <Content Include="js\lib\models\admin_panel.js" />
     <Content Include="js\lib\models\circle.js" />
     <Content Include="js\lib\models\dashboard.js" />
+    <Content Include="js\lib\models\notyHelper.js" />
     <Content Include="js\lib\models\user.js" />
     <Content Include="js\lib\templates\achivement\index.js" />
     <Content Include="js\lib\templates\achivement\show.js" />
+    <Content Include="js\lib\templates\admin\new_circle.js" />
     <Content Include="js\lib\templates\dashboard\achivement.js" />
     <Content Include="js\lib\templates\dashboard\admin_menu.js" />
     <Content Include="js\lib\templates\dashboard\admin_panel.js" />
@@ -762,6 +778,7 @@
     <Content Include="js\lib\templates\dashboard\user_circleList.js" />
     <Content Include="js\lib\templates\dashboard\user_panel.js" />
     <Content Include="js\lib\templates\dashboard\user_profile.js" />
+    <Content Include="js\lib\views\admin\new_circle.js" />
     <Content Include="js\lib\views\dashboard\achivement.js" />
     <Content Include="js\lib\views\dashboard\admin_panel.js" />
     <Content Include="js\lib\views\dashboard\basic_panel.js" />
@@ -1240,6 +1257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502280131145_RefactorCircleTable2.resx">
       <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503020242170_RemoveUserConfigure.resx">
+      <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

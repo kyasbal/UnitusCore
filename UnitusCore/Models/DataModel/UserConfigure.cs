@@ -6,10 +6,4 @@ using UnitusCore.Models.BaseClasses;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class UserConfigure:ModelBase
-    {
-        public Person TargetPerson { get; set; }
-
-        public bool ShowOwnProfileToOtherCircle { get; set; }
-    }
 }

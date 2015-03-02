@@ -167,14 +167,15 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         [RoleRestrict("Administrator")]
         [Route("Circle")]
+        [UnitusCorsEnabled]
         public Task<IHttpActionResult> AddCircle(AddCircleRequest req)
         {
             ApplicationUser user = null;
             return this.OnValidToken(req, async (r) =>
             {
-                Ensure.NotEmptyString(req.LeaderUserName);
-                Ensure.NotEmptyString(req.Name);
-                Ensure.NotEmptyString(req.BelongedSchool);
+                Ensure.NotEmptyString(req.LeaderUserName,"LeaderUserName is empty.");
+                Ensure.NotEmptyString(req.Name,"Name is empty.");
+                Ensure.NotEmptyString(req.BelongedSchool,"BelongedSchool is empty.");
                 EnsureNotExistingCircle(req.Name,req.BelongedSchool);
                 user = await Ensure.ExistingUserFromEmail(req.LeaderUserName);
                 await user.LoadPersonData(DbSession);
@@ -201,6 +202,7 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         [RoleRestrict("Administrator")]
         [Route("Circle/CheckExist")]
+        [UnitusCorsEnabled]
         public async Task<IHttpActionResult> GetIsExisting(string validationToken, string circleName,string universityName)
         {
             return await this.OnValidToken(validationToken, () =>
@@ -214,6 +216,7 @@ namespace UnitusCore.Controllers
         [HttpGet]
         [Route("Circle/Member")]
         [ApiAuthorized]
+        [UnitusCorsEnabled]
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
             Circle circle = await Ensure.ExisitingCircleId(circleId);
@@ -270,6 +273,7 @@ namespace UnitusCore.Controllers
         [HttpPut]
         [ApiAuthorized]
         [Route("Circle")]
+        [UnitusCorsEnabled]
         public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
             Circle circle = await Ensure.ExisitingCircleId(req.CircleId);
@@ -284,7 +288,6 @@ namespace UnitusCore.Controllers
                 circle.Contact = req.Contact ?? circle.Contact;
                 circle.ActivityDate = req.ActivityDate ?? circle.ActivityDate;
                 circle.CanInterColledge = req.CanInterColledge;
-
                 DbSession.SaveChanges();
                 return await GetCircleDetailed(req.ValidationToken, req.CircleId);
             });

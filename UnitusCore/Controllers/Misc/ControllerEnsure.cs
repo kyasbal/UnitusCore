@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -85,9 +86,12 @@ namespace UnitusCore.Controllers.Misc
             return guidResult;
         }
 
-        public void NotEmptyString(string str)
+        public void NotEmptyString(string str,string info="")
         {
-            if(string.IsNullOrWhiteSpace(str))throw new HttpResponseException(HttpStatusCode.BadRequest);
+            if(string.IsNullOrWhiteSpace(str))throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+            {
+                Content = new StringContent(info)
+            });
         }
     }
 }

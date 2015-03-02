@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/user', 'models/admin_panel', 'models/circle'], function($, Backbone, template, HeaderView, PanelView, User, AdminPanel, Circle) {
+define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/user', 'models/admin_panel'], function($, Backbone, template, HeaderView, PanelView, User, AdminPanel) {
   var DashboadView;
   return DashboadView = (function(_super) {
     __extends(DashboadView, _super);
@@ -11,8 +11,6 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
     }
 
     DashboadView.prototype.initialize = function(option) {
-      this.circle = new Circle();
-      console.log(this.circle.get("CircleName"));
       this.user = new User();
       $.ajaxSetup({
         xhrFields: {

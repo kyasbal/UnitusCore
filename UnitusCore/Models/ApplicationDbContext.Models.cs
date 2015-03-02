@@ -65,8 +65,6 @@ namespace UnitusCore.Models
         public DbSet<UserStatistics> UserStatistics { get; set; } 
 
         public DbSet<CircleUploaderEntity> CircleUploaderEntities { get; set; } 
-
-        public DbSet<UserConfigure> UserConfigures { get; set; } 
        
     }
 }

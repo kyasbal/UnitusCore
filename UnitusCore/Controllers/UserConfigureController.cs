@@ -15,17 +15,17 @@ namespace UnitusCore.Controllers
     public class UserConfigureController :UnitusApiController
     {
         [Route("Config")]
-        [HttpPut]
+        [HttpGet]
         [UnitusCorsEnabled]
         [ApiAuthorized]
-        public async Task<IHttpActionResult> PutUserConfigure(PutUserConfigureRequest req)
+        public async Task<IHttpActionResult> GetUserConfigure(PutUserConfigureRequest req)
         {
             return await this.OnValidToken(req, async (r) =>
             {
-                ApplicationUser user = CurrentUserWithPerson;
-                await user.PersonData.LoadUserConfigure(DbSession);
-                user.PersonData.UserConfigure.ShowOwnProfileToOtherCircle = req.ShowOwnProfileToOtherCircle;
-                await DbSession.SaveChangesAsync();
+                //ApplicationUser user = CurrentUserWithPerson;
+                //await user.PersonData.LoadUserConfigure(DbSession);
+                //user.PersonData.UserConfigure.ShowOwnProfileToOtherCircle = req.ShowOwnProfileToOtherCircle;
+                //await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
             });
         }

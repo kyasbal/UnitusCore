@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -50,7 +53,7 @@ namespace UnitusCore
                     (validateInterval:TimeSpan.FromHours(1),regenerateIdentity: (manager, user) =>user.GenerateUserIdentityAsync(manager,DefaultAuthenticationTypes.ApplicationCookie)),
                     OnException = context =>
                     {
-                        throw context.Exception;
+                        context.Rethrow = false;
                     }
                 }
             });
