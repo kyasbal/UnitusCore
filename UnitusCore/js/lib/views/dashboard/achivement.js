@@ -13,7 +13,7 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
     }
 
     AchivementView.prototype.initialize = function(option) {
-      this.user = option.user;
+      this.dashboard = option.dashboard;
       return $.ajax({
         type: "GET",
         url: "https://core.unitus-ac.com/Achivements",
@@ -86,7 +86,7 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
               return $(_this.$el.children("[data-js=achivementPanel]")[0]).html(AchivementShowTemplate({
                 achivement: _this.achivement,
                 data: JSON.stringify(_this.achivement),
-                user: _this.user
+                dashboard: _this.dashboard
               })).removeClass("hidden_panel_r");
             };
           })(this),

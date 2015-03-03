@@ -12,10 +12,13 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
       this.validationCreateButton = __bind(this.validationCreateButton, this);
       this.watchNewCircleEvents = __bind(this.watchNewCircleEvents, this);
       this.watchChangeValue = __bind(this.watchChangeValue, this);
+      this.createCircle = __bind(this.createCircle, this);
       return AdminNewCircleView.__super__.constructor.apply(this, arguments);
     }
 
     AdminNewCircleView.prototype.initialize = function(option) {
+      this.circles = option.circles;
+      this.dashboard = option.dashboard;
       this.notyHelper = new NotyHelper();
       this.circle = new Circle();
       this.render();
@@ -25,8 +28,6 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
         url: "https://core.unitus-ac.com/Candidate/University",
         success: (function(_this) {
           return function(msg) {
-            console.log("栄光");
-            console.log(msg);
             $.each(msg.Content, function(index, obj) {
               return _this.$("[data-js=circleSelect]").append("<option>" + obj + "</option>");
             });
@@ -35,7 +36,6 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
         })(this),
         error: (function(_this) {
           return function(msg) {
-            console.log("栄光ジャナイ");
             return console.log(msg);
           };
         })(this)
@@ -58,6 +58,11 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
       e.preventDefault();
       e.stopPropagation();
       $(e.target).html("<img src='./img/send.gif'>");
+      if (this.circle.get("LeaderUserName") === this.dashboard.get("UserName")) {
+        this.circle.set({
+          IsBelonging: true
+        });
+      }
       sendData = {
         Name: this.circle.get("CircleName"),
         Description: this.circle.get("CircleDescription"),
@@ -65,7 +70,7 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
         BelongedSchool: this.circle.get("BelongedSchool"),
         Notes: this.circle.get("Notes"),
         Contact: this.circle.get("Contact"),
-        CanInterColledge: true,
+        CanInterColledge: this.circle.get("CanInterColledge"),
         ActivityDate: this.circle.get("ActivityDate"),
         LeaderUserName: this.circle.get("LeaderUserName")
       };
@@ -77,13 +82,21 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
           return function(msg) {
             _this.notyHelper.generate("success", "作成完了", (_this.circle.get("CircleName")) + "を追加しました。");
             console.log("成功したよ");
-            console.log(msg);
+            _this.circle.set({
+              CircleID: msg.Content.CircleId
+            });
+            _this.circle.set({
+              LastUpdateDate: msg.Content.LastUpdate
+            });
+            _this.circle.set({
+              MemberCount: msg.Content.MemberCount
+            });
+            _this.circles.add(_this.circle);
             return $(e.target).html("作成する");
           };
         })(this),
         error: (function(_this) {
           return function(msg) {
-            console.log("失敗したよ");
             console.log(msg);
             if (msg.statusText === "Conflict") {
               _this.notyHelper.generate("error", "作成失敗", (_this.circle.get("CircleName")) + "はすでに存在します。");
@@ -255,28 +268,33 @@ define(['jquery', 'backbone', 'templates/admin/new_circle', 'models/circle'], fu
 
     AdminNewCircleView.prototype.isCircleExist = function() {
       var sendData;
-      console.log("isCircles");
-      sendData = {
-        circleName: "" + (this.circle.get("CircleName")),
-        universityName: "" + (this.circle.get("BelongedSchool"))
-      };
-      return $.ajax({
-        type: "GET",
-        url: "https://core.unitus-ac.com/Circle/CheckExist",
-        dataType: "text",
-        data: sendData,
-        success: (function(_this) {
-          return function(msg) {
-            return false;
-          };
-        })(this),
-        error: (function(_this) {
-          return function(msg) {
-            _this.notyHelper.generate("error", "作成失敗", "既にそのサークルはデータベースに存在しています");
-            return true;
-          };
-        })(this)
-      });
+      if (this.circle.get("BelongedSchool") !== '') {
+        sendData = {
+          circleName: "" + (this.circle.get("CircleName")),
+          belongedSchool: "" + (this.circle.get("BelongedSchool"))
+        };
+        return $.ajax({
+          type: "GET",
+          url: "https://core.unitus-ac.com/Circle/CheckExist",
+          dataType: "text",
+          data: sendData,
+          success: (function(_this) {
+            return function(msg) {
+              return false;
+            };
+          })(this),
+          error: (function(_this) {
+            return function(msg) {
+              if (msg.statusText === "Conflict") {
+                _this.notyHelper.generate("error", "作成失敗", "既にそのサークルはデータベースに存在しています");
+              } else {
+                _this.notyHelper.generate("error", "作成失敗", "データチェックに失敗しました");
+              }
+              return true;
+            };
+          })(this)
+        });
+      }
     };
 
     return AdminNewCircleView;

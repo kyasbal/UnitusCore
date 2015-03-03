@@ -11,7 +11,14 @@ define(['jquery', 'backbone'], function($, Backbone) {
     }
 
     Dashboard.prototype.defaults = {
-      name: 'こやっほーんにちは'
+      AchivementCategories: '',
+      AvatarUri: '',
+      CircleBelonging: '',
+      IsAdministrator: '',
+      Name: '',
+      UserName: '',
+      Profile: '',
+      GithubAssociation: false
     };
 
     return Dashboard;

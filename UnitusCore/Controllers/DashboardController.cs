@@ -22,7 +22,7 @@ using WebGrease.Css.Extensions;
 namespace UnitusCore.Controllers
 {
     
-    public class DashboardController : UnitusApiController
+    public class DashboardController : UnitusApiControllerWithTableConnection
     {
         [ApiAuthorized]
         [UnitusCorsEnabled]
@@ -106,14 +106,10 @@ namespace UnitusCore.Controllers
 
         private async Task<DetailedProfile> GetUserProfile(ApplicationUser targetUser)
         {
-            await targetUser.LoadPersonData(DbSession);
-            var p = targetUser.PersonData;
-            var disclosureConfig = new ProfileDisclosureConfigStorage(new TableStorageConnection(),targetUser.Id);
-
-            return new DetailedProfile(await disclosureConfig.FetchProtectedProperty(ProfileProperty.University,AccessBy.Owner,()=>p.BelongedSchool)
-                , await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, AccessBy.Owner, () => p.Faculty),
-                await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, AccessBy.Owner, () => p.Major),
-                p.CurrentCource, await GetGithubProfile(),p.Notes);
+            return
+                await
+                    DetailedProfile.GenerateFromUser(targetUser, DbSession, TableConnection, AccessBy.Owner,
+                        await GetGithubProfile());
         }
 
         private async Task<GithubProfile> GetGithubProfile()
@@ -179,17 +175,34 @@ namespace UnitusCore.Controllers
 
         public class DetailedProfile:IProtectedSchoolInfoContainer
         {
-            public DetailedProfile(DisclosureProtectedResponse belongedSchool, DisclosureProtectedResponse faculty, DisclosureProtectedResponse major, Person.Cource currentGrade, GithubProfile githubProfie, string notes)
+            public static async Task<DetailedProfile> GenerateFromUser(ApplicationUser user,ApplicationDbContext dbContext,TableStorageConnection storageConnection,AccessBy accessBy,GithubProfile profile)
             {
-                BelongedSchool = belongedSchool;
-                Faculty = faculty;
-                Major = major;
-                CurrentGrade = currentGrade;
-                GithubProfie = githubProfie;
-                Notes = notes;
+                await user.LoadPersonData(dbContext);
+                var disclosureConfig = new ProfileDisclosureConfigStorage(storageConnection, user.Id);
+                var p = user.PersonData;
+                DetailedProfile result = new DetailedProfile()
+                {
+                    Email = await disclosureConfig.FetchProtectedProperty(ProfileProperty.MailAddress,accessBy,()=>p.Email),
+                    Url = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Url, accessBy,()=>p.Url),
+                    BelongedSchool = await disclosureConfig.FetchProtectedProperty(ProfileProperty.University, accessBy,()=>p.BelongedSchool),
+                    Faculty = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, accessBy,()=>p.Faculty),
+                    Major = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, accessBy,()=>p.Major),
+                    CurrentGrade = p.CurrentCource,
+                    Notes = p.Notes,
+                    GithubProfile = profile,
+                    CreatedDateInfo = p.CreationDate.ToString("yyyy年M月d日に登録"),
+                    CreatedDateInfoByDateOffset = string.Format("{0}日目",(int)(DateTime.Now-p.CreationDate).TotalDays)
+                };
+
+                return result;
             }
 
-            public GithubProfile GithubProfie { get; set; }
+            public DetailedProfile()
+            {
+                
+            }
+
+            public GithubProfile GithubProfile { get; set; }
 
             public DisclosureProtectedResponse BelongedSchool { get; set; }
 
@@ -197,9 +210,17 @@ namespace UnitusCore.Controllers
 
             public DisclosureProtectedResponse Major { get; set; }
 
+            public DisclosureProtectedResponse Email { get; set; }
+
+            public DisclosureProtectedResponse Url { get; set; }
+
             public Person.Cource CurrentGrade { get; set; }
 
             public string Notes { get; set; }
+
+            public string CreatedDateInfo { get; set; }
+
+            public string CreatedDateInfoByDateOffset { get; set; }
         }
 
         public class GithubProfile

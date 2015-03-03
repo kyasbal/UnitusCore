@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/user', 'models/admin_panel'], function($, Backbone, template, HeaderView, PanelView, User, AdminPanel) {
+define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/admin_panel'], function($, Backbone, template, HeaderView, PanelView, AdminPanel) {
   var DashboadView;
   return DashboadView = (function(_super) {
     __extends(DashboadView, _super);
@@ -11,7 +11,8 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
     }
 
     DashboadView.prototype.initialize = function(option) {
-      this.user = new User();
+      this.dashboard = option.dashboard;
+      this.circles = option.circles;
       $.ajaxSetup({
         xhrFields: {
           withCredentials: true
@@ -30,34 +31,41 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
             console.log(msg);
             $("[data-js=loading]").fadeOut();
             data = msg.Content;
-            _this.user.set({
-              name: data.Name
+            _this.dashboard.set({
+              Name: data.Name
             });
-            _this.user.set({
-              mail: data.UserName
+            _this.dashboard.set({
+              UserName: data.UserName
             });
-            _this.user.set({
-              avatar: data.AvatarUri
+            _this.dashboard.set({
+              AvatarUri: data.AvatarUri
             });
-            _this.user.set({
-              isAdmin: data.IsAdministrator
+            _this.dashboard.set({
+              IsAdministrator: data.IsAdministrator
             });
-            _this.user.set({
-              circles: data.CircleBelonging
+            _this.dashboard.set({
+              CircleBelonging: data.CircleBelonging
             });
-            if (_this.user.get("isAdmin")) {
+            _this.dashboard.set({
+              Profile: data.Profile
+            });
+            _this.dashboard.set({
+              GithubAssociation: data.Profile.GithubProfie.AssociationEnabled
+            });
+            if (_this.dashboard.get("IsAdministrator")) {
               _this.admin_panel = new AdminPanel();
             }
             _this.renderDashboard();
             new HeaderView({
               el: $("[data-js=header]"),
-              user: _this.user,
+              dashboard: _this.dashboard,
               admin_panel: _this.admin_panel
             });
             new PanelView({
               el: $("[data-js=panel]"),
-              user: _this.user,
-              admin_panel: _this.admin_panel
+              dashboard: _this.dashboard,
+              admin_panel: _this.admin_panel,
+              circles: _this.circles
             });
             return _this.$el.fadeIn();
           };
@@ -74,7 +82,7 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
 
     DashboadView.prototype.renderDashboard = function() {
       return this.$el.html(template({
-        user: this.user
+        dashboard: this.Dashboard
       }));
     };
 

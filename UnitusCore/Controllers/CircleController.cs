@@ -59,17 +59,17 @@ namespace UnitusCore.Controllers
             });
         }
 
-
-        [UnitusCorsEnabled]
-        [Route("Circle/Detail/Dummy")]
-        [HttpGet]
-        public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
-        {
-            return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(new GetPutCircleDetailBody(
-                "応用数学研究部", "# 数学とかwwww", 28, "Tokyo university of science,Kagura-zaka", "特になし", "http://unitus-ac.com",
-                "なし", false, "毎週木曜日")
-                ));
-        }
+//
+//        [UnitusCorsEnabled]
+//        [Route("Circle/Detail/Dummy")]
+//        [HttpGet]
+//        public async Task<IHttpActionResult> GetCircleDetailedDummy(string validationToken, string circleId)
+//        {
+//            return Json(ResultContainer<GetPutCircleDetailBody>.GenerateSuccessResult(new GetPutCircleDetailBody(
+//                "応用数学研究部", "# 数学とかwwww", 28, "Tokyo university of science,Kagura-zaka", "特になし", "http://unitus-ac.com",
+//                "なし", false, "毎週木曜日")
+//                ));
+//        }
 
         #endregion
 
@@ -207,6 +207,8 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, () =>
             {
+                Ensure.NotEmptyString(circleName);
+                Ensure.NotEmptyString(belongedSchool);
                 EnsureNotExistingCircle(circleName,belongedSchool);
                 return StatusCode(HttpStatusCode.OK);
             });
@@ -392,10 +394,10 @@ namespace UnitusCore.Controllers
             public string CircleId { get; set; }
             public string ValidationToken { get; set; }
 
-            public PutCircleRequest(string circleId, string validationToken, string circleName, string circleDescription,
+            public PutCircleRequest(string circleId,string lastUpdate, string validationToken, string circleName, string circleDescription,
                 int memberCount, string belongedSchool, string notes, string webAddress, string contact,
                 bool canInterColledge, string activityDate)
-                : base(
+                : base(circleId,lastUpdate,
                     circleName, circleDescription, memberCount, belongedSchool, notes, webAddress, contact,
                     canInterColledge, activityDate)
             {
@@ -416,10 +418,12 @@ namespace UnitusCore.Controllers
 
             }
 
-            public GetPutCircleDetailBody(string circleName, string circleDescription, int memberCount,
+            public GetPutCircleDetailBody(string circleId,string lastupdate,string circleName, string circleDescription, int memberCount,
                 string belongedSchool, string notes, string webAddress, string contact, bool canInterColledge,
                 string activityDate)
             {
+                CircleId = circleId;
+                LastUpdate = lastupdate;
                 CircleName = circleName;
                 CircleDescription = circleDescription;
                 MemberCount = memberCount;
@@ -430,6 +434,10 @@ namespace UnitusCore.Controllers
                 CanInterColledge = canInterColledge;
                 ActivityDate = activityDate;
             }
+            
+            public string CircleId { get; set; }
+
+            public string LastUpdate { get; set; }
 
             public string CircleName { get; set; }
 
@@ -451,7 +459,7 @@ namespace UnitusCore.Controllers
 
             public static GetPutCircleDetailBody FromCircle(Circle circle)
             {
-                return new GetPutCircleDetailBody(circle.Name, circle.Description, circle.MemberCount,
+                return new GetPutCircleDetailBody(circle.Id.ToString(),circle.LastModefied.ToString("yyyy年M月d日"),circle.Name, circle.Description, circle.MemberCount,
                     circle.BelongedSchool, circle.Notes, circle.WebAddress, circle.Contact, circle.CanInterColledge,
                     circle.ActivityDate);
             }

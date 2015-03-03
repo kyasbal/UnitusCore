@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Microsoft.WindowsAzure.Storage.Table;
+using UnitusCore.Controllers;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels.Profile;
 
@@ -44,7 +45,7 @@ namespace UnitusCore.Storage
             return new DisclosureConfig(userId,(ProfileProperty) Enum.Parse(typeof(ProfileProperty),defaultDisclosureConfig.RowKey),defaultDisclosureConfig.Config);
         }
 
-        private async Task<ProfilePropertyDisclosureConfig> FetchDisclosureConfig(string userId,ProfileProperty property)
+        private async Task<DisclosureConfig> FetchDisclosureConfig(string userId,ProfileProperty property)
         {
             var disclosureConfigEntity =await RetrieveDisclosureConfigEntity(userId, property);
             if (disclosureConfigEntity == null)
@@ -58,7 +59,13 @@ namespace UnitusCore.Storage
                 }
                 await AddDisclosureConfig(disclosureConfigEntity);
             }
-            return disclosureConfigEntity.Config;
+            return disclosureConfigEntity;
+        }
+
+        private async Task<ProfilePropertyDisclosureConfig> FetchDisclosureConfigFlag(string userId,
+            ProfileProperty property)
+        {
+            return (await FetchDisclosureConfig(userId, property)).Config;
         }
 
         private bool HasRight(AccessBy accessBy, ProfilePropertyDisclosureConfig disclosureConfig)
@@ -66,7 +73,7 @@ namespace UnitusCore.Storage
             return (((byte)accessBy)&((byte)disclosureConfig))!=0x00;
         }
 
-        private async Task AddDisclosureConfig(string userId,ProfileProperty property,ProfilePropertyDisclosureConfig disclosureConfig)
+        public async Task AddDisclosureConfig(string userId,ProfileProperty property,ProfilePropertyDisclosureConfig disclosureConfig)
         {
             await AddDisclosureConfig(new DisclosureConfig(userId, property, disclosureConfig));
         }
@@ -80,7 +87,7 @@ namespace UnitusCore.Storage
 
         public async Task<DisclosureProtectedResponse> FetchProtectedProperty(ProfileProperty property,AccessBy accessBy,Func<Task<string>> fetchContent)
         {
-            ProfilePropertyDisclosureConfig disclosureConfig = await FetchDisclosureConfig(_userId, property);
+            ProfilePropertyDisclosureConfig disclosureConfig = await FetchDisclosureConfigFlag(_userId, property);
             if (HasRight(accessBy, disclosureConfig))
             {
                 var content = await fetchContent();
@@ -95,6 +102,24 @@ namespace UnitusCore.Storage
         public async Task<DisclosureProtectedResponse> FetchProtectedProperty(ProfileProperty property, AccessBy accessBy, Func<string> fetchContent)
         {
             return await FetchProtectedProperty(property,accessBy, () => Task.Run(fetchContent));
+        }
+
+        public async Task<IEnumerable<DisclosureConfig>> GetAllDisclosureProtectedConfigure()
+        {
+            HashSet<DisclosureConfig> configs=new HashSet<DisclosureConfig>();
+            foreach (ProfileProperty targetProperty in Enum.GetValues(typeof (ProfileProperty)))
+            {
+                configs.Add(await FetchDisclosureConfig(_userId,targetProperty));
+            }
+            return configs;
+        }
+
+        public async Task ObtainDetailedNames(IEnumerable<IDetailedDisplayDisclosureConfig> configures)
+        {
+            foreach (IDetailedDisplayDisclosureConfig config in configures)
+            {
+                config.DisplayConfigureName=await StringResourceStorage.Instance.GetPropertyString("ConfigDetailedName-" + config.Property);
+            }
         }
     }
 

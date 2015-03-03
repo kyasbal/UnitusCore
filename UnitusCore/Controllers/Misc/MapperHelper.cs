@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Web;
 using AutoMapper;
 using UnitusCore.Models.DataModel;
+using UnitusCore.Storage.DataModels.Profile;
 
 namespace UnitusCore.Controllers.Misc
 {
@@ -14,6 +15,7 @@ namespace UnitusCore.Controllers.Misc
         {
             Mapper.CreateMap(typeof (Circle), typeof (CircleController.AddCircleRequest));
             Mapper.CreateMap(typeof (CircleController.AddCircleRequest), typeof (Circle));
+            Mapper.CreateMap(typeof (DisclosureConfig), typeof (UserConfigureController.DisplayDisclosureConfig));
         }
 
         public static void DebugForProperty<T>(T arg) where T : class

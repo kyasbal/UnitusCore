@@ -12,6 +12,7 @@ using UnitusCore.Controllers.Base;
 using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
+using UnitusCore.Storage.Base;
 
 // ReSharper disable ReplaceWithSingleCallToFirstOrDefault
 
@@ -83,6 +84,20 @@ namespace UnitusCore.Controllers
             ApplicationUser applicationUser = await UserManager.FindByNameAsync(userName);
             if(applicationUser==null&&!allowNotFound)throw new HttpResponseException(HttpStatusCode.NotFound);
             return applicationUser;
+        }
+    }
+
+    public class UnitusApiControllerWithTableConnection:UnitusApiController
+    {
+        private TableStorageConnection _tableConnection;
+
+        protected TableStorageConnection TableConnection
+        {
+            get
+            {
+                _tableConnection = _tableConnection ?? new TableStorageConnection();
+                return _tableConnection;
+            }
         }
     }
 }

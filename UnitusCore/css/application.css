@@ -126,6 +126,72 @@ section#panel {
 .clear {
   clear: both; }
 
+#settingModal {
+  color: whitesmoke;
+  -webkit-font-smoothing: antialiased; }
+  #settingModal .modal-dialog {
+    margin: 80px auto; }
+  #settingModal .modal-header {
+    background-image: -webkit-linear-gradient(top, #262B34 0%, #262B34 100%);
+    background-image: -o-linear-gradient(top, #262B34 0%, #262B34 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#262B34), to(#262B34));
+    background-image: linear-gradient(to bottom, #262B34 0%, #262B34 100%);
+    background-color: #262B34;
+    border-bottom-color: #888; }
+    #settingModal .modal-header button span {
+      color: white; }
+  #settingModal .modal-body {
+    background-color: #39414D;
+    padding: 0px; }
+    #settingModal .modal-body ul {
+      border-bottom-color: #888;
+      margin-top: -1px; }
+      #settingModal .modal-body ul li:first-child a {
+        margin-left: 10px; }
+      #settingModal .modal-body ul li:last-child a {
+        margin-left: 10px; }
+      #settingModal .modal-body ul li.active a {
+        border-radius: 0px;
+        border-color: #888;
+        color: white;
+        background-color: transparent; }
+      #settingModal .modal-body ul li:hover a {
+        border-radius: 0px;
+        border-color: #888;
+        color: white;
+        background-color: transparent; }
+      #settingModal .modal-body ul li a {
+        color: #888; }
+    #settingModal .modal-body .tab-pane {
+      padding: 16px; }
+      #settingModal .modal-body .tab-pane h1 {
+        letter-spacing: normal;
+        font-family: inherit;
+        padding: 8px 0px;
+        font-size: 32px;
+        margin: 0;
+        text-align: left; }
+      #settingModal .modal-body .tab-pane ul {
+        border: solid 1px #888;
+        padding: 8px 24px;
+        margin-top: 16px;
+        background-color: rgba(0, 0, 0, 0.2); }
+      #settingModal .modal-body .tab-pane .btn.btn-success {
+        border-radius: 0px; }
+    #settingModal .modal-body #settingDisclosure .col-xs-6 {
+      margin: 4px 0px; }
+    #settingModal .modal-body #settingDisclosure .col-xs-6 p {
+      padding: 6px;
+      background-color: #262b34;
+      margin: 0px; }
+    #settingModal .modal-body #settingDisclosure .col-xs-6 .btn {
+      border: solid 1px #262b34;
+      border: solid 1px #262b34;
+      border-radius: 0px;
+      color: #888; }
+      #settingModal .modal-body #settingDisclosure .col-xs-6 .btn:hover, #settingModal .modal-body #settingDisclosure .col-xs-6 .btn.active {
+        color: white; }
+
 #app {
   width: 100%;
   height: 100%; }

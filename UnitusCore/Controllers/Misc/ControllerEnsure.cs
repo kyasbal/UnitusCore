@@ -93,5 +93,18 @@ namespace UnitusCore.Controllers.Misc
                 Content = new StringContent(info)
             });
         }
+
+        public T IsEnumElement<T>(string arg)where T:struct 
+        {
+            T t;
+            if (!Enum.TryParse(arg, out t))
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = typeof(T).ToString()+"is not contain"+arg
+                });
+            }
+            return t;
+        }
     }
 }

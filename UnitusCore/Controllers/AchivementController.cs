@@ -48,25 +48,10 @@ namespace UnitusCore.Controllers
                 AchivementListResponse response = new AchivementListResponse();
                 AchivementStatisticsStorage achivementStatistics = new AchivementStatisticsStorage(
                     new TableStorageConnection(),dbSession);
-                response.Achivements = (await achivementStatistics.EachForUserAchivements<AchivementListElement>(
-                    user.Id,
-                    GetAsAchivementListElement,
-                    achivementCategory
-                    )).ToArray();
+                response.AchivementCategories = await achivementStatistics.GetAchivementsHeaders(CurrentUser.Id);
                 return Content(HttpStatusCode.OK,  JsonConvert.SerializeObject(
                                 ResultContainer<AchivementListResponse>.GenerateSuccessResult(response), new JsonSerializerSettings() { FloatFormatHandling = FloatFormatHandling.String }), new RawJsonMediaTypeFormatter(), new MediaTypeWithQualityHeaderValue("application/json"));
             });
-        }
-
-        private AchivementListElement GetAsAchivementListElement(SingleUserAchivementStatisticsByDay a,AchivementStatisticsStorage ass)
-        {
-            var body =
-                Task.Run(async ()=>await ass.RetrieveAchivementBody(a.AchivementId)).Result;
-            return new AchivementListElement(a.AchivementId, a.CurrentProgress, a.ProgressDiff, a.IsAwarded,
-                a.IsAwarded ? a.AwardedDate.FromUnixTime().ToString("d") : "",
-                a.IsAwarded
-                    ? body.BadgeImageUrl
-                    : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
         }
 
         [HttpGet]
@@ -166,7 +151,7 @@ namespace UnitusCore.Controllers
 
         public class AchivementListResponse
         {
-            public AchivementListElement[] Achivements { get; set; }
+            public IEnumerable<AchivementStatisticsStorage.CategoryInfo> AchivementCategories { get; set; }
         }
 
         public class AchivementListElement

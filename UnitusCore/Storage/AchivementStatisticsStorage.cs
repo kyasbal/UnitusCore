@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using Octokit.Helpers;
+using UnitusCore.Controllers;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.Base;
@@ -344,6 +347,7 @@ namespace UnitusCore.Storage
 
         private IEnumerable<string> RetrieveAchivementNamesForCategory(string categoryName)
         {
+            if(categoryName=="全て")return GetAchivementNames();
             TableQuery<CategoryAchivementPair> pairRetrieveQuery=new TableQuery<CategoryAchivementPair>().Where(TableQuery.GenerateFilterCondition("PartitionKey",QueryComparisons.Equal,categoryName));
             return _achivementCategoriesTable.ExecuteQuery(pairRetrieveQuery).Select(a => a.AchivementName);
         }
@@ -356,7 +360,7 @@ namespace UnitusCore.Storage
         /// <param name="f"></param>
         /// <param name="achivementCategory"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> EachForUserAchivements<T>(string userIds, Func<SingleUserAchivementStatisticsByDay, AchivementStatisticsStorage, T> f, string achivementCategory)
+        private async Task<IEnumerable<T>> EachForUserAchivements<T>(string userIds, Func<SingleUserAchivementStatisticsByDay, AchivementStatisticsStorage, Task<T>> f, string achivementCategory)
         {
             var result = new HashSet<T>();
             IEnumerable<string> targetAchivementNames = null;
@@ -376,7 +380,7 @@ namespace UnitusCore.Storage
                     achivementData = new SingleUserAchivementStatisticsByDay(achivement, userIds, false, double.NaN,
                         double.NaN);
                 }
-                result.Add(f(achivementData, this));
+                result.Add(await f(achivementData, this));
             }
             return result;
         }
@@ -392,8 +396,34 @@ namespace UnitusCore.Storage
 
         public async Task<IEnumerable<string>> GetAchivementCategories()
         {
-            TableQuery<CategoryNamesEntity> categoryQuery=new TableQuery<CategoryNamesEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey",QueryComparisons.Equal,"CATEGORY"));
-            return _achivementCategoriesTable.ExecuteQuery(categoryQuery).Select(a=>a.CategoryName);
+            TableQuery<CategoryNamesEntity> categoryQuery =
+                new TableQuery<CategoryNamesEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey",
+                    QueryComparisons.Equal, "CATEGORY"));
+            var categories=_achivementCategoriesTable.ExecuteQuery(categoryQuery).OrderBy(a=>a.Timestamp).Select(a=>a.CategoryName);
+            return categories;
+        }
+
+        public async Task<IEnumerable<CategoryInfo>> GetAchivementsHeaders(string userId)
+        {
+            HashSet<CategoryInfo> c=new HashSet<CategoryInfo>();
+            var categories= await GetAchivementCategories();
+            foreach (string category in categories)
+            {
+                HashSet<AchivementController.AchivementListElement> catElem=new HashSet<AchivementController.AchivementListElement>();
+                var achivements =await EachForUserAchivements<AchivementController.AchivementListElement>(userId, async(a,b) =>
+                {
+                    var body = await RetrieveAchivementBody(a.AchivementId);
+                    return new AchivementController.AchivementListElement(a.AchivementId, a.CurrentProgress, a.ProgressDiff, a.IsAwarded, a.IsAwarded ? a.AwardedDate.FromUnixTime().ToString("d") : "", a.IsAwarded
+                    ? body.BadgeImageUrl
+                    : "https://core.unitus-ac.com/Uploader/Download?imageId=RH1DdgeB6g8ZT3X1");
+                }, category);
+                foreach (var achivement in achivements)
+                {
+                    catElem.Add(achivement);
+                }
+                c.Add(new CategoryInfo(category, achivements));
+            }
+            return c;
         }
 
         public async Task Maintenance_GenerateAchivementCategoriesForExisitingAchivementBody()
@@ -408,6 +438,19 @@ namespace UnitusCore.Storage
                         TableOperation.Insert(new CategoryAchivementPair(achivementName, "github")));
                 }
             }
+        }
+
+        public class CategoryInfo
+        {
+            public CategoryInfo(string categoryName, IEnumerable<AchivementController.AchivementListElement> achivements)
+            {
+                CategoryName = categoryName;
+                Achivements = achivements;
+            }
+
+            public string CategoryName { get; set; }
+
+            public IEnumerable<AchivementController.AchivementListElement> Achivements { get; set; }
         }
 
         private class MemberAchivementRankingComparator : IComparer<SingleUserAchivementStatisticsByDay>
@@ -618,6 +661,7 @@ namespace UnitusCore.Storage
             {
                 return new Tuple<double, double>(0, 0);
             }
+
         }
     }
 }

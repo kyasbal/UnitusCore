@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using UnitusCore.Controllers;
 
 namespace UnitusCore.Storage.DataModels.Profile
 {
-    public class DisclosureConfig:TableEntity
+    public class DisclosureConfig:TableEntity,IDisplayDisclosureConfig
     {
         public DisclosureConfig()
         {
@@ -32,6 +33,16 @@ namespace UnitusCore.Storage.DataModels.Profile
             }
             set { ConfigString = value.ToString(); }
         }
+
+        [IgnoreProperty]
+        public string Property
+        {
+            get
+            {
+                return RowKey;
+            }
+            set { RowKey = value; }
+        }
     }
 
     [Flags]
@@ -48,6 +59,7 @@ namespace UnitusCore.Storage.DataModels.Profile
         University,
         Faculty,
         Major,
-        MailAddress
+        MailAddress,
+        Url
     }
 }

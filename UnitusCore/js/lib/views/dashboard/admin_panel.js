@@ -12,6 +12,8 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel', 'views/admin/ne
 
     AdminPanelView.prototype.initialize = function(option) {
       var sendData;
+      this.circles = option.circles;
+      this.dashboard = option.dashboard;
       sendData = {
         count: 40
       };
@@ -27,7 +29,7 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel', 'views/admin/ne
             text += '<td class="name name_w">' + this.Name + '<i data-js="deleteAccount" class="fa fa-times"></i></td>';
             text += '<td class="author author_w">' + "閲覧者" + '</td>';
             text += '<td class="number number_w">' + this.Grade + '</td>';
-            text += '<td class="university university_w">' + this.BelongedTo + '</td>';
+            text += '<td class="university university_w">' + this.BelongedSchool + '</td>';
             text += '<td class="mail mail_w">' + this.UserName + '<i class="fa fa-clipboard" data-js="copyMail" data-clipboard-text="' + this.UserName + '"></i></td>';
             text += '</tr>';
             return $("[data-js=userList]").append(text);
@@ -40,12 +42,15 @@ define(['jquery', 'backbone', 'templates/dashboard/admin_panel', 'views/admin/ne
       this.admin_panel = option.admin_panel;
       this.admin_panel.on("change:isOpen", (function(_this) {
         return function() {
+          console.log("open");
           return _this.$el.toggleClass("hidden_panel_l");
         };
       })(this));
       this.renderAdminPanel();
       return new AdminNewCircle({
-        el: $("[data-js=adminNewCircle]")
+        el: $("[data-js=adminNewCircle]"),
+        circles: this.circles,
+        dashboard: this.dashboard
       });
     };
 

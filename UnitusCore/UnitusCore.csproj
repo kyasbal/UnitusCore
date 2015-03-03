@@ -340,6 +340,10 @@
     <Compile Include="Migrations\201503020840261_RenameSchoolColmun.Designer.cs">
       <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503031556122_AddPersonColumn.cs" />
+    <Compile Include="Migrations\201503031556122_AddPersonColumn.Designer.cs">
+      <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
@@ -382,6 +386,7 @@
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
+    <Compile Include="Storage\DataModels\StringResource.cs" />
     <Compile Include="Storage\DataModels\TimeLine\CircleTimeLineEntity.cs" />
     <Compile Include="Storage\DbCacheStorage.cs" />
     <Compile Include="Storage\IdPairContainerStorage.cs" />
@@ -389,6 +394,7 @@
     <Compile Include="Storage\StatisticJobLogStorage.cs" />
     <Compile Include="Storage\StatisticTaskQueueStorage.cs" />
     <Compile Include="Storage\ProfileDisclosureConfigStorage.cs" />
+    <Compile Include="Storage\StringResourceStorage.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />
@@ -765,6 +771,7 @@
     <Content Include="img\pictgrams-colored-02.png" />
     <Content Include="img\send.gif" />
     <Content Include="js\lib\collections\achivements.js" />
+    <Content Include="js\lib\collections\circles.js" />
     <Content Include="js\lib\helpers\notyHelper.js" />
     <Content Include="js\lib\index.js" />
     <Content Include="js\lib\models\achivement.js" />
@@ -784,6 +791,7 @@
     <Content Include="js\lib\templates\dashboard\user_circleList.js" />
     <Content Include="js\lib\templates\dashboard\user_panel.js" />
     <Content Include="js\lib\templates\dashboard\user_profile.js" />
+    <Content Include="js\lib\templates\header\config.js" />
     <Content Include="js\lib\views\admin\new_circle.js" />
     <Content Include="js\lib\views\dashboard\achivement.js" />
     <Content Include="js\lib\views\dashboard\admin_panel.js" />
@@ -792,6 +800,7 @@
     <Content Include="js\lib\views\dashboard\header.js" />
     <Content Include="js\lib\views\dashboard\panel.js" />
     <Content Include="js\lib\views\dashboard\user_panel.js" />
+    <Content Include="js\lib\views\renderer\circle.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\ZeroClipboard.Core.min.map" />
@@ -1269,6 +1278,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503020840261_RenameSchoolColmun.resx">
       <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503031556122_AddPersonColumn.resx">
+      <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

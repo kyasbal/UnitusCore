@@ -24,7 +24,11 @@ namespace UnitusCore.Models.DataModel
 
         public string Name { get; set; }
 
+        public string NickName { get; set; }
+
         public string Email { get; set; }
+
+        public string Url { get; set; }
 
         public ICollection<MemberStatus> BelongedCircles { get; set; }//binded
 
