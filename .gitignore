@@ -188,3 +188,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/UnitusCore/UnitusCore.csproj.DotSettings
+/UnitusCore.sln.GhostDoc.xml

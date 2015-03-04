@@ -1,7 +1,7 @@
 var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/admin_panel'], function($, Backbone, template, HeaderView, PanelView, AdminPanel) {
+define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/header', 'views/dashboard/panel', 'models/admin_panel', 'models/profile', 'collections/profiles'], function($, Backbone, template, HeaderView, PanelView, AdminPanel, Profile, Profiles) {
   var DashboadView;
   return DashboadView = (function(_super) {
     __extends(DashboadView, _super);
@@ -12,6 +12,8 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
 
     DashboadView.prototype.initialize = function(option) {
       this.dashboard = option.dashboard;
+      this.profile = new Profile();
+      this.profiles = new Profiles();
       this.circles = option.circles;
       $.ajaxSetup({
         xhrFields: {
@@ -27,12 +29,14 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
         type: 'GET',
         success: (function(_this) {
           return function(msg) {
-            var data;
-            console.log(msg);
+            var data, profile;
             $("[data-js=loading]").fadeOut();
             data = msg.Content;
             _this.dashboard.set({
               Name: data.Name
+            });
+            _this.dashboard.set({
+              AchivementCategories: data.AchivementCategories
             });
             _this.dashboard.set({
               UserName: data.UserName
@@ -47,11 +51,23 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
               CircleBelonging: data.CircleBelonging
             });
             _this.dashboard.set({
-              Profile: data.Profile
+              GithubAssociation: data.Profile.GithubProfile.AssociationEnabled
             });
-            _this.dashboard.set({
-              GithubAssociation: data.Profile.GithubProfie.AssociationEnabled
+            profile = data.Profile;
+            _this.profile.set({
+              BelongedSchool: profile.BelongedSchool,
+              CreatedDateInfo: profile.CreatedDateInfo,
+              CreatedDateInfoByDateOffset: profile.CreatedDateInfoByDateOffset,
+              CurrentGrade: profile.CurrentGrade,
+              Email: profile.Email,
+              Faculty: profile.Faculty,
+              GithubProfile: profile.GithubProfile,
+              Major: profile.Major,
+              Notes: profile.Notes,
+              Url: profile.Url,
+              IsSelf: true
             });
+            _this.profiles.add(_this.profile);
             if (_this.dashboard.get("IsAdministrator")) {
               _this.admin_panel = new AdminPanel();
             }
@@ -71,8 +87,6 @@ define(['jquery', 'backbone', 'templates/dashboard/dashboard', 'views/dashboard/
           };
         })(this),
         error: function(XMLHttpRequest, textStatus) {
-          console.log(XMLHttpRequest);
-          console.log(textStatus);
           if (textStatus === "error" || XMLHttpRequest.ErrorMessage === "Unauthorized API Access") {
             return location.assign("https://core.unitus-ac.com/Account/Login");
           }

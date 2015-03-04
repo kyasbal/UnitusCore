@@ -383,6 +383,7 @@
     <Compile Include="Storage\DataModels\GistStatisticsForSingleUserByLanguage.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
     <Compile Include="Storage\DataModels\Profile\DisclosureConfig.cs" />
+    <Compile Include="Storage\DataModels\Profile\LanguageProfile.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
@@ -772,6 +773,7 @@
     <Content Include="img\send.gif" />
     <Content Include="js\lib\collections\achivements.js" />
     <Content Include="js\lib\collections\circles.js" />
+    <Content Include="js\lib\collections\profiles.js" />
     <Content Include="js\lib\helpers\notyHelper.js" />
     <Content Include="js\lib\index.js" />
     <Content Include="js\lib\models\achivement.js" />
@@ -779,6 +781,7 @@
     <Content Include="js\lib\models\circle.js" />
     <Content Include="js\lib\models\dashboard.js" />
     <Content Include="js\lib\models\notyHelper.js" />
+    <Content Include="js\lib\models\profile.js" />
     <Content Include="js\lib\models\user.js" />
     <Content Include="js\lib\templates\achivement\index.js" />
     <Content Include="js\lib\templates\achivement\show.js" />
@@ -799,6 +802,7 @@
     <Content Include="js\lib\views\dashboard\dashboard.js" />
     <Content Include="js\lib\views\dashboard\header.js" />
     <Content Include="js\lib\views\dashboard\panel.js" />
+    <Content Include="js\lib\views\dashboard\profilebar.js" />
     <Content Include="js\lib\views\dashboard\user_panel.js" />
     <Content Include="js\lib\views\renderer\circle.js" />
     <Content Include="Scripts\bootstrap.js" />

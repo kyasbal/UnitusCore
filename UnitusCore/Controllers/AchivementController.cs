@@ -27,7 +27,7 @@ namespace UnitusCore.Controllers
         [UnitusCorsEnabled]
         [Route("Achivements")]
         [Authorize]
-        public async Task<IHttpActionResult> GetAchivementList(string validationToken,string achivementCategory="全て")
+        public async Task<IHttpActionResult> GetAchivementList(string validationToken,string achivementCategory="All")
         {
             return await AchivementListResult(validationToken, DbSession, CurrentUser,achivementCategory);
         }
@@ -35,7 +35,7 @@ namespace UnitusCore.Controllers
         [HttpGet]
         [UnitusCorsEnabled]
         [Route("Achivements")]
-        public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName,string achivementCategory="全て")
+        public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName,string achivementCategory="All")
         {
             ApplicationUser user = await Ensure.ExistingUserFromEmail(userName);
             return await AchivementListResult(validationToken,DbSession, user,achivementCategory);

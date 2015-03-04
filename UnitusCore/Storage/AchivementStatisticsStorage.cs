@@ -347,7 +347,7 @@ namespace UnitusCore.Storage
 
         private IEnumerable<string> RetrieveAchivementNamesForCategory(string categoryName)
         {
-            if(categoryName=="全て")return GetAchivementNames();
+            if(categoryName=="All")return GetAchivementNames();
             TableQuery<CategoryAchivementPair> pairRetrieveQuery=new TableQuery<CategoryAchivementPair>().Where(TableQuery.GenerateFilterCondition("PartitionKey",QueryComparisons.Equal,categoryName));
             return _achivementCategoriesTable.ExecuteQuery(pairRetrieveQuery).Select(a => a.AchivementName);
         }
@@ -364,12 +364,13 @@ namespace UnitusCore.Storage
         {
             var result = new HashSet<T>();
             IEnumerable<string> targetAchivementNames = null;
-            if (achivementCategory.Equals("全て"))
+            if (achivementCategory.Equals("All"))
             {
                 targetAchivementNames = GetAchivementNames();
             }
             else
             {
+                achivementCategory = achivementCategory.ToLower();
                 targetAchivementNames = RetrieveAchivementNamesForCategory(achivementCategory);
             }
             foreach (var achivement in targetAchivementNames)

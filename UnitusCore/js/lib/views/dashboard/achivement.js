@@ -2,7 +2,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 'templates/achivement/index', 'templates/achivement/show'], function($, Backbone, Achivement, Achivements, AchivementListTemplate, AchivementShowTemplate) {
+define(['jquery', 'backbone', 'models/achivement', 'templates/achivement/index', 'templates/achivement/show'], function($, Backbone, Achivement, AchivementListTemplate, AchivementShowTemplate) {
   var AchivementView;
   return AchivementView = (function(_super) {
     __extends(AchivementView, _super);
@@ -14,34 +14,45 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
 
     AchivementView.prototype.initialize = function(option) {
       this.dashboard = option.dashboard;
+      this.achivements = option.achivements;
       return $.ajax({
         type: "GET",
         url: "https://core.unitus-ac.com/Achivements",
         success: (function(_this) {
           return function(data) {
-            var achivements;
-            _this.achivements = new Achivements();
-            achivements = _this.achivements;
-            $.each(data.Content.Achivements, function() {
-              var achivement;
-              achivement = new Achivement({
-                Name: this.AchivementName,
-                AwardedDate: this.AwardedDate,
-                BadgeImageUrl: this.BadgeImageUrl,
-                CurrentProgress: (this.CurrentProgress === "NaN" ? null : this.CurrentProgress.toFixed(2)),
-                IsAwarded: this.IsAwarded,
-                ProgressDiff: (this.ProgressDiff === "NaN" ? null : this.ProgressDiff.toFixed(2))
+            console.log(data);
+            return $.each(data.Content.AchivementCategories, function(parentIndex, parentObj) {
+              var categoryName;
+              categoryName = "belonged" + parentObj.CategoryName;
+              $.each(parentObj.Achivements, function(index, obj) {
+                var achivement;
+                if (parentIndex === 0) {
+                  achivement = new Achivement({
+                    Name: obj.AchivementName,
+                    AwardedDate: obj.AwardedDate,
+                    BadgeImageUrl: obj.BadgeImageUrl,
+                    CurrentProgress: (obj.CurrentProgress === "NaN" ? null : obj.CurrentProgress.toFixed(2)),
+                    IsAwarded: obj.IsAwarded,
+                    ProgressDiff: (obj.ProgressDiff === "NaN" ? null : obj.ProgressDiff.toFixed(2))
+                  });
+                  achivement.set(_this.hash(categoryName, true));
+                  return _this.achivements.add(achivement);
+                } else {
+                  achivement = _this.achivements.where({
+                    Name: obj.AchivementName
+                  })[0];
+                  return achivement.set(_this.hash(categoryName, true));
+                }
               });
-              return achivements.add(achivement);
-            });
-            return achivements.each(function(a) {
-              return _this.$el.append(AchivementListTemplate({
-                achivement: a
-              }));
+              return _this.listenTo(_this.achivements, parentObj.CategoryName, function() {
+                return _this.render(_this.achivements.where(_this.hash("belonged" + parentObj.CategoryName, true)), parentObj.CategoryName);
+              });
             });
           };
         })(this),
-        error: function(data) {}
+        error: function(data) {
+          return console.log(data);
+        }
       });
     };
 
@@ -71,8 +82,6 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
                 isDetailGetting: true
               });
               values = data.Content;
-              console.log("koayo");
-              console.log(values);
               _this.achivement.set({
                 Description: values.AchivementDescription,
                 AwardedPerson: values.AwardedPerson,
@@ -95,15 +104,33 @@ define(['jquery', 'backbone', 'models/achivement', 'collections/achivements', 't
           }
         });
       } else {
-        $(this.$el.children("[data-js=achivementPanel]")[0]).html(AchivementShowTemplate({
+        return $(this.$el.children("[data-js=achivementPanel]")[0]).html(AchivementShowTemplate({
           achivement: this.achivement
         })).removeClass("hidden_panel_r");
-        return console.log("取得済み");
       }
     };
 
     AchivementView.prototype.closePanel = function(e) {
       return $(this.$el.children("[data-js=achivementPanel]")[0]).addClass("hidden_panel_r");
+    };
+
+    AchivementView.prototype.hash = function(key, value) {
+      var h;
+      h = {};
+      h[key] = value;
+      return h;
+    };
+
+    AchivementView.prototype.render = function(achivements, categoryName) {
+      $(this.$el.find("[data-js=categoryName]")).html("（" + categoryName + "）");
+      $(this.$el.find("[data-js=badges]")).html('');
+      return $.each(achivements, (function(_this) {
+        return function(index, a) {
+          return $(_this.$el.find("[data-js=badges]")).append(AchivementListTemplate({
+            achivement: a
+          }));
+        };
+      })(this));
     };
 
     return AchivementView;

@@ -149,19 +149,21 @@ section#panel {
       #settingModal .modal-body ul li:first-child a {
         margin-left: 10px; }
       #settingModal .modal-body ul li:last-child a {
-        margin-left: 10px; }
-      #settingModal .modal-body ul li.active a {
-        border-radius: 0px;
-        border-color: #888;
-        color: white;
-        background-color: transparent; }
-      #settingModal .modal-body ul li:hover a {
-        border-radius: 0px;
-        border-color: #888;
-        color: white;
-        background-color: transparent; }
-      #settingModal .modal-body ul li a {
-        color: #888; }
+        margin-right: 10px; }
+      #settingModal .modal-body ul li {
+        margin-left: -3px; }
+        #settingModal .modal-body ul li.active a {
+          border-radius: 0px;
+          border-color: #888;
+          color: white;
+          background-color: transparent; }
+        #settingModal .modal-body ul li:hover a {
+          border-radius: 0px;
+          border-color: #888;
+          color: white;
+          background-color: transparent; }
+        #settingModal .modal-body ul li a {
+          color: #888; }
     #settingModal .modal-body .tab-pane {
       padding: 16px; }
       #settingModal .modal-body .tab-pane h1 {
@@ -549,6 +551,13 @@ section#header {
         transition: transform 0.3s ease-out; }
     #profile .profilebar .panel .list-group {
       border: none; }
+      #profile .profilebar .panel .list-group li {
+        cursor: pointer; }
+        #profile .profilebar .panel .list-group li i {
+          font-size: 18px;
+          margin-right: 10px;
+          color: #555;
+          vertical-align: bottom; }
   #profile .profilebar a[aria-expanded="true"] i {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
@@ -574,16 +583,19 @@ section#header {
   bottom: 0px;
   background-color: #37414b; }
 
-#allUserAchivement {
+#userAchivement {
   overflow-x: hidden;
   overflow-y: scroll; }
-  #allUserAchivement .title {
+  #userAchivement .title {
     color: white;
     font-size: 24px;
     border-bottom: 2px solid #888;
     -webkit-font-smoothing: antialiased;
     padding: 4px 0px; }
-  #allUserAchivement .achive_badge {
+    #userAchivement .title span {
+      color: #888;
+      font-size: 18px; }
+  #userAchivement .achive_badge {
     position: relative;
     vertical-align: top;
     display: inline-block;
@@ -593,25 +605,25 @@ section#header {
     border-bottom: solid 2px #888;
     min-height: 216px;
     cursor: pointer; }
-    #allUserAchivement .achive_badge:hover .image-wrap {
+    #userAchivement .achive_badge:hover .image-wrap {
       margin-top: -4px; }
-    #allUserAchivement .achive_badge:nth-of-type(4n+2) {
+    #userAchivement .achive_badge:nth-of-type(4n) {
       border-right: none; }
-    #allUserAchivement .achive_badge .image-wrap {
+    #userAchivement .achive_badge .image-wrap {
       -webkit-transition: margin 0.2s ease-out;
       -moz-transition: margin 0.2s ease-out;
       -ms-transition: margin 0.2s ease-out;
       -o-transition: margin 0.2s ease-out;
       transition: margin 0.2s ease-out;
       width: 100%; }
-      #allUserAchivement .achive_badge .image-wrap img {
+      #userAchivement .achive_badge .image-wrap img {
         display: block;
         width: 80px;
         margin: 24px auto; }
-    #allUserAchivement .achive_badge .achive_name {
+    #userAchivement .achive_badge .achive_name {
       color: whitesmoke;
       text-align: center; }
-    #allUserAchivement .achive_badge .info {
+    #userAchivement .achive_badge .info {
       border-top: 1px solid #888;
       background-color: #262b34;
       color: whitesmoke;
@@ -620,15 +632,15 @@ section#header {
       width: 100%;
       padding: 8px 0px;
       font-size: 12px; }
-      #allUserAchivement .achive_badge .info .tag {
+      #userAchivement .achive_badge .info .tag {
         font-size: 10px; }
-    #allUserAchivement .achive_badge .achive_progress {
+    #userAchivement .achive_badge .achive_progress {
       position: absolute;
       height: 4px;
       left: 0px;
       bottom: 0px;
       z-index: 2; }
-    #allUserAchivement .achive_badge .achive_progress-wrap {
+    #userAchivement .achive_badge .achive_progress-wrap {
       position: absolute;
       background-color: #676767;
       height: 4px;
@@ -637,21 +649,21 @@ section#header {
       width: 100%;
       z-index: 1; }
   @media (max-width: 1200px) {
-    #allUserAchivement .achive_badge {
+    #userAchivement .achive_badge {
       width: 33.33%; }
-      #allUserAchivement .achive_badge:nth-of-type(4n+2) {
+      #userAchivement .achive_badge:nth-of-type(4n) {
         border-right: solid 2px #888; }
-      #allUserAchivement .achive_badge:nth-of-type(3n+2) {
+      #userAchivement .achive_badge:nth-of-type(3n) {
         border-right: none; } }
   @media (max-width: 984px) {
-    #allUserAchivement .achive_badge {
+    #userAchivement .achive_badge {
       width: 50%; }
-      #allUserAchivement .achive_badge:nth-of-type(3n+2) {
+      #userAchivement .achive_badge:nth-of-type(3n) {
         border-right: solid 2px #888; }
-      #allUserAchivement .achive_badge:nth-of-type(2n+2) {
+      #userAchivement .achive_badge:nth-of-type(2n) {
         border-right: none; } }
   @media (max-width: 784px) {
-    #allUserAchivement .achive_badge {
+    #userAchivement .achive_badge {
       width: 100%;
       border-right: none;
       border-bottom: none; } }
