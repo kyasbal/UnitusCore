@@ -9,26 +9,26 @@ namespace UnitusCore.Storage.DataModels.Profile
 {
     public class SkillProfile:TableEntity
     {
-        private string _languageName;
+        private string _skillName;
 
         public SkillProfile()
         {
             
         }
 
-        public SkillProfile(string userId,string languageName,SkillLevel skillLevel)
+        public SkillProfile(string userId,string skillName,SkillLevel skillLevel)
         {
             UserId = userId;
-            LanguageName = languageName;
+            SkillName = skillName;
             SkillLevel = skillLevel;
         }
 
-        public string LanguageName
+        public string SkillName
         {
-            get { return _languageName; }
+            get { return _skillName; }
             set
             {
-                _languageName = value;
+                _skillName = value;
                 RowKey = value.ToHashCode();
             }
         }
