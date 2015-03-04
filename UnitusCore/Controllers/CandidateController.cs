@@ -6,11 +6,12 @@ using System.Web;
 using System.Web.Http;
 using UnitusCore.Attributes;
 using UnitusCore.Results;
+using UnitusCore.Storage;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class CandidateController:UnitusApiController
+    public class CandidateController:UnitusApiControllerWithTableConnection
     {
         [HttpGet]
         [ApiAuthorized]
@@ -35,6 +36,25 @@ namespace UnitusCore.Controllers
                         universities.Add(university);
                     }
                     return Json(ResultContainer<string[]>.GenerateSuccessResult(universities.ToArray()));
+                });
+        }
+
+        [HttpGet]
+        [ApiAuthorized]
+        [UnitusCorsEnabled]
+        [Route("Candidate/Skill")]
+        public async Task<IHttpActionResult> SkillCandidates(string validationToken)
+        {
+            return await this.OnValidToken(validationToken,
+                () =>
+                {
+                    HashSet<string> skills = new HashSet<string>();
+                    SkillProfileStorage sps=new SkillProfileStorage(TableConnection);
+                    foreach (string skillName in sps.GetAllSkills())
+                    {
+                        skills.Add(skillName);
+                    }
+                    return Json(ResultContainer<string[]>.GenerateSuccessResult(skills.ToArray()));
                 });
         }
     }

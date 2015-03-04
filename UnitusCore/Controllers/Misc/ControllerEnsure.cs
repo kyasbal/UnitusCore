@@ -106,5 +106,18 @@ namespace UnitusCore.Controllers.Misc
             }
             return t;
         }
+
+        public async Task IsSkillName(string skillName)
+        {
+            SkillProfileStorage sps=new SkillProfileStorage(new TableStorageConnection());
+            if (!await sps.IsSkill(skillName)) throw new HttpResponseException(HttpStatusCode.BadRequest);
+        }
+
+        public async Task IsNotExisitingSkillName(string skillName)
+        {
+            NotEmptyString(skillName);
+            SkillProfileStorage sps = new SkillProfileStorage(new TableStorageConnection());
+            if (await sps.IsSkill(skillName)) throw new HttpResponseException(HttpStatusCode.Conflict);
+        }
     }
 }

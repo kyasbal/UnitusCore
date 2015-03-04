@@ -85,21 +85,21 @@ namespace UnitusCore.Storage
                     TableOperation.InsertOrReplace(config));
         }
 
-        public async Task<DisclosureProtectedResponse> FetchProtectedProperty(ProfileProperty property,AccessBy accessBy,Func<Task<string>> fetchContent)
+        public async Task<DisclosureProtectedResponse<T>> FetchProtectedProperty<T>(ProfileProperty property,AccessBy accessBy,Func<Task<T>> fetchContent)where T:class
         {
             ProfilePropertyDisclosureConfig disclosureConfig = await FetchDisclosureConfigFlag(_userId, property);
             if (HasRight(accessBy, disclosureConfig))
             {
                 var content = await fetchContent();
-                return new DisclosureProtectedResponse(disclosureConfig, content, true);
+                return new DisclosureProtectedResponse<T>(disclosureConfig, content, true);
             }
             else
             {
-                return new DisclosureProtectedResponse(disclosureConfig, null, false);
+                return new DisclosureProtectedResponse<T>(disclosureConfig, null, false);
             }
         }
 
-        public async Task<DisclosureProtectedResponse> FetchProtectedProperty(ProfileProperty property, AccessBy accessBy, Func<string> fetchContent)
+        public async Task<DisclosureProtectedResponse<T>> FetchProtectedProperty<T>(ProfileProperty property, AccessBy accessBy, Func<T> fetchContent) where T : class
         {
             return await FetchProtectedProperty(property,accessBy, () => Task.Run(fetchContent));
         }
@@ -137,18 +137,30 @@ namespace UnitusCore.Storage
         {
             
         }
-
-        public DisclosureProtectedResponse(ProfilePropertyDisclosureConfig disclosureConfig, string content, bool canAccess)
+        public DisclosureProtectedResponse(ProfilePropertyDisclosureConfig disclosureConfig,bool canAccess)
         {
             DisclosureConfig = disclosureConfig;
-            Content = content;
             CanAccess = canAccess;
         }
 
         public ProfilePropertyDisclosureConfig DisclosureConfig { get; set; }
-
-        public string Content { get; set; }
-
         public bool CanAccess { get; set; }
+    }
+
+    public class DisclosureProtectedResponse<T> : DisclosureProtectedResponse
+    {
+        public DisclosureProtectedResponse()
+        {
+            
+        }
+
+        public DisclosureProtectedResponse(ProfilePropertyDisclosureConfig disclosureConfig, T content, bool canAccess) : base(disclosureConfig,canAccess)
+        {
+            Content = content;
+        }
+
+        public T Content { get; set; }
+
+        
     }
 }

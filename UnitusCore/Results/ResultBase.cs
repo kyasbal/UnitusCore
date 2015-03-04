@@ -38,6 +38,11 @@ namespace UnitusCore.Results
             return container;
         }
 
+        public static ResultContainer<T> GenerateSuccessResult<T>(T content)
+        {
+            return ResultContainer<T>.GenerateSuccessResult(content);
+        }
+
         public static ResultContainer GenerateFaultResult(string errorMsg)
         {
             ResultContainer container = new ResultContainer();

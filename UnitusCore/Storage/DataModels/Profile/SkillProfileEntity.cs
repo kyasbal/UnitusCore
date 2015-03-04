@@ -3,20 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UnitusCore.Util;
 
 namespace UnitusCore.Storage.DataModels.Profile
 {
-    public class SkillProfile:TableEntity
+    public interface ISkillProfile
+    {
+        string SkillName { get; set; }
+        SkillLevel SkillLevel { get; set; }
+    }
+
+    class SkillProfileContainer : ISkillProfile
+    {
+        public string SkillName { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SkillLevel SkillLevel { get; set; }
+    }
+
+    public class SkillProfileEntity:TableEntity, ISkillProfile
     {
         private string _skillName;
 
-        public SkillProfile()
+        public SkillProfileEntity()
         {
             
         }
 
-        public SkillProfile(string userId,string skillName,SkillLevel skillLevel)
+        public SkillProfileEntity(string userId,string skillName,SkillLevel skillLevel)
         {
             UserId = userId;
             SkillName = skillName;
@@ -33,7 +49,14 @@ namespace UnitusCore.Storage.DataModels.Profile
             }
         }
 
-        public SkillLevel SkillLevel { get; set; }
+        public int SkillLevelAsInt { get; set; }
+
+        [IgnoreProperty]
+        public SkillLevel SkillLevel
+        {
+            get { return (SkillLevel) SkillLevelAsInt; }
+            set { SkillLevelAsInt = (int) value; }
+        }
 
         [IgnoreProperty]
         public string UserId
@@ -43,19 +66,29 @@ namespace UnitusCore.Storage.DataModels.Profile
         }
     }
 
+    public interface ISkillInfo
+    {
+        string SkillName { get; set; }
+    }
+
+    class SkillInfoContainer : ISkillInfo
+    {
+        public string SkillName { get; set; }
+    }
+
     /// <summary>
     /// 言語情報など
     /// </summary>
-    public class SkillInfo : TableEntity
+    public class SkillInfoEntity : TableEntity, ISkillInfo
     {
         private string _skillName;
 
-        public SkillInfo()
+        public SkillInfoEntity()
         {
             
         }
 
-        public SkillInfo(string skillName)
+        public SkillInfoEntity(string skillName)
         {
             PartitionKey = "SKILL";
             SkillName = skillName;

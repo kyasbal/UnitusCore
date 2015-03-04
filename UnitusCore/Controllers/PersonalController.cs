@@ -6,15 +6,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using AutoMapper;
 using UnitusCore.Attributes;
 using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
+using UnitusCore.Storage;
+using UnitusCore.Storage.DataModels.Profile;
 using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class PersonalController:UnitusApiController
+    public class PersonalController:UnitusApiControllerWithTableConnection
     {
         [UnitusCorsEnabled]
         [ApiAuthorized]
@@ -24,6 +27,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req, async (a) =>
             {
+
                 Person personData = CurrentUserWithPerson.PersonData;
                 personData.BelongedSchool = req.BelongedSchool ?? personData.BelongedSchool;
                 personData.Faculty = req.Faculty ?? personData.Faculty;
@@ -56,6 +60,35 @@ namespace UnitusCore.Controllers
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
             });
+        }
+
+        [UnitusCorsEnabled]
+        [ApiAuthorized]
+        [HttpPut]
+        [Route("Personal/Profile/Skills")]
+        public async Task<IHttpActionResult> PutSkillProfile(PutSkillProfileRequest profileRequest)
+        {
+            Ensure.NotEmptyString(profileRequest.SkillName);
+            return await this.OnValidToken(profileRequest,async (r) =>
+            {
+                SkillProfileStorage sprofile = new SkillProfileStorage(TableConnection);
+                await sprofile.AddOrReplaceProfile(CurrentUser.Id, r.SkillName, r.SkillLevel);
+                return Json(ResultContainer.GenerateSuccessResult(GetSkillProfiles(CurrentUser.Id)));
+            }
+            );
+        }
+
+        public  IEnumerable<ISkillProfile> GetSkillProfiles(string userId)
+        {
+            SkillProfileStorage sprofile=new SkillProfileStorage(TableConnection);
+            return sprofile.GetAllSkillProfile(userId).Select(Mapper.DynamicMap<ISkillProfile,SkillProfileContainer>);
+        }
+
+        public class PutSkillProfileRequest : AjaxRequestModelBase,ISkillProfile
+        {
+            public string SkillName { get; set; }
+
+            public SkillLevel SkillLevel { get; set; }
         }
 
         public class PutPersonalRequestAdmin:PutPersonalRequest

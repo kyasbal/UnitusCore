@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using AutoMapper;
 using Octokit;
 using UnitusCore.Attributes;
 using UnitusCore.Controllers.Misc;
@@ -179,6 +180,7 @@ namespace UnitusCore.Controllers
             {
                 await user.LoadPersonData(dbContext);
                 var disclosureConfig = new ProfileDisclosureConfigStorage(storageConnection, user.Id);
+                var skillProfileStroage = new SkillProfileStorage(storageConnection);
                 var p = user.PersonData;
                 DetailedProfile result = new DetailedProfile()
                 {
@@ -187,6 +189,7 @@ namespace UnitusCore.Controllers
                     BelongedSchool = await disclosureConfig.FetchProtectedProperty(ProfileProperty.University, accessBy,()=>p.BelongedSchool),
                     Faculty = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, accessBy,()=>p.Faculty),
                     Major = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, accessBy,()=>p.Major),
+                    Skills = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Language,accessBy, () => skillProfileStroage.GetAllSkillProfile(user.Id).Select(Mapper.DynamicMap<ISkillProfile,SkillProfileContainer>)),
                     CurrentGrade = p.CurrentCource,
                     Notes = p.Notes,
                     GithubProfile = profile,
@@ -213,6 +216,8 @@ namespace UnitusCore.Controllers
             public DisclosureProtectedResponse Email { get; set; }
 
             public DisclosureProtectedResponse Url { get; set; }
+
+            public DisclosureProtectedResponse Skills { get; set; }
 
             public Person.Cource CurrentGrade { get; set; }
 
