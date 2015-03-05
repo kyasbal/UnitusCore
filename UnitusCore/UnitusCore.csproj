@@ -397,10 +397,6 @@
     <Compile Include="Util\UtilExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\UnitusCoreDatabase.mdf" />
-    <Content Include="App_Data\UnitusCoreDatabase_log.ldf">
-      <DependentUpon>UnitusCoreDatabase.mdf</DependentUpon>
-    </Content>
     <Content Include="bower_components\backbone-relational\.gitignore" />
     <Content Include="bower_components\backbone-relational\backbone-relational.js" />
     <Content Include="bower_components\backbone-relational\index.html" />
@@ -1125,6 +1121,7 @@
     <Content Include="bower_components\underscore\underscore-min.map" />
     <Content Include="img\Thumbs.db" />
     <None Include="Properties\PublishProfiles\unitus-core %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\unitus-core %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\unitus-core.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -1168,6 +1165,7 @@
     <Content Include="Views\CircleInvitationAccept\SelectedEmailForUnknownUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Validator\" />
     <Folder Include="Views\Unitus\" />

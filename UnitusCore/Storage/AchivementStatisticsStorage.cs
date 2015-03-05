@@ -479,7 +479,7 @@ namespace UnitusCore.Storage
                 {
                     var sampleTime = beginTime - MultiplyTimeSpan(duration, i); //サンプルする時刻を取得
                     var sampledData = await _storage.RetrieveAchivementProgress(_achivementData, sampleTime);
-                    if (sampledData == null) progressHistory.Add(0);;
+                    if (sampledData == null) progressHistory.Add(0);
                     else
                     {
                         progressHistory.Add(sampledData.Progress);
@@ -515,7 +515,7 @@ namespace UnitusCore.Storage
                         await
                             _storage.RetrieveProgressForCircle(_achivementData.AchivementId, circle.Id.ToString(),
                                 sampleTime);
-                    progressHistory.Add(sampledData == null ? 0 : sampledData.AvrProgress;
+                    progressHistory.Add(sampledData == null ? 0 : sampledData.AvrProgress);
                 }
                 progressHistory.Reverse();
                 return new NameDataPair(progressHistory.ToArray(), string.Format("「{0}」内の平均進捗率", circle.Name));
