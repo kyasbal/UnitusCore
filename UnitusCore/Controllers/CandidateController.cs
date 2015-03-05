@@ -42,7 +42,7 @@ namespace UnitusCore.Controllers
         [HttpGet]
         [ApiAuthorized]
         [UnitusCorsEnabled]
-        [Route("Candidate/Skill")]
+        [Route("Candidate/Skill",Name = "Candidate-Skills")]
         public async Task<IHttpActionResult> SkillCandidates(string validationToken)
         {
             return await this.OnValidToken(validationToken,

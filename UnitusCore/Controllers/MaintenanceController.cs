@@ -42,10 +42,14 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(request, async (r) =>
             {
-                await Ensure.IsNotExisitingSkillName(request.SkillName);
                 SkillProfileStorage storage=new SkillProfileStorage(TableConnection);
-                await storage.AppendSkill(request.SkillName);
-                return Json(ResultContainer.GenerateSuccessResult());
+                string[] splittedRequest = request.SkillName.Split(',');
+                foreach (string skillName in splittedRequest)
+                {
+                    if(string.IsNullOrWhiteSpace(skillName))continue;
+                    await storage.AppendSkill(skillName);
+                }
+                return Json(ResultContainer.GenerateSuccessResult(storage.GetAllSkills()));
             });
         }
 
