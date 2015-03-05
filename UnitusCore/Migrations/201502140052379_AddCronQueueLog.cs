@@ -7,18 +7,18 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.CronQueueLogs",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        ExecutedTime = c.DateTime(nullable: false),
-                        ArgumentLog = c.String(),
-                        WorkedAddress = c.String(),
-                        TakeTime = c.Long(nullable: false),
-                        ResultLog = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
+//            CreateTable(
+//                "dbo.CronQueueLogs",
+//                c => new
+//                    {
+//                        Id = c.Guid(nullable: false),
+//                        ExecutedTime = c.DateTime(nullable: false),
+//                        ArgumentLog = c.String(),
+//                        WorkedAddress = c.String(),
+//                        TakeTime = c.Long(nullable: false),
+//                        ResultLog = c.String(),
+//                    })
+//                .PrimaryKey(t => t.Id);
             
         }
         

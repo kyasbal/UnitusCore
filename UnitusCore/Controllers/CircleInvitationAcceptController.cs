@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using UnitusCore.Controllers.Base;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Util;
@@ -94,13 +95,13 @@ namespace UnitusCore.Controllers
                 {
                     DbSession.SaveChanges();
                     var user = UserManager.FindByName(username);
-                    DbSession.Entry(user).Reference(p => p.PersonData).Load();
-                    DbSession.Entry(user.PersonData).Collection(p => p.BelongedCircles);
+                    await user.LoadPersonData(DbSession);
+                    await user.RetrieveBelongingCircles(DbSession);
                     user.PersonData.Name = firstName + " " + lastName;
                     string belongedTo = string.IsNullOrWhiteSpace(NewBelongedUniversity)
                         ? invitationData.InvitedCircle.BelongedSchool
                         : NewBelongedUniversity;
-                    user.PersonData.BelongedColledge = belongedTo;
+                    user.PersonData.BelongedSchool = belongedTo;
                     var status = new MemberStatus();
                     status.GenerateId();
                     status.Occupation = "新入生";
@@ -153,7 +154,7 @@ namespace UnitusCore.Controllers
                 var isAlreadyMember = false;
                 foreach (var member in CurrentUser.PersonData.BelongedCircles)
                 {
-                    DbSession.Entry(member).Reference(a => a.TargetCircle);
+                    await member.LoadReferencesAsync(DbSession);
                     if (member.TargetCircle.Id.Equals(invitationData.InvitedCircle.Id))
                     {
                         isAlreadyMember = true;

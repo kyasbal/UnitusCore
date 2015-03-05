@@ -5,7 +5,8 @@ require.config({
     bootstrap: '../../bower_components/bootstrap/dist/js/bootstrap',
     backbone: '../../bower_components/backbone/backbone',
     jade: '../../bower_components/jade/runtime',
-    highcharts: '../../bower_components/highcharts/highcharts'
+    highcharts: '../../bower_components/highcharts/highcharts',
+    noty: '../../bower_components/noty/noty'
   },
   shim: {
     'bootstrap': {
@@ -13,14 +14,26 @@ require.config({
     },
     'highcharts': {
       deps: ["jquery"]
+    },
+    'noty': {
+      deps: ["jquery"]
     }
   }
 });
 
-require(['jquery', 'bootstrap', 'highcharts', 'views/dashboard/dashboard'], function($, bootstrap, highcharts, DashboardView) {
+require(['jquery', 'bootstrap', 'highcharts', 'noty', 'views/dashboard/dashboard', 'helpers/notyHelper', 'views/renderer/circle', 'collections/circles', 'models/dashboard'], function($, bootstrap, highcharts, noty, DashboardView, NotyHelper, CircleRenderView, Circles, Dashboard) {
   return $(function() {
-    return new DashboardView({
-      el: $('[data-js=app]')
+    var circles, dashboard;
+    circles = new Circles();
+    dashboard = new Dashboard();
+    new DashboardView({
+      el: $('[data-js=app]'),
+      circles: circles,
+      dashboard: dashboard
+    });
+    return new CircleRenderView({
+      circles: circles,
+      dashboard: dashboard
     });
   });
 });

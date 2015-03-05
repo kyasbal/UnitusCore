@@ -1,19 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 
-namespace UnitusCore.Controllers
+namespace UnitusCore.Controllers.Base
 {
-    public class UnitusController : Controller
+    public class UnitusController : Controller,IUnitusController
     {
+        public UnitusController()
+        {
+            Ensure=new ControllerEnsure(this);
+            MapperHelper.Initialize();
+        }
+
+        public ControllerEnsure Ensure { get; private set; }
+
         public IOwinContext OwinContext
         {
             get { return Request.GetOwinContext(); }

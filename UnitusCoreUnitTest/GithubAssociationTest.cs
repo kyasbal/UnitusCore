@@ -11,6 +11,7 @@ using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
+using UnitusCore.Util.Github;
 
 namespace UnitusCoreUnitTest
 {
@@ -47,39 +48,8 @@ namespace UnitusCoreUnitTest
         [Test]
         public async void GistTest()
         {
-            var client = manager.GetAuthenticatedClientFromToken("731dc5b4f7d2346f28751b00436df0178402a2a2");
-            var user = await client.User.Current();
-            var repos=await manager.GetAllRepositoriesList(client);
-            foreach (var githubRepositoryIdentity in repos)
-            {
-                Console.WriteLine("{0}/{1}", githubRepositoryIdentity.OwnerName, githubRepositoryIdentity.RepoName);
-                if (client.Repository == null)
-                {
-                    Console.WriteLine("repository is null");
-                    continue;
-                }
-                try
-                {
-                    var source =
-                        await
-                            client.Repository.GetAllLanguages(githubRepositoryIdentity.OwnerName,
-                                githubRepositoryIdentity.RepoName);
-                    if (source == null)
-                    {
-                        Console.WriteLine("source is null");
-                        continue;
-                    }
-                    foreach (var allLanguage in source)
-                    {
-                        Console.WriteLine("{0}  ---{1} bytes", allLanguage.Name, allLanguage.NumberOfBytes);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine("cant fetch data");
-                }
-            }
-            await manager.GetGists(client);
+            var client = manager.GetAuthenticatedClientFromToken("b47f54c7f2afb543f421ce7a01a4a7db6bb72140");
+            GistAnalyzer analysis = await GistAnalyzer.GetGistAnalysis(client, "abn");
         }
     }
 }

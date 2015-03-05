@@ -1,28 +1,36 @@
-var __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __hasProp = {}.hasOwnProperty;
 
-define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashboard/user_profile', 'views/dashboard/achivement'], function($, Backbone, UserTemplate, UserProfile, AchivementView) {
+define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'views/dashboard/achivement', 'models/circle', 'views/dashboard/profilebar', 'collections/achivements'], function($, Backbone, UserTemplate, AchivementView, Circle, ProfilebarView, Achivements) {
   var UserPanelView;
   return UserPanelView = (function(_super) {
     __extends(UserPanelView, _super);
 
     function UserPanelView() {
+      this.deleteCircle = __bind(this.deleteCircle, this);
+      this.renderCircleList = __bind(this.renderCircleList, this);
       return UserPanelView.__super__.constructor.apply(this, arguments);
     }
 
     UserPanelView.prototype.initialize = function(option) {
-      this.user = option.user;
-      this.belongingCircles = this.user.attributes.circles;
+      this.dashboard = option.dashboard;
+      this.circles = option.circles;
+      this.belongingCircles = this.dashboard.get("CircleBelonging");
+      this.achivements = new Achivements();
+      this.notyHelper = new NotyHelper();
       this.renderUserPanel();
-      this.renderUserProfile();
-      this.renderCircleList();
-      new AchivementView({
-        el: '[data-js=achivementList]',
-        user: this.user
+      new ProfilebarView({
+        el: '[data-js="myProfile"]',
+        dashboard: this.dashboard,
+        achivements: this.achivements
       });
-      if (this.belongingCircles.length > 0) {
-        return this.renderBelongingCircles();
-      }
+      this.renderCircleList();
+      return new AchivementView({
+        el: '[data-js=achivementList]',
+        dashboard: this.dashboard,
+        achivements: this.achivements
+      });
     };
 
     UserPanelView.prototype.events = {
@@ -34,8 +42,9 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
     };
 
     UserPanelView.prototype.renderCircleList = function() {
-      var sendData, user;
-      user = this.user;
+      var circleList, dashboard, sendData;
+      circleList = [];
+      dashboard = this.dashboard;
       sendData = {
         count: 40,
         offset: 0
@@ -44,78 +53,71 @@ define(['jquery', 'backbone', 'templates/dashboard/user_panel', 'templates/dashb
         type: "GET",
         url: "https://core.unitus-ac.com/Circle",
         data: sendData,
-        success: function(msg) {
-          console.log(msg.Content.Circle);
-          return $.each(msg.Content.Circle, function() {
-            var text;
-            text = '';
-            text += '<tr data-circleID="' + this.CircleId + '" data-commonId="' + this.CircleId + '">';
-            text += '<td class="name name_w">' + this.CircleName + '<i class="glyphicon glyphicon-eye-open"></i></td>';
-            text += '<td class="author author_w">' + "閲覧者" + '</td>';
-            text += '<td class="number number_w">' + this.MemberCount + '</td>';
-            text += '<td class="university university_w">' + this.BelongedUniversity + '</td>';
-            if (user.get("isAdmin")) {
-              text += '<td class="update update_w">' + this.LastUpdateDate + '<i class="fa fa-times-circle" data-js="deleteCircle"></i></td>';
-            } else {
-              text += '<td class="update update_w">' + this.LastUpdateDate + '</td>';
-            }
-            text += '</tr>';
-            return $("[data-js=circleList]").append(text);
-          });
-        },
+        success: (function(_this) {
+          return function(msg) {
+            return $.each(msg.Content.Circle, function(index, obj) {
+              var circle, existCircle;
+              existCircle = _this.circles.where({
+                CircleID: obj.CircleId
+              });
+              if (existCircle.length <= 0) {
+                circle = new Circle({
+                  CircleID: obj.CircleId,
+                  CircleName: obj.CircleName,
+                  MemberCount: obj.MemberCount,
+                  BelongedSchool: obj.BelongedSchool,
+                  LastUpdateDate: obj.LastUpdateDate,
+                  IsBelonging: obj.IsBelonging
+                });
+                return _this.circles.add(circle);
+              } else {
+                console.log("これです。");
+                return existCircle[0].set({
+                  CircleID: obj.CircleId,
+                  CircleName: obj.CircleName,
+                  MemberCount: obj.MemberCount,
+                  BelongedSchool: obj.BelongedSchool,
+                  LastUpdateDate: obj.LastUpdateDate,
+                  IsBelonging: obj.IsBelonging
+                });
+              }
+            });
+          };
+        })(this),
         error: function(msg) {
           return console.log(msg);
         }
       });
     };
 
-    UserPanelView.prototype.renderUserProfile = function() {
-      return this.$('[data-js="myProfile"]').html(UserProfile({
-        user: this.user
-      }));
-    };
-
-    UserPanelView.prototype.renderBelongingCircles = function() {
-      var textPanel, textSidebar;
-      textSidebar = '';
-      textPanel = '';
-      textSidebar += '<li class="divider"><h1>所属サークル</h1></li>';
-      $.each(this.belongingCircles, function() {
-        textSidebar += '<li role="presentation" data-commonId="' + this.CircleId + '">';
-        textSidebar += '<a href="#' + this.CircleId + '" aria-controls="#' + this.CircleId + '" role="tab" data-toggle="tab">';
-        textSidebar += '<i class="circleIcon">' + this.CircleName.slice(0, 1) + '</i>';
-        textSidebar += '<span class="title">' + this.CircleName + '</span>';
-        textSidebar += '</a>';
-        textSidebar += '</li>';
-        textPanel += '<div id="' + this.CircleId + '" class="tab-pane fade in" role="tabpanel" data-commonId="' + this.CircleId + '">';
-        textPanel += '<h1>' + this.CircleName + '</h1>';
-        return textPanel += '</div>';
-      });
-      $("[data-js=userSideList]").append(textSidebar);
-      return $("[data-js=userPanelList]").append(textPanel);
-    };
-
     UserPanelView.prototype.deleteCircle = function(e) {
-      var $circleRow, sendData;
+      var $circleRow, id, sendData;
       e.preventDefault();
       e.stopPropagation();
       $circleRow = $($($(e.target).get(0)).closest("tr").get(0));
       if (confirm($($circleRow.children("td.name").get(0)).text() + "を削除しますか？")) {
+        id = $circleRow.attr("data-circleListID");
         sendData = {
-          circleID: $circleRow.attr("data-circleId")
+          circleID: id
         };
         return $.ajax({
           type: "DELETE",
           url: "https://core.unitus-ac.com/Circle",
           data: sendData,
-          success: function(msg) {
-            var target;
-            target = "[data-commonId=" + $circleRow.attr("data-circleId") + "]";
-            return $(target).remove();
-          },
-          error: function(msg) {
-            return console.log("削除できませんでした。");
-          }
+          success: (function(_this) {
+            return function(msg) {
+              var target;
+              _this.notyHelper.generate('info', '削除成功', "サークルを削除しました。");
+              target = "[data-commonId=" + id + "]";
+              console.log(target);
+              return $(target).remove();
+            };
+          })(this),
+          error: (function(_this) {
+            return function(msg) {
+              return _this.notyHelper.generate('error', '削除失敗', "何らかの理由でサークルを削除できませんでした。");
+            };
+          })(this)
         });
       }
     };

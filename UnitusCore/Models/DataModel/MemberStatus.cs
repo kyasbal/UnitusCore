@@ -24,5 +24,7 @@ namespace UnitusCore.Models.DataModel
             var circleStatus = dbContext.Entry(this).Reference(a => a.TargetCircle);
             if (!circleStatus.IsLoaded) await circleStatus.LoadAsync();
         }
+
+        
     }
 }

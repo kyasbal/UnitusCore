@@ -6,13 +6,16 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using AutoMapper;
 using Octokit;
 using UnitusCore.Attributes;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Results;
 using UnitusCore.Storage;
 using UnitusCore.Storage.Base;
+using UnitusCore.Storage.DataModels.Profile;
 using UnitusCore.Util;
 using WebGrease.Css.Extensions;
 
@@ -20,7 +23,7 @@ using WebGrease.Css.Extensions;
 namespace UnitusCore.Controllers
 {
     
-    public class DashboardController : UnitusApiController
+    public class DashboardController : UnitusApiControllerWithTableConnection
     {
         [ApiAuthorized]
         [UnitusCorsEnabled]
@@ -30,67 +33,84 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(ValidationToken, async () =>
             {
-                PermissionManager permission = new PermissionManager(DbSession, UserManager);
-                GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
-                AchivementStatisticsStorage achivementStatisticsStorage=new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
-                return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
-                    new GetDashboardStatusAjaxResponse(
-                        permission.CheckPermission("Administrator", User.Identity.Name),
-                        CurrentUserWithPerson.PersonData.Name,
-                        CurrentUserWithPerson.Email,
-                        await manager.GetAvatarUri(CurrentUserWithPerson.Email),
-                        (await GetAsArray(await CircleDatabaseHelper.GetBelongingCircle(DbSession, CurrentUserWithPerson)))
-                        , await GetUserProfile(),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
+                return await GetDashboardResponse(CurrentUserWithPerson);
             });
         }
 
-
+        [ApiAuthorized]
         [UnitusCorsEnabled]
         [HttpGet]
-        [AllowAnonymous]
-        [Route("Dashboard/Dummy")]
-        public async Task<IHttpActionResult> GetDashboardStatusDummy(string validationToken)
+        [Route("Dashboard")]
+        [RoleRestrict("Administrator")]
+        public async Task<IHttpActionResult> GetDashboardStatus(string ValidationToken,string userName)
         {
-            AchivementStatisticsStorage achivementStatisticsStorage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
-            return await this.OnValidToken(validationToken, async () =>
+            return await this.OnValidToken(ValidationToken, async () =>
             {
-                return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
-                    new GetDashboardStatusAjaxResponse(
-                        true,
-                        "種市 朝日",
-                        "darafu@gmail.com",
-                        "https://avatars2.githubusercontent.com/u/230541?v=3&s=460",
-                        new CircleBelongingStatus[] { new CircleBelongingStatus("ダラフ株式会社", "HelloID", true), new CircleBelongingStatus("EspicaCompute", "IDIDIDIDIDIDIDIDIDIID", false), },
-                        new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false),""),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray()))
-                    );
+                return await GetDashboardResponse(await UserManager.FindByNameAsync(userName));
             });
         }
 
-        private async Task<CircleBelongingStatus[]> GetAsArray(IEnumerable<MemberStatus> status)
+        private async Task<IHttpActionResult> GetDashboardResponse(ApplicationUser user)
+        {
+            await user.LoadPersonData(DbSession);
+            PermissionManager permission = new PermissionManager(DbSession, UserManager);
+            GithubAssociationManager manager = new GithubAssociationManager(DbSession, UserManager);
+            AchivementStatisticsStorage achivementStatisticsStorage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
+            return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
+                new GetDashboardStatusAjaxResponse(
+                    permission.CheckPermission("Administrator",user.UserName),
+                    user.PersonData.Name,
+                    user.Email,
+                    await manager.GetAvatarUri(user.Email),
+                    (await GetAsArrayOfResultCircleData(await CircleDatabaseHelper.GetBelongingCircle(DbSession, user)))
+                    , await GetUserProfile(CurrentUser), (await achivementStatisticsStorage.GetAchivementCategories()).ToArray())));
+        }
+
+
+        //[UnitusCorsEnabled]
+        //[HttpGet]
+        //[AllowAnonymous]
+        //[Route("Dashboard/Dummy")]
+        //public async Task<IHttpActionResult> GetDashboardStatusDummy(string validationToken)
+        //{
+        //    AchivementStatisticsStorage achivementStatisticsStorage = new AchivementStatisticsStorage(new TableStorageConnection(), DbSession);
+        //    return await this.OnValidToken(validationToken, async () =>
+        //    {
+        //        return Json(ResultContainer<GetDashboardStatusAjaxResponse>.GenerateSuccessResult(
+        //            new GetDashboardStatusAjaxResponse(
+        //                true,
+        //                "種市 朝日",
+        //                "darafu@gmail.com",
+        //                "https://avatars2.githubusercontent.com/u/230541?v=3&s=460",
+        //                new CircleBelongingStatus[] { new CircleBelongingStatus("ダラフ株式会社", "HelloID", true), new CircleBelongingStatus("EspicaCompute", "IDIDIDIDIDIDIDIDIDIID", false), },
+        //                new DetailedProfile("東京理科大学", "理工学部", "電気電子工学科", Person.Cource.MC1, new GithubProfile(true, 29),new UserConfig(false),""),(await achivementStatisticsStorage.GetAchivementCategories()).ToArray()))
+        //            );
+        //    });
+        //}
+
+        private async Task<CircleBelongingStatus[]> GetAsArrayOfResultCircleData(IEnumerable<MemberStatus> status)
         {
             HashSet<CircleBelongingStatus> result = new HashSet<CircleBelongingStatus>();
             foreach (var st in status)
             {
-                result.Add(new CircleBelongingStatus(st.TargetCircle.Name, st.TargetCircle.Id.ToString(),
+                var circleBelongingStatus = new CircleBelongingStatus(st.TargetCircle.Name, st.TargetCircle.Id.ToString(),
                     await
                         CircleDatabaseHelper.CheckHaveAuthorityAboutCircle(DbSession, CurrentUserWithPerson,
-                            st.TargetCircle)));
+                            st.TargetCircle));
+                CircleTagStorage stroage = new CircleTagStorage(new TableStorageConnection());
+                circleBelongingStatus.CircleTags = (await stroage.RetrieveTagBodies(circleBelongingStatus.CircleId,circleBelongingStatus.HasAuthority)).Select(a => a.Tag);
+                result.Add(circleBelongingStatus);
             }
             return result.ToArray();
         }
 
-        private async Task<UserConfig> GetUserConfig()
-        {
-            var p = CurrentUserWithPerson.PersonData;
-            await p.LoadUserConfigure(DbSession);
-            return new UserConfig(p.UserConfigure.ShowOwnProfileToOtherCircle);
-        }
 
-
-        private async Task<DetailedProfile> GetUserProfile()
+        private async Task<DetailedProfile> GetUserProfile(ApplicationUser targetUser)
         {
-            var p = CurrentUserWithPerson.PersonData;
-            return new DetailedProfile(p.BelongedColledge, p.Faculty, p.Major, p.CurrentCource, await GetGithubProfile(),await GetUserConfig(),p.Notes);
+            return
+                await
+                    DetailedProfile.GenerateFromUser(targetUser, DbSession, TableConnection, AccessBy.Owner,
+                        await GetGithubProfile());
         }
 
         private async Task<GithubProfile> GetGithubProfile()
@@ -150,34 +170,62 @@ namespace UnitusCore.Controllers
             public string CircleId { get; set; }
 
             public bool HasAuthority { get; set; }
+
+            public IEnumerable<string> CircleTags { get; set; } 
         }
 
-        public class DetailedProfile
+        public class DetailedProfile:IProtectedSchoolInfoContainer
         {
-            public DetailedProfile(string belongingColledge, string faculty, string major, Person.Cource currentGrade, GithubProfile githubProfie, UserConfig userConfigure, string notes)
+            public static async Task<DetailedProfile> GenerateFromUser(ApplicationUser user,ApplicationDbContext dbContext,TableStorageConnection storageConnection,AccessBy accessBy,GithubProfile profile)
             {
-                BelongingColledge = belongingColledge;
-                Faculty = faculty;
-                Major = major;
-                CurrentGrade = currentGrade;
-                GithubProfie = githubProfie;
-                UserConfigure = userConfigure;
-                Notes = notes;
+                await user.LoadPersonData(dbContext);
+                var disclosureConfig = new ProfileDisclosureConfigStorage(storageConnection, user.Id);
+                var skillProfileStroage = new SkillProfileStorage(storageConnection);
+                var p = user.PersonData;
+                DetailedProfile result = new DetailedProfile()
+                {
+                    Email = await disclosureConfig.FetchProtectedProperty(ProfileProperty.MailAddress,accessBy,()=>p.Email),
+                    Url = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Url, accessBy,()=>p.Url),
+                    BelongedSchool = await disclosureConfig.FetchProtectedProperty(ProfileProperty.University, accessBy,()=>p.BelongedSchool),
+                    Faculty = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, accessBy,()=>p.Faculty),
+                    Major = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, accessBy,()=>p.Major),
+                    Skills = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Language,accessBy, () => skillProfileStroage.GetAllSkillProfile(user.Id).Select(Mapper.DynamicMap<ISkillProfile,SkillProfileContainer>)),
+                    CurrentGrade = p.CurrentCource,
+                    Notes = p.Notes,
+                    GithubProfile = profile,
+                    CreatedDateInfo = p.CreationDate.ToString("yyyy年M月d日に登録"),
+                    CreatedDateInfoByDateOffset = string.Format("{0}日目",(int)(DateTime.Now-p.CreationDate).TotalDays)
+                };
+
+                return result;
             }
 
-            public GithubProfile GithubProfie { get; set; }
+            public DetailedProfile()
+            {
+                
+            }
 
-            public UserConfig UserConfigure { get; set; }
+            public GithubProfile GithubProfile { get; set; }
 
-            public string BelongingColledge { get; set; }
+            public DisclosureProtectedResponse BelongedSchool { get; set; }
 
-            public string Faculty { get; set; }
+            public DisclosureProtectedResponse Faculty { get; set; }
 
-            public string Major { get; set; }
+            public DisclosureProtectedResponse Major { get; set; }
+
+            public DisclosureProtectedResponse Email { get; set; }
+
+            public DisclosureProtectedResponse Url { get; set; }
+
+            public DisclosureProtectedResponse Skills { get; set; }
 
             public Person.Cource CurrentGrade { get; set; }
 
             public string Notes { get; set; }
+
+            public string CreatedDateInfo { get; set; }
+
+            public string CreatedDateInfoByDateOffset { get; set; }
         }
 
         public class GithubProfile

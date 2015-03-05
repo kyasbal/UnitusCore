@@ -52,17 +52,21 @@ namespace UnitusCore.Storage.DataModels
 
         public int SumStared { get; set; }
 
-        public int CumlutiveCollaboratorCount { get; set; }
+        public long CumlutiveCollaboratorCount { get; set; }
 
-        public int CumlutiveUnitusCollaboratorMemberCount { get; set; }
+        public long CumlutiveUnitusCollaboratorMemberCount { get; set; }
 
-        public int CumlutiveCollaboratorCircleMemberCount { get; set; }
+        public long CumlutiveCollaboratorCircleMemberCount { get; set; }
 
-        public int CollaboratorCount { get; set; }
+        public long CollaboratorCount { get; set; }
 
-        public int UnitusCollaboratorMemberCount { get; set; }
+        public long UnitusCollaboratorMemberCount { get; set; }
 
-        public int CircleCollaboratorMemberCount { get; set; }
+        public long CircleCollaboratorMemberCount { get; set; }
+
+        public int SumRepositoryWithOtherComitter { get; set; }
+
+        public int SumRepositoryWithOtherComitterAndAuthority { get; set; }
 
         [IgnoreProperty]
         public HashSet<SingleUserLanguageStatisticsByDay> LanguageStatistics { get; set; }
@@ -72,6 +76,7 @@ namespace UnitusCore.Storage.DataModels
         {
             get { return PartitionKey + "-" + RowKey; }
         }
+
 
     }
 }

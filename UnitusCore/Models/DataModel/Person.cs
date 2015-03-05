@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnitusCore.Controllers;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Models.BaseClasses;
 using UnitusCore.Util;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Person : ModelBaseWithTimeLogging
+    public class Person : ModelBaseWithTimeLogging,IMajorInfoContainer
     {
         public Person()
         {
@@ -21,11 +22,13 @@ namespace UnitusCore.Models.DataModel
 
         public ApplicationUser ApplicationUser { get; set; }//binded
 
-        public UserConfigure UserConfigure { get; set; }//binded
-
         public string Name { get; set; }
 
+        public string NickName { get; set; }
+
         public string Email { get; set; }
+
+        public string Url { get; set; }
 
         public ICollection<MemberStatus> BelongedCircles { get; set; }//binded
 
@@ -33,7 +36,7 @@ namespace UnitusCore.Models.DataModel
 
         public Cource CurrentCource { get; set; }
 
-        public string BelongedColledge { get; set; }
+        public string BelongedSchool { get; set; }
 
         public string Faculty { get; set; }
 
@@ -60,19 +63,6 @@ namespace UnitusCore.Models.DataModel
             return await dbSession.People.FindAsync(guid);
         }
 
-        public async Task LoadUserConfigure(ApplicationDbContext dbSession)
-        {
-            var userConfigureStatus = dbSession.Entry(this).Reference(a => a.UserConfigure);
-            if (!userConfigureStatus.IsLoaded) await userConfigureStatus.LoadAsync();
-            if (userConfigureStatus.CurrentValue == null)
-            {
-                UserConfigure=new UserConfigure();
-                UserConfigure.GenerateId();
-                UserConfigure.ShowOwnProfileToOtherCircle = true;
-                dbSession.UserConfigures.Add(UserConfigure);
-                await dbSession.SaveChangesAsync();
-            }
-        }
 
         public async Task LoadStatisticsData(ApplicationDbContext dbSession)
         {

@@ -24,7 +24,9 @@ define(['jquery', 'backbone'], function($, Backbone) {
       ProgressDiff: '前日差分',
       ProgressGraphPoints: '達成率の変化グラフ',
       SumPerson: 'Unitus合計人数',
-      isDetailGetting: false
+      isDetailGetting: false,
+      belongedAll: true,
+      belongedGithub: false
     };
 
     return Achivement;

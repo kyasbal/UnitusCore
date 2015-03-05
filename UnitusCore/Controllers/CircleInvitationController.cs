@@ -20,12 +20,13 @@ namespace UnitusCore.Controllers
         [ApiAuthorized]
         [UnitusCorsEnabled]
         [HttpPost]
+        [CircleAdmin]
         public async Task<IHttpActionResult> PostInvitation(CircleInvitationSendRequest req)
         {
             return await this.OnValidToken("",async () =>
             {
-                Circle targetCircle = await Circle.FromIdAsync(DbSession, req.CircleId);
-                DbSession.Entry(CurrentUser).Collection(a=>a.AdministrationCircle).Load();
+                Circle targetCircle = await Ensure.ExisitingCircleId(req.CircleId);
+                await CurrentUser.LoadAdministrationCircles(DbSession);
                 CurrentUser.AdministrationCircle.Add(targetCircle);
                 DbSession.SaveChanges();
                 if (CurrentUser.AdministrationCircle.Contains(targetCircle))
@@ -37,7 +38,6 @@ namespace UnitusCore.Controllers
                 {
                     return new BadRequestErrorMessageResult("権限が無効です",this);
                 }
-                return Json(true);
             });
         }
 
@@ -50,8 +50,8 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-                Circle circle = await Circle.FromIdAsync(DbSession, CircleId);
-                circle.LoadMemberInvitations(DbSession);
+                Circle circle = await Ensure.ExisitingCircleId(CircleId);
+                await circle.LoadMemberInvitations(DbSession);
                 List<CurrentInvitationEntity> invitations=new List<CurrentInvitationEntity>();
                 foreach (CircleMemberInvitation invitation in circle.MemberInvitations)
                 {

@@ -16,11 +16,14 @@ using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using System.Web.Helpers;
 using Microsoft.Web.Mvc.Resources;
+using Newtonsoft.Json;
 using Octokit;
+using UnitusCore.Controllers.Misc;
 using UnitusCore.Storage;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
+using UnitusCore.Util.Github;
 
 namespace UnitusCore.Controllers
 {
@@ -56,66 +59,89 @@ namespace UnitusCore.Controllers
             if (!cronId.Equals(ValidCronId)) return null;
             var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
             StringBuilder builder=new StringBuilder();
-            if (await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.GenerateCacheBeforeStat, 1,
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        })
-                        &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub, 1,
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        })
-                        &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        }) 
-                        &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, 10,
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        })
-                        &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, 5, 
-                       async q =>
-                       {
-                           await
-                               ExecuteQueues(q, st);
-                       })
-                &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        })
-                 &&
-                await
-                    st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics,1, 
-                        async q =>
-                        {
-                            await
-                                ExecuteQueues(q, st);
-                        }))
+            if (await DequeueTasks(st, builder))
             {//タスクが全くない時
                 return Json("All Tasks were completed!");
             }
             return Content(HttpStatusCode.OK, builder.ToString());
         }
+
+        [Route("cron/queue/debug")]
+        [HttpPost]
+        public async Task<IHttpActionResult> ExecuteDebugQueue()
+        {
+            var st = new StatisticTaskQueueStorage(new QueueStorageConnection());
+            StringBuilder builder = new StringBuilder();
+            if (await DequeueTasks(st, builder))
+            {//タスクが全くない時
+                return Json("All Tasks were completed!");
+            }
+            if (st.ErrorLogger != null)
+            {
+                return Content(HttpStatusCode.OK, JsonConvert.SerializeObject(st.ErrorLogger.ToArray(),Formatting.Indented),new RawJsonMediaTypeFormatter(),new MediaTypeHeaderValue("application/json"));
+            }
+            return Content(HttpStatusCode.OK, builder.ToString());
+        }
+
+        private async Task<bool> DequeueTasks(StatisticTaskQueueStorage st, StringBuilder builder)
+        {
+            return await
+                st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.GenerateCacheBeforeStat, 1,
+                    async q =>
+                    {
+                        await
+                            ExecuteQueues(q, st);
+                    })
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.PreInitializeForGithub, 1,
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           })
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserContributionStatistics, 5,
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           }) 
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SingleUserAchivementStatistics, 10,
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           })
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.CircleAchivementStatistics, 5, 
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           })
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.SystemAchivementStatistics,10, 
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           })
+                   &&
+                   await
+                       st.CheckNeedOfFinishedTaskExecuteWhenExisiting(builder, StatisticTaskQueueStorage.QueuedTaskType.FinalizeAchivementStatistics,1, 
+                           async q =>
+                           {
+                               await
+                                   ExecuteQueues(q, st);
+                           });
+        }
+
 
         private  async Task ExecuteQueues(IEnumerable<StatisticTaskQueueStorage.QueueMessageContainer> tasks, StatisticTaskQueueStorage st)
         {
@@ -128,7 +154,12 @@ namespace UnitusCore.Controllers
                 var response = await client.PostAsJsonAsync(Url.Content(q.TargetAddress), argumentObject);
                 if (response.IsSuccessStatusCode)
                 {
+                    st.ErrorLogger.Add(new CronErrorLog(true,q.TaskType, q.TargetAddress, q.TargetArguments, response.StatusCode, response.Headers.ToString(), await response.Content.ReadAsStringAsync()));
                     await st.EndTask(q);
+                }
+                else
+                {
+                        st.ErrorLogger.Add(new CronErrorLog(false,q.TaskType,q.TargetAddress,q.TargetArguments,response.StatusCode,response.Headers.ToString(),await response.Content.ReadAsStringAsync()));
                 }
             }
         }
@@ -176,25 +207,37 @@ namespace UnitusCore.Controllers
         {
             StatisticJobLogStorage jobLog=new StatisticJobLogStorage(new TableStorageConnection());
             var logger = jobLog.GetLogger().Begin(DailyStatisticJobAction.SingleUserStatisticGithubContribution,System.Web.Helpers.Json.Encode(arg));
-            GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
-            ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
-            if (await associationManager.IsAssociationEnabled(user))
+            try
             {
-                ContributeStatisticsByDay contributeStatistics = ContributeStatisticsByDay.GenerateTodayStatistics(user);
+                GithubAssociationManager associationManager=new GithubAssociationManager(DbSession,UserManager);
+                ApplicationUser user = await UserManager.FindByIdAsync(arg.UserId);
+                if (await associationManager.IsAssociationEnabled(user))
+                {
+                    ContributeStatisticsByDay contributeStatistics = ContributeStatisticsByDay.GenerateTodayStatistics(user);
                 
-                GitHubClient client = associationManager.GetAuthenticatedClient(user);
-                var st = await associationManager.GetAllRepositoryCommit(client,contributeStatistics);
-                contributeStatistics.SumAddition = st.SumAddition;
-                contributeStatistics.SumDeletion = st.SumDeletion;
-                contributeStatistics.SumRepository = st.RepositoryCount;
-                contributeStatistics.SumCommit = st.SumCommit;
-                contributeStatistics.SumForked = st.SumForked;
-                contributeStatistics.SumForking = st.SumForking;
-                contributeStatistics.SumStaring = st.SumStared;
-                ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection(),DbSession);
-                await storage.Add(contributeStatistics,st.CollaboratorLog);
+                    GitHubClient client = associationManager.GetAuthenticatedClient(user);
+                    var st = await associationManager.GetAllRepositoryCommit(client,contributeStatistics);
+                    contributeStatistics.SumAddition = st.AdditionCount;
+                    contributeStatistics.SumDeletion = st.DeletionCount;
+                    contributeStatistics.SumRepository = st.RepositoryCount;
+                    contributeStatistics.SumCommit = st.CommitCount;
+                    contributeStatistics.SumForked = st.ForkedCount;
+                    contributeStatistics.SumForking = st.ForkingCount;
+                    contributeStatistics.SumStaring = st.StaredCount;
+                    contributeStatistics.SumRepositoryWithOtherComitter = st.RepositoryCountWithOtherCommitter;
+                    contributeStatistics.SumRepositoryWithOtherComitterAndAuthority =
+                        st.RepositoryCountWithOtherCommitterAndAuthority;
+                    ContributeStatisticsByDayStorage storage=new ContributeStatisticsByDayStorage(new TableStorageConnection(),DbSession);
+                    await storage.StoreGistAnalysis(await GistAnalyzer.GetGistAnalysis(client, arg.UserId));
+                    await storage.Add(contributeStatistics,st.Collaborators);
+                }
             }
-            await logger.End("Success" + user.Id);
+            catch (RateLimitExceededException rl)
+            {
+                logger.EndNSync("Failed RateLimitExceeded" + arg.UserId+"\nStackTrace:"+rl);
+                return Json(false);
+            }
+            await logger.End("Success" +arg.UserId);
             return Json(true);
         }
 

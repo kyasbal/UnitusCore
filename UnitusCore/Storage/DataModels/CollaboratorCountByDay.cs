@@ -13,14 +13,14 @@ namespace UnitusCore.Storage.DataModels
             
         }
 
-        public CollaboratorCountByDay(string id,string gitLogin,int count)
+        public CollaboratorCountByDay(string id,string gitLogin,long count)
         {
             Count = count;
             PartitionKey = id;
             RowKey = gitLogin;
         }
 
-        public int Count { get; set; }
+        public long Count { get; set; }
 
         [IgnoreProperty]
         public string TargetGitLogin

@@ -67,6 +67,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
@@ -253,8 +259,18 @@
     <Compile Include="Controllers\CircleInvitationController.cs" />
     <Compile Include="Controllers\CircleInvitationAcceptController.cs" />
     <Compile Include="Controllers\CircleListController.cs" />
+    <Compile Include="Controllers\CircleTagController.cs" />
     <Compile Include="Controllers\CircleUploaderController.cs" />
+    <Compile Include="Controllers\CronJobMaintenance.cs" />
     <Compile Include="Controllers\MaintenanceController.cs" />
+    <Compile Include="Controllers\Misc\IProtectedSchoolInfoContainer.cs" />
+    <Compile Include="Controllers\Misc\ISchoolInfoContainer.cs" />
+    <Compile Include="Controllers\Misc\MapperHelper.cs" />
+    <Compile Include="Controllers\Misc\CronErrorLog.cs" />
+    <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
+    <Compile Include="Controllers\Misc\ICircleInfoContainer.cs" />
+    <Compile Include="Controllers\Misc\IPersonInfoContainer.cs" />
+    <Compile Include="Controllers\Base\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
@@ -264,9 +280,10 @@
     <Compile Include="Controllers\GithubController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
-    <Compile Include="Controllers\UnitusApiController.cs" />
-    <Compile Include="Controllers\UnitusController.cs" />
+    <Compile Include="Controllers\Base\UnitusApiController.cs" />
+    <Compile Include="Controllers\Base\UnitusController.cs" />
     <Compile Include="Controllers\UserConfigureController.cs" />
+    <Compile Include="Controllers\CandidateController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -311,6 +328,22 @@
     <Compile Include="Migrations\201502172054037_SecoundReset.Designer.cs">
       <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502280131145_RefactorCircleTable2.cs" />
+    <Compile Include="Migrations\201502280131145_RefactorCircleTable2.Designer.cs">
+      <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503020242170_RemoveUserConfigure.cs" />
+    <Compile Include="Migrations\201503020242170_RemoveUserConfigure.Designer.cs">
+      <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503020840261_RenameSchoolColmun.cs" />
+    <Compile Include="Migrations\201503020840261_RenameSchoolColmun.Designer.cs">
+      <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503031556122_AddPersonColumn.cs" />
+    <Compile Include="Migrations\201503031556122_AddPersonColumn.Designer.cs">
+      <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
     <Compile Include="Migrations\UserSeedConfiguration.cs" />
@@ -328,7 +361,9 @@
     <Compile Include="Storage\Base\BlobStorageConnection.cs" />
     <Compile Include="Storage\Base\BlobStorageTableBase.cs" />
     <Compile Include="Storage\Base\QueueStorageConnection.cs" />
+    <Compile Include="Storage\Base\TableStorageBase.cs" />
     <Compile Include="Storage\Base\TableStorageConnection.cs" />
+    <Compile Include="Storage\CircleTagStorage.cs" />
     <Compile Include="Storage\ContributeStatisticsByDayStorage.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementBody.cs" />
     <Compile Include="Storage\DataModels\Achivement\AchivementCircleRankingStatistics.cs" />
@@ -339,19 +374,29 @@
     <Compile Include="Storage\DataModels\Achivement\ResponseCache.cs" />
     <Compile Include="Storage\DataModels\Achivement\SingleUserAchivementStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\CircleMemberCache.cs" />
+    <Compile Include="Storage\DataModels\Circle\CircleMemberTagBody.cs" />
+    <Compile Include="Storage\DataModels\Circle\CircleMemberTagGlue.cs" />
     <Compile Include="Storage\DataModels\CollaboratorCountByDay.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\ContributeStatisticsByDay.cs" />
+    <Compile Include="Storage\DataModels\GistStatisticsForSingleUser.cs" />
+    <Compile Include="Storage\DataModels\GistStatisticsForSingleUserByLanguage.cs" />
     <Compile Include="Storage\DataModels\IdPairContainer.cs" />
+    <Compile Include="Storage\DataModels\Profile\DisclosureConfig.cs" />
+    <Compile Include="Storage\DataModels\Profile\SkillProfileEntity.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDay.cs" />
     <Compile Include="Storage\DataModels\SingleUserLanguageStatisticsByDayDiff.cs" />
     <Compile Include="Storage\DataModels\StatisticsJobLog.cs" />
+    <Compile Include="Storage\DataModels\StringResource.cs" />
     <Compile Include="Storage\DataModels\TimeLine\CircleTimeLineEntity.cs" />
     <Compile Include="Storage\DbCacheStorage.cs" />
     <Compile Include="Storage\IdPairContainerStorage.cs" />
     <Compile Include="Storage\ImageUploaderBlobTable.cs" />
+    <Compile Include="Storage\SkillProfileStorage.cs" />
     <Compile Include="Storage\StatisticJobLogStorage.cs" />
     <Compile Include="Storage\StatisticTaskQueueStorage.cs" />
+    <Compile Include="Storage\ProfileDisclosureConfigStorage.cs" />
+    <Compile Include="Storage\StringResourceStorage.cs" />
     <Compile Include="Util\AjaxRequestModelBase.cs" />
     <Compile Include="Models\ApplicationDbContext.Models.cs" />
     <Compile Include="Models\DataModel\ApplicationUser.cs" />
@@ -386,9 +431,12 @@
     <Compile Include="Storage\Base\AzureStorageConnection.cs" />
     <Compile Include="Util\CircleDatabaseHelper.cs" />
     <Compile Include="Util\CircleInvitationManager.cs" />
+    <Compile Include="Util\Github\ContributionAnalyzer.cs" />
     <Compile Include="Util\DateTimeHelper.cs" />
     <Compile Include="Util\GithubAssociationManager.cs" />
+    <Compile Include="Util\Github\GistAnalyzer.cs" />
     <Compile Include="Util\IdGenerator.cs" />
+    <Compile Include="Util\IObjectDictionaryEntity.cs" />
     <Compile Include="Util\MailConfirmationSender.cs" />
     <Compile Include="Util\PasswordForgotManager.cs" />
     <Compile Include="Util\RawJsonMediaTypeFormatter.cs" />
@@ -689,6 +737,7 @@
     <Content Include="bower_components\jquery\src\var\support.js" />
     <Content Include="bower_components\jquery\src\var\toString.js" />
     <Content Include="bower_components\jquery\src\wrap.js" />
+    <Content Include="bower_components\noty\noty.js" />
     <Content Include="bower_components\requirejs\require.js" />
     <Content Include="bower_components\underscore\.gitignore" />
     <Content Include="bower_components\underscore\underscore-min.js" />
@@ -707,21 +756,33 @@
     <Content Include="Content\ZeroClipboard.js" />
     <Content Include="Content\ZeroClipboard.min.js" />
     <Content Include="Content\ZeroClipboard.swf" />
+    <Content Include="css\animate.css" />
     <Content Include="css\application.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="img\loading.gif" />
     <Content Include="img\loading2.gif" />
+    <Content Include="img\pictgrams-01.png" />
+    <Content Include="img\pictgrams-02.png" />
+    <Content Include="img\pictgrams-colored-01.png" />
+    <Content Include="img\pictgrams-colored-02.png" />
+    <Content Include="img\send.gif" />
     <Content Include="js\lib\collections\achivements.js" />
+    <Content Include="js\lib\collections\circles.js" />
+    <Content Include="js\lib\collections\profiles.js" />
+    <Content Include="js\lib\helpers\notyHelper.js" />
     <Content Include="js\lib\index.js" />
     <Content Include="js\lib\models\achivement.js" />
     <Content Include="js\lib\models\admin_panel.js" />
     <Content Include="js\lib\models\circle.js" />
     <Content Include="js\lib\models\dashboard.js" />
+    <Content Include="js\lib\models\notyHelper.js" />
+    <Content Include="js\lib\models\profile.js" />
     <Content Include="js\lib\models\user.js" />
     <Content Include="js\lib\templates\achivement\index.js" />
     <Content Include="js\lib\templates\achivement\show.js" />
+    <Content Include="js\lib\templates\admin\new_circle.js" />
     <Content Include="js\lib\templates\dashboard\achivement.js" />
     <Content Include="js\lib\templates\dashboard\admin_menu.js" />
     <Content Include="js\lib\templates\dashboard\admin_panel.js" />
@@ -730,13 +791,17 @@
     <Content Include="js\lib\templates\dashboard\user_circleList.js" />
     <Content Include="js\lib\templates\dashboard\user_panel.js" />
     <Content Include="js\lib\templates\dashboard\user_profile.js" />
+    <Content Include="js\lib\templates\header\config.js" />
+    <Content Include="js\lib\views\admin\new_circle.js" />
     <Content Include="js\lib\views\dashboard\achivement.js" />
     <Content Include="js\lib\views\dashboard\admin_panel.js" />
     <Content Include="js\lib\views\dashboard\basic_panel.js" />
     <Content Include="js\lib\views\dashboard\dashboard.js" />
     <Content Include="js\lib\views\dashboard\header.js" />
     <Content Include="js\lib\views\dashboard\panel.js" />
+    <Content Include="js\lib\views\dashboard\profilebar.js" />
     <Content Include="js\lib\views\dashboard\user_panel.js" />
+    <Content Include="js\lib\views\renderer\circle.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\ZeroClipboard.Core.min.map" />
@@ -1208,6 +1273,18 @@
     <EmbeddedResource Include="Migrations\201502172054037_SecoundReset.resx">
       <DependentUpon>201502172054037_SecoundReset.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280131145_RefactorCircleTable2.resx">
+      <DependentUpon>201502280131145_RefactorCircleTable2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503020242170_RemoveUserConfigure.resx">
+      <DependentUpon>201503020242170_RemoveUserConfigure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503020840261_RenameSchoolColmun.resx">
+      <DependentUpon>201503020840261_RenameSchoolColmun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503031556122_AddPersonColumn.resx">
+      <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1242,6 +1319,7 @@
   <PropertyGroup>
     <SsdtUnitTestVersion>2.0</SsdtUnitTestVersion>
   </PropertyGroup>
+  <Import Project="..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

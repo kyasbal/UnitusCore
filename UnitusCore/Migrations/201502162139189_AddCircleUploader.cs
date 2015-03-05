@@ -7,22 +7,22 @@ namespace UnitusCore.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.CircleUploaderEntities",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        TargetAddress = c.String(),
-                        LastModefied = c.DateTime(nullable: false),
-                        CreationDate = c.DateTime(nullable: false),
-                        UploadedCircle_Id = c.Guid(nullable: false),
-                        UploadUser_Id = c.String(nullable: false, maxLength: 128),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Circles", t => t.UploadedCircle_Id, cascadeDelete: true)
-                .ForeignKey("dbo.AspNetUsers", t => t.UploadUser_Id, cascadeDelete: true)
-                .Index(t => t.UploadedCircle_Id)
-                .Index(t => t.UploadUser_Id);
+//            CreateTable(
+//                "dbo.CircleUploaderEntities",
+//                c => new
+//                    {
+//                        Id = c.Guid(nullable: false),
+//                        TargetAddress = c.String(),
+//                        LastModefied = c.DateTime(nullable: false),
+//                        CreationDate = c.DateTime(nullable: false),
+//                        UploadedCircle_Id = c.Guid(nullable: false),
+//                        UploadUser_Id = c.String(nullable: false, maxLength: 128),
+//                    })
+//                .PrimaryKey(t => t.Id)
+//                .ForeignKey("dbo.Circles", t => t.UploadedCircle_Id, cascadeDelete: true)
+//                .ForeignKey("dbo.AspNetUsers", t => t.UploadUser_Id, cascadeDelete: true)
+//                .Index(t => t.UploadedCircle_Id)
+//                .Index(t => t.UploadUser_Id);
             
         }
         

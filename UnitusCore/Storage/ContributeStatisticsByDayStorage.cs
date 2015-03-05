@@ -5,15 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
+using Octokit;
 using UnitusCore.Models;
 using UnitusCore.Models.DataModel;
 using UnitusCore.Storage.Base;
 using UnitusCore.Storage.DataModels;
 using UnitusCore.Util;
+using UnitusCore.Util.Github;
 
 namespace UnitusCore.Storage
 {
-    public class ContributeStatisticsByDayStorage
+    public class ContributeStatisticsByDayStorage:TableStorageBase
     {
         private const string ContributeStatisticsByDayTableName = "StatisticsContributeByDay";
 
@@ -24,6 +26,10 @@ namespace UnitusCore.Storage
         private const string SingleUserLanguageStatisticsByDayDiffTableName = "StatisticsSingleUserLanguageByDayDiff";
 
         private const string CollabolatorCountByDayTableName = "CollabolatorCountByDayTable";
+
+        private const string GistContributeStatisticsForSingleUserTableName = "GistContributionsForSingleUser";
+
+        private const string GistContributeStatisticsByLanguageForSingleUserTablename = "GistContributionsByLanguageForSingleUser";
 
         private readonly TableStorageConnection _connection;
         private readonly ApplicationDbContext _dbContext;
@@ -38,56 +44,47 @@ namespace UnitusCore.Storage
 
         private readonly CloudTable _collaboratorCountByDayTable;
 
-        private Dictionary<string,string> ReplaceTables=new Dictionary<string, string>()
-            {{"#","Sharp"},{"/","Slash"}}; 
+        private readonly CloudTable _gistContributeStatisticsForSingleUser;
 
-        public ContributeStatisticsByDayStorage(TableStorageConnection connection,ApplicationDbContext dbContext)
+        private readonly CloudTable _gistContributeStatisticsByLanguageForSingleUser;
+
+        public ContributeStatisticsByDayStorage(TableStorageConnection connection, ApplicationDbContext dbContext):base(connection)
         {
             _connection = connection;
             _dbContext = dbContext;
-            _contributeStatisticsByDayTable =
-                connection.TableClient.GetTableReference(ContributeStatisticsByDayTableName);
-            _singleUserLanguageStatisticsByDayTable =
-                connection.TableClient.GetTableReference(SingleUserLanguageStatisticsByDayTableName);
-            _contributeStatisticsByDayTable.CreateIfNotExists();
-            _singleUserLanguageStatisticsByDayTable.CreateIfNotExists();
-            _contributeStatisticsByDayDiffTable =
-                connection.TableClient.GetTableReference(ContributeStatisticsByDayDiffTableName);
-            _singleUserLanguageStatisticsByDayDiffTable =
-                connection.TableClient.GetTableReference(SingleUserLanguageStatisticsByDayDiffTableName);
-            _contributeStatisticsByDayDiffTable.CreateIfNotExists();
-            _singleUserLanguageStatisticsByDayDiffTable.CreateIfNotExists();
-            _collaboratorCountByDayTable = connection.TableClient.GetTableReference(CollabolatorCountByDayTableName);
-            _collaboratorCountByDayTable.CreateIfNotExists();
-
+            _contributeStatisticsByDayTable =InitCloudTable(ContributeStatisticsByDayTableName);
+            _singleUserLanguageStatisticsByDayTable =InitCloudTable(SingleUserLanguageStatisticsByDayTableName);
+            _contributeStatisticsByDayDiffTable =InitCloudTable(ContributeStatisticsByDayDiffTableName);
+            _singleUserLanguageStatisticsByDayDiffTable =InitCloudTable(SingleUserLanguageStatisticsByDayDiffTableName);
+            _collaboratorCountByDayTable = InitCloudTable(CollabolatorCountByDayTableName);
+            _gistContributeStatisticsForSingleUser = InitCloudTable(GistContributeStatisticsForSingleUserTableName);
+            _gistContributeStatisticsByLanguageForSingleUser =
+                InitCloudTable(GistContributeStatisticsByLanguageForSingleUserTablename);
         }
 
-        public async Task Add(ContributeStatisticsByDay day, ConcurrentDictionary<string, ConcurrentDictionary<string, int>> collaboratorLog)
+        public async Task Add(ContributeStatisticsByDay day, ContributionAnalysis.CollaboratorDictionary collaboratorLog)
         {
             //Collaborator関連
             await StatCollaborators(day, collaboratorLog);
             foreach (SingleUserLanguageStatisticsByDay statEntity in day.LanguageStatistics)
             {
-                foreach (KeyValuePair<string, string> replacePair in ReplaceTables)
-                {
-                    statEntity.Language = statEntity.Language.Replace(replacePair.Key, replacePair.Value);
-                }
+                statEntity.Language=statEntity.Language.ToSafeForTable();
                 await _singleUserLanguageStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(statEntity));
             }
             await _contributeStatisticsByDayTable.ExecuteAsync(TableOperation.InsertOrReplace(day));
             await GenerateDiff(day);
         }
 
-        private async Task StatCollaborators(ContributeStatisticsByDay day, ConcurrentDictionary<string, ConcurrentDictionary<string, int>> collaboratorLog)
+        private async Task StatCollaborators(ContributeStatisticsByDay day, ContributionAnalysis.CollaboratorDictionary collaboratorLog)
         {
             IdPairContainerStorage idPairStorage=new IdPairContainerStorage(new TableStorageConnection());
             DbCacheStorage cacheStorage=new DbCacheStorage(new TableStorageConnection(), _dbContext);
             HashSet<string> circleMember = await cacheStorage.GetCircleMemberGitLogins(day.PartitionKey);
-            int cumlutiveCount = 0,cumlutiveUnitusCount=0,cumlutiveCircleCount=0,count=0,unitusCount=0,circleCount=0;
+            long cumlutiveCount = 0,cumlutiveUnitusCount=0,cumlutiveCircleCount=0,count=0,unitusCount=0,circleCount=0;
             foreach (var loginLangPair in collaboratorLog)
             {
                 bool isUnitus = false, isCircle = false;
-                int countOfThisCollaborator=0;
+                long countOfThisCollaborator=0;
                 count++;
                 if (await idPairStorage.IsStored(loginLangPair.Key, IdPairContainer.GithubLogin, IdPairContainer.UserId))
                 {
@@ -99,7 +96,7 @@ namespace UnitusCore.Storage
                     circleCount++;
                     isCircle = true;
                 }
-                foreach (var langCountPair in loginLangPair.Value)
+                foreach (var langCountPair in loginLangPair.Value.LanguageDictionary)
                 {
                     countOfThisCollaborator += langCountPair.Value;
                     cumlutiveCount += langCountPair.Value;
@@ -159,6 +156,23 @@ namespace UnitusCore.Storage
             TableQuery<SingleUserLanguageStatisticsByDay> query =new TableQuery<SingleUserLanguageStatisticsByDay>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, contribute.UniqueId));
            var result= _singleUserLanguageStatisticsByDayTable.ExecuteQuery(query);
             contribute.LanguageStatistics=new HashSet<SingleUserLanguageStatisticsByDay>(result);
+        }
+
+        /// <summary>
+        /// Gist関連のデータを永続化します
+        /// </summary>
+        /// <param name="gistAnalyzer"></param>
+        /// <returns></returns>
+        public async Task StoreGistAnalysis(GistAnalyzer gistAnalyzer)
+        {
+            await
+                _gistContributeStatisticsForSingleUser.ExecuteAsync(
+                    TableOperation.InsertOrReplace(gistAnalyzer.StatisticsForUser));
+            foreach (KeyValuePair<string, GistStatisticsForSingleUserByLanguage> entity in gistAnalyzer.ByLanguages)
+            {
+                await
+                    _gistContributeStatisticsByLanguageForSingleUser.ExecuteAsync(TableOperation.InsertOrReplace(entity.Value));
+            }
         }
     }
 }
