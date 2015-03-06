@@ -98,8 +98,16 @@ namespace UnitusCore.Controllers
             public string Name { get; set; }
         }
 
-        public class PutPersonalRequest : AjaxRequestModelBase,IMajorInfoContainer
+        public class PutPersonalRequest : AjaxRequestModelBase,IPersonProfile
         {
+            [Required]
+            [MaxLength(20)]
+            public string NickName { get; set; }
+            [Required]
+            [Url]
+            public string Url { get; set; }
+            [Required]
+            public Person.Cource CurrentCource { get; set; }
             [Required]
             [MaxLength(32)]
             public string BelongedSchool { get; set; }
@@ -112,7 +120,7 @@ namespace UnitusCore.Controllers
             [Required]
             public Person.Cource CurrentGrade { get; set; }
             [Required]
-            [MaxLength(640)]
+            [MaxLength(140)]
             public string Notes { get; set; }
         }
     }

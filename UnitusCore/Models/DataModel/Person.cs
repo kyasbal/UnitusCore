@@ -8,7 +8,15 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Person : ModelBaseWithTimeLogging,IMajorInfoContainer
+    public interface IPersonProfile : IMajorInfoContainer
+    {
+        string NickName { get; set; }
+        string Url { get; set; }
+        Person.Cource CurrentCource { get; set; }
+        string Notes { get; set; }
+    }
+
+    public class Person : ModelBaseWithTimeLogging, IPersonProfile
     {
         public Person()
         {
