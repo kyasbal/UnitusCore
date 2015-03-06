@@ -18,6 +18,7 @@ namespace UnitusCore.Util
 
         public IHttpActionResult OnValidToken<T>(UnitusApiController controller,T arg,Func<T,IHttpActionResult> f) where T :AjaxRequestModelBase
         {
+            if(!controller.ModelState.IsValid)throw new HttpResponseException(HttpStatusCode.BadRequest);
             if (NoCheckAntiFogery) return f(arg);//for debug
             string[] tokens = arg.ValidationToken.Split(':');
             try
@@ -27,12 +28,13 @@ namespace UnitusCore.Util
             }
             catch (Exception)
             {
-                return new StatusCodeResult(HttpStatusCode.BadRequest,controller);
+                return new StatusCodeResult(HttpStatusCode.Forbidden,controller);
             }
         }
 
         public async Task<IHttpActionResult> OnValidToken<T>(UnitusApiController controller, T arg, Func<T, Task<IHttpActionResult>> f) where T : AjaxRequestModelBase
         {
+            if (!controller.ModelState.IsValid) throw new HttpResponseException(HttpStatusCode.BadRequest);
             if (NoCheckAntiFogery) return await f(arg);//for debug
             string[] tokens = arg.ValidationToken.Split(':');
             try
@@ -42,7 +44,7 @@ namespace UnitusCore.Util
             }
             catch (Exception)
             {
-                return new StatusCodeResult(HttpStatusCode.BadRequest, controller);
+                return new StatusCodeResult(HttpStatusCode.Forbidden, controller);
             }
         } 
     }
