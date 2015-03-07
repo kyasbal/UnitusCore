@@ -110,14 +110,14 @@ namespace UnitusCore.Controllers
 
             public static GetPersonListPersonEntity FromPerson(Person p)
             {
-                return new GetPersonListPersonEntity(p.Email, p.BelongedSchool, p.Name, p.CurrentCource);
+                return new GetPersonListPersonEntity(p.Email, p.BelongedSchool, p.Name, p.CurrentGrade);
             }
 
             public static GetPersonListPersonEntity GenerateDummy(int index)
             {
                 return new GetPersonListPersonEntity(index + IdGenerator.GetId(4) + "@gmail.com",
                     IdGenerator.GetId(4) + "大学", IdGenerator.GetId(4) + " " + IdGenerator.GetId(4),
-                    IdGenerator.GetRandomEnum<Person.Cource>());
+                    IdGenerator.GetRandomEnum<Person.Grade>());
             }
 
             public string UserName { get; set; }
@@ -126,14 +126,14 @@ namespace UnitusCore.Controllers
 
             public string Name { get; set; }
 
-            public Person.Cource Grade { get; set; }
+            public Person.Grade Grade { get; set; }
 
 
             public GetPersonListPersonEntity()
             {
             }
 
-            public GetPersonListPersonEntity(string userName, string belongedSchool, string name, Person.Cource grade)
+            public GetPersonListPersonEntity(string userName, string belongedSchool, string name, Person.Grade grade)
             {
                 UserName = userName;
                 BelongedSchool = belongedSchool;

@@ -55,7 +55,8 @@ namespace UnitusCore
                     {
                         context.Rethrow = false;
                     }
-                }
+                },
+                ExpireTimeSpan = new TimeSpan(1,0,0,0)
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ApplicationCookie);
 

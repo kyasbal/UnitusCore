@@ -19,6 +19,7 @@ namespace UnitusCore.Controllers
 {
     public class PersonalController:UnitusApiControllerWithTableConnection
     {
+
         [UnitusCorsEnabled]
         [ApiAuthorized]
         [HttpPut]
@@ -27,13 +28,8 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req, async (a) =>
             {
-
                 Person personData = CurrentUserWithPerson.PersonData;
-                personData.BelongedSchool = req.BelongedSchool ?? personData.BelongedSchool;
-                personData.Faculty = req.Faculty ?? personData.Faculty;
-                personData.Major = req.Major ?? personData.Major;
-                personData.CurrentCource = req.CurrentGrade;
-                personData.Notes = req.Notes ?? personData.Notes;
+                Mapper.DynamicMap<IPersonProfile, Person>(req, personData);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
             });
@@ -51,12 +47,7 @@ namespace UnitusCore.Controllers
                 var applicationUser = await UserManager.FindByNameAsync(req.UserName);
                 await applicationUser.LoadPersonData(DbSession);
                 Person personData = applicationUser.PersonData;
-                personData.Name = req.Name ?? personData.Name;
-                personData.BelongedSchool = req.BelongedSchool ?? personData.BelongedSchool;
-                personData.Faculty = req.Faculty ?? personData.Faculty;
-                personData.Major = req.Major ?? personData.Major;
-                personData.CurrentCource = req.CurrentGrade;
-                personData.Notes = req.Notes ?? personData.Notes;
+                Mapper.DynamicMap<IPersonProfile,Person>(req, personData);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
             });
@@ -68,7 +59,6 @@ namespace UnitusCore.Controllers
         [Route("Personal/Profile/Skills")]
         public async Task<IHttpActionResult> PutSkillProfile(PutSkillProfileRequest profileRequest)
         {
-            Ensure.NotEmptyString(profileRequest.SkillName);
             return await this.OnValidToken(profileRequest,async (r) =>
             {
                 SkillProfileStorage sprofile = new SkillProfileStorage(TableConnection);
@@ -86,15 +76,20 @@ namespace UnitusCore.Controllers
 
         public class PutSkillProfileRequest : AjaxRequestModelBase,ISkillProfile
         {
+            [Required]
             public string SkillName { get; set; }
-
+            [Required]
             public SkillLevel SkillLevel { get; set; }
         }
 
         public class PutPersonalRequestAdmin:PutPersonalRequest
         {
+            [Required]
+            [EmailAddress]
             public string UserName { get; set; }
 
+            [Required]
+            [MaxLength(16)]
             public string Name { get; set; }
         }
 
@@ -103,22 +98,25 @@ namespace UnitusCore.Controllers
             [Required]
             [MaxLength(20)]
             public string NickName { get; set; }
-            [Required]
+
             [Url]
             public string Url { get; set; }
+
             [Required]
-            public Person.Cource CurrentCource { get; set; }
+            public Person.Grade CurrentGrade { get; set; }
+
             [Required]
             [MaxLength(32)]
             public string BelongedSchool { get; set; }
-            [Required]
+
+
             [MaxLength(32)]
             public string Faculty { get; set; }
-            [Required]
+
+  
             [MaxLength(32)]
             public string Major { get; set; }
-            [Required]
-            public Person.Cource CurrentGrade { get; set; }
+
             [Required]
             [MaxLength(140)]
             public string Notes { get; set; }
