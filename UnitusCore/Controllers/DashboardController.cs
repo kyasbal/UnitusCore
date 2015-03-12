@@ -190,7 +190,7 @@ namespace UnitusCore.Controllers
                     Faculty = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Faculty, accessBy,()=>p.Faculty),
                     Major = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Major, accessBy,()=>p.Major),
                     Skills = await disclosureConfig.FetchProtectedProperty(ProfileProperty.Language,accessBy, () => skillProfileStroage.GetAllSkillProfile(user.Id).Select(Mapper.DynamicMap<ISkillProfile,SkillProfileContainer>)),
-                    CurrentGrade = p.CurrentCource,
+                    CurrentGrade = p.CurrentGrade,
                     Notes = p.Notes,
                     GithubProfile = profile,
                     CreatedDateInfo = p.CreationDate.ToString("yyyy年M月d日に登録"),
@@ -219,7 +219,7 @@ namespace UnitusCore.Controllers
 
             public DisclosureProtectedResponse Skills { get; set; }
 
-            public Person.Cource CurrentGrade { get; set; }
+            public Person.Grade CurrentGrade { get; set; }
 
             public string Notes { get; set; }
 

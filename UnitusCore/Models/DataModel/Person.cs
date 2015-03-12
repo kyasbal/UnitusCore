@@ -8,7 +8,15 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Models.DataModel
 {
-    public class Person : ModelBaseWithTimeLogging,IMajorInfoContainer
+    public interface IPersonProfile : IMajorInfoContainer
+    {
+        string NickName { get; set; }
+        string Url { get; set; }
+        Person.Grade CurrentGrade { get; set; }
+        string Notes { get; set; }
+    }
+
+    public class Person : ModelBaseWithTimeLogging, IPersonProfile
     {
         public Person()
         {
@@ -34,7 +42,7 @@ namespace UnitusCore.Models.DataModel
 
         public ICollection<Project> CommittedProjects { get; set; }//binded
 
-        public Cource CurrentCource { get; set; }
+        public Grade CurrentGrade { get; set; }
 
         public string BelongedSchool { get; set; }
 
@@ -52,7 +60,7 @@ namespace UnitusCore.Models.DataModel
 
         public ICollection<CircleMemberInvitation> InvitedPeople { get; set; } //binded
 
-        public enum Cource
+        public enum Grade
         {
             UG1, UG2, UG3, UG4, UG5, UG6, MC1, MC2, MC3, MC4, DC1, DC2, DC3, DC4
         }

@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 using System.Web.Http.Results;
+using AutoMapper;
 using UnitusCore.Controllers;
 using UnitusCore.Results;
 
@@ -16,8 +22,58 @@ namespace UnitusCore.Util
         public static bool NoCheckAntiFogery = true;
         public string ValidationToken { get; set; }
 
+        private bool TryGetModelError(UnitusApiController controller,out IHttpActionResult response)
+        {
+            if (controller.ModelState.IsValid)
+            {
+                response = null;
+                return false;
+            }
+            else
+            {
+                IEnumerable<object> validationObjects = controller.ModelState.Keys.Select((key) =>
+                {
+                    ModelState value;
+                    object stateInfo = null;
+                    if (controller.ModelState.TryGetValue(key, out value))
+                    {
+                        if (value.Errors.Count != 0)
+                        {
+                            stateInfo =
+                                new
+                                {
+                                    ValueName = key,
+                                    State = "Error",
+                                    ErrorCount = value.Errors.Count,
+                                    Errors = value.Errors.Select(e => e.ErrorMessage)
+                                };
+                        }
+                        else
+                        {
+                            stateInfo = new {ValueName = key, State = "Valid", Value = value.Value.AttemptedValue};
+                        }
+                    }
+                    else
+                    {
+                        stateInfo = new {ValueName = key, State = "Empty"};
+                    }
+                    return stateInfo;
+                }
+
+                    );
+
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content =new StringContent(Json.Encode(validationObjects),new UnicodeEncoding(),"application/json")
+                });
+                //return true;
+            }
+        }
+
         public IHttpActionResult OnValidToken<T>(UnitusApiController controller,T arg,Func<T,IHttpActionResult> f) where T :AjaxRequestModelBase
         {
+            IHttpActionResult getErrorContent = null;
+            if (TryGetModelError(controller, out getErrorContent)) return getErrorContent;
             if (NoCheckAntiFogery) return f(arg);//for debug
             string[] tokens = arg.ValidationToken.Split(':');
             try
@@ -27,12 +83,14 @@ namespace UnitusCore.Util
             }
             catch (Exception)
             {
-                return new StatusCodeResult(HttpStatusCode.BadRequest,controller);
+                return new StatusCodeResult(HttpStatusCode.Forbidden,controller);
             }
         }
 
         public async Task<IHttpActionResult> OnValidToken<T>(UnitusApiController controller, T arg, Func<T, Task<IHttpActionResult>> f) where T : AjaxRequestModelBase
         {
+            IHttpActionResult getErrorContent = null;
+            if (TryGetModelError(controller, out getErrorContent)) return getErrorContent;
             if (NoCheckAntiFogery) return await f(arg);//for debug
             string[] tokens = arg.ValidationToken.Split(':');
             try
@@ -42,7 +100,7 @@ namespace UnitusCore.Util
             }
             catch (Exception)
             {
-                return new StatusCodeResult(HttpStatusCode.BadRequest, controller);
+                return new StatusCodeResult(HttpStatusCode.Forbidden, controller);
             }
         } 
     }

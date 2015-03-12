@@ -9,6 +9,7 @@ using System.Security.Permissions;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Mvc.Filters;
 using System.Web.Security;
@@ -27,8 +28,8 @@ namespace UnitusCore.Controllers
     public class AccountController : UnitusController
     {
         [RequireHttps]  
-        [AllowAnonymous]
-        [HttpGet]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpGet]
         // GET: Account
         public ActionResult Login(string ReturnUrl=null)
         {
@@ -36,8 +37,8 @@ namespace UnitusCore.Controllers
             return View();
         }
 
-        [AllowAnonymous]
-        [HttpPost]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginRequest request)
         {
@@ -63,16 +64,43 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [Authorize]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpPost]
+        public async Task<ActionResult> LoginWithAdmin(LoginRequest request)
+        {
+            if(request.UserName!="LimeStreem@gmail.com")throw new HttpResponseException(HttpStatusCode.BadRequest);
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = null;
+                if ((user = UserManager.Find(request.UserName, request.Password)) != null)
+                {
+                    var loginIdentity =
+                        await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+                    AuthenticationContext.SignIn(new AuthenticationProperties() { IsPersistent = true }, loginIdentity);
+                    if (Session["ReturnUrl"] != null) return Redirect((string)Session["ReturnUrl"]);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    return loginFailedResult("ユーザー名またはパスワードが間違っています。");
+                }
+            }
+            else
+            {
+                return loginFailedResult("不正なログイン情報が渡されました。");
+            }
+        }
+
+        [System.Web.Mvc.Authorize]
         [RoleRestrict("Administrator")]
-        [HttpGet]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> AddAccount(AddAccountInfomationResponse response=null)
         {
             return View(response);
         }
 
-        [Authorize]
-        [HttpPost]
+        [System.Web.Mvc.Authorize]
+        [System.Web.Mvc.HttpPost]
         [RoleRestrict("Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddAccount(AddAccountRequest request)
@@ -122,8 +150,8 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet]
+        [System.Web.Mvc.Authorize]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> SendMailConfirm()
         {
             ApplicationUser user = UserManager.FindByName(User.Identity.Name);
@@ -154,8 +182,8 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> MailConfirm(string confirmId)
         {
             var result = MailConfirmationManager.ConfirmConfirmationId(confirmId, this);
@@ -170,15 +198,15 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> ForgotPassword(string errorMsg=null)
         {
             return View("ForgotPassword",new PasswordForgotResponse() {ErrorMessage = errorMsg});
         }
 
-        [AllowAnonymous]
-        [HttpPost]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(PasswordForgotRequest req)
         {
@@ -193,15 +221,15 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> ForgotPasswordConfirm(string confirmId)
         {
             return await ForgotPasswordConfirm(new PasswordInputRequest() {confirmId = confirmId});
         }
 
-        [AllowAnonymous]
-        [HttpPost]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpPost]
         public async Task<ActionResult> ForgotPasswordConfirm(PasswordInputRequest req)
         {
             var result = PasswordForgotManager.ConfirmConfirmationId(req.confirmId, this,false);
@@ -215,8 +243,8 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet]
+        [System.Web.Mvc.Authorize]
+        [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> Logout()
         {
             AuthenticationContext.SignOut("ApplicationCookie");
@@ -224,8 +252,8 @@ namespace UnitusCore.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpPost]
+        [System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPasswordConfirmSave(PasswordForgotConfirmRequest req)
         {

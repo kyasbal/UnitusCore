@@ -231,7 +231,7 @@ namespace UnitusCore.Controllers
                 await members.LoadReferencesAsync(DbSession);
                 await members.TargetUser.LoadApplicationUser(DbSession);
                 GetMemberListElement memberElement = new GetMemberListElement(members.TargetUser.ApplicationUser.Id, members.TargetUser.Name,
-                    members.Occupation, members.TargetUser.CurrentCource, members.IsActiveMember,members.TargetUser.BelongedSchool,members.TargetUser.Faculty,members.TargetUser.Major);
+                    members.Occupation, members.TargetUser.CurrentGrade, members.IsActiveMember,members.TargetUser.BelongedSchool,members.TargetUser.Faculty,members.TargetUser.Major);
                 memberElement.Tags =
                     await stroage.GetAppliedTags(circle.Id.ToString(), members.TargetUser.ApplicationUser.Id,authority);
                 elements.Add(memberElement);
@@ -325,7 +325,7 @@ namespace UnitusCore.Controllers
 
         public class GetMemberListElement:IMajorInfoContainer
         {
-            public GetMemberListElement(string userId, string name, string ocupation, Person.Cource currentGrade,
+            public GetMemberListElement(string userId, string name, string ocupation, Person.Grade currentGrade,
                 bool isActiveMember, string belongedSchool, string faculty, string major)
             {
                 UserId = userId;
@@ -342,7 +342,7 @@ namespace UnitusCore.Controllers
 
             public string Ocupation { get; set; }
 
-            public Person.Cource CurrentGrade { get; set; }
+            public Person.Grade CurrentGrade { get; set; }
 
             public bool IsActiveMember { get; set; }
 
