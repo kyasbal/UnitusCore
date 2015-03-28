@@ -10,6 +10,9 @@ using UnitusCore.Models.DataModel;
 
 namespace UnitusCore.Controllers.Base
 {
+    /// <summary>
+    /// IUnitusControllerのMVC Controller実装
+    /// </summary>
     public class UnitusController : Controller,IUnitusController
     {
         public UnitusController()
@@ -17,7 +20,7 @@ namespace UnitusCore.Controllers.Base
             Ensure=new ControllerEnsure(this);
             MapperHelper.Initialize();
         }
-
+        
         public ControllerEnsure Ensure { get; private set; }
 
         public IOwinContext OwinContext

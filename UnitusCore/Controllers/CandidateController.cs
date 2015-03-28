@@ -11,7 +11,7 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class CandidateController:UnitusApiControllerWithTableConnection
+    public class CandidateController:UnitusApiController
     {
         [HttpGet]
         [ApiAuthorized]

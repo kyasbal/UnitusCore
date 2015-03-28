@@ -17,7 +17,7 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class PersonalController:UnitusApiControllerWithTableConnection
+    public class PersonalController:UnitusApiController
     {
 
         [UnitusCorsEnabled]

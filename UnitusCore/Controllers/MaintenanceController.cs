@@ -16,7 +16,7 @@ namespace UnitusCore.Controllers
 {
     [RoleRestrict(GlobalConstants.AdminRoleName)]
     [ApiAuthorized]
-    public class MaintenanceController : UnitusApiControllerWithTableConnection
+    public class MaintenanceController : UnitusApiController
     {
         [HttpPost]
         [Route("Maintenance/Achivements/AdjustBody")]

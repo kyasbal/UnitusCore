@@ -272,6 +272,7 @@
     <Compile Include="Controllers\Misc\IPersonInfoContainer.cs" />
     <Compile Include="Controllers\Base\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
+    <Compile Include="Controllers\TutorialController.cs" />
     <Compile Include="Controllers\UploaderController.cs" />
     <Compile Include="Controllers\CronJobController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -343,6 +344,10 @@
     <Compile Include="Migrations\201503031556122_AddPersonColumn.cs" />
     <Compile Include="Migrations\201503031556122_AddPersonColumn.Designer.cs">
       <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503121119027_MigrationTutorial.cs" />
+    <Compile Include="Migrations\201503121119027_MigrationTutorial.Designer.cs">
+      <DependentUpon>201503121119027_MigrationTutorial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\CustomDbInitializer.cs" />
@@ -1284,6 +1289,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503031556122_AddPersonColumn.resx">
       <DependentUpon>201503031556122_AddPersonColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503121119027_MigrationTutorial.resx">
+      <DependentUpon>201503121119027_MigrationTutorial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

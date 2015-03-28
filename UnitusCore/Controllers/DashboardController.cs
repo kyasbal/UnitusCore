@@ -23,7 +23,7 @@ using WebGrease.Css.Extensions;
 namespace UnitusCore.Controllers
 {
     
-    public class DashboardController : UnitusApiControllerWithTableConnection
+    public class DashboardController : UnitusApiController
     {
         [ApiAuthorized]
         [UnitusCorsEnabled]

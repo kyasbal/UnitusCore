@@ -18,7 +18,7 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
-    public class UserConfigureController :UnitusApiControllerWithTableConnection
+    public class UserConfigureController :UnitusApiController
     {
         [Route("Config")]
         [HttpGet]
