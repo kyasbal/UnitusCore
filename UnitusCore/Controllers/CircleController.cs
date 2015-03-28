@@ -82,7 +82,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req.ValidationToken, async () =>
             {
-                var circle = await Ensure.ExisitingCircleId(req.CircleId);
+                var circle = await Ensure.ExisitingCircleIdAsync(req.CircleId);
                 DbSession.Circles.Remove(circle);
                 await DbSession.SaveChangesAsync();
                 return Json(ResultContainer.GenerateSuccessResult());
@@ -153,7 +153,7 @@ namespace UnitusCore.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetCircleDetailed(string validationToken, string circleId)
         {
-            Circle circle = await Ensure.ExisitingCircleId(circleId);
+            Circle circle = await Ensure.ExisitingCircleIdAsync(circleId);
             return await this.OnValidToken(validationToken, () =>
             {
                 return
@@ -177,7 +177,7 @@ namespace UnitusCore.Controllers
                 Ensure.NotEmptyString(req.Name,"Name is empty.");
                 Ensure.NotEmptyString(req.BelongedSchool,"BelongedSchool is empty.");
                 EnsureNotExistingCircle(req.Name,req.BelongedSchool);
-                user = await Ensure.ExistingUserFromEmail(req.LeaderUserName);
+                user = await Ensure.ExistingUserFromEmailAsync(req.LeaderUserName);
                 await user.LoadPersonData(DbSession);
                 MemberStatus memberStatus = ModelBase.CreateNewEntity<MemberStatus>();
                 memberStatus.IsActiveMember = true;
@@ -221,7 +221,7 @@ namespace UnitusCore.Controllers
         [UnitusCorsEnabled]
         public async Task<IHttpActionResult> GetMembers(string validationToken, string circleId)
         {
-            Circle circle = await Ensure.ExisitingCircleId(circleId);
+            Circle circle = await Ensure.ExisitingCircleIdAsync(circleId);
             bool authority = await circle.HaveAuthority(CurrentUser, DbSession);
             CircleTagStorage stroage=new CircleTagStorage(new TableStorageConnection());
             await circle.LoadMembers(DbSession);
@@ -247,8 +247,8 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req,async (r) =>
             {
-                Circle circle = await Ensure.ExisitingCircleId(req.CircleId);
-                Person targetUser = await Ensure.ExistingPersonId(req.PersonId);
+                Circle circle = await Ensure.ExisitingCircleIdAsync(req.CircleId);
+                Person targetUser = await Ensure.ExistingPersonIdAsync(req.PersonId);
                 await circle.LoadMembers(DbSession);
                 bool found = false;
                 foreach (MemberStatus memberStatus in circle.Members)
@@ -278,7 +278,7 @@ namespace UnitusCore.Controllers
         [UnitusCorsEnabled]
         public async Task<IHttpActionResult> PutCircle(PutCircleRequest req)
         {
-            Circle circle = await Ensure.ExisitingCircleId(req.CircleId);
+            Circle circle = await Ensure.ExisitingCircleIdAsync(req.CircleId);
             return await this.OnValidToken(req.ValidationToken, async () =>
             {
                 circle.Name = req.CircleName ?? circle.Name;

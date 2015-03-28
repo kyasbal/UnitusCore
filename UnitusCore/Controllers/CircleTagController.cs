@@ -23,7 +23,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(req, async (r) =>
             {
-                await Ensure.ExisitingCircleId(req.CircleId);
+                await Ensure.ExisitingCircleIdAsync(req.CircleId);
                 CircleTagStorage storage = new CircleTagStorage(new TableStorageConnection());
                 await storage.GenerateNewTag(req.CircleId, req.TagName, req.IsVisibleForNonAdmin);
                 return Json(true);
@@ -39,8 +39,8 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(req, async (r) =>
             {
                 //userIdの存在チェック
-                await Ensure.ExisitingCircleId(req.CircleId);
-                await Ensure.BelongingTo(req.CircleId, req.UserId);
+                await Ensure.ExisitingCircleIdAsync(req.CircleId);
+                await Ensure.BelongingToAsync(req.CircleId, req.UserId);
                 CircleTagStorage storage=new CircleTagStorage(new TableStorageConnection());
                 if((await storage.RetrieveTagBody(req.CircleId,req.TagName))==null)throw new HttpResponseException(HttpStatusCode.NotFound);
                 await storage.ApplyTag(req.CircleId, req.UserId, req.TagName);
@@ -57,8 +57,8 @@ namespace UnitusCore.Controllers
             return await this.OnValidToken(req, async (r) =>
             {
                 //userIdの存在チェック
-                await Ensure.ExisitingCircleId(req.CircleId);
-                await Ensure.BelongingTo(req.CircleId, req.UserId);
+                await Ensure.ExisitingCircleIdAsync(req.CircleId);
+                await Ensure.BelongingToAsync(req.CircleId, req.UserId);
                 CircleTagStorage storage = new CircleTagStorage(new TableStorageConnection());
                 if ((await storage.RetrieveTagBody(req.CircleId, req.TagName)) == null) throw new HttpResponseException(HttpStatusCode.NotFound);
                 await storage.DeleteTag(req.CircleId, req.UserId, req.TagName);

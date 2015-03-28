@@ -77,7 +77,7 @@ namespace UnitusCore.Controllers
                 UploadRequest requestArgument=new UploadRequest();
                 requestArgument.CircleId = GetFirstHeaderElement("CircleId", request.Headers);
                 requestArgument.ValidationToken = GetFirstHeaderElement("ValidationToken", request.Headers);
-                Circle circle = await Ensure.ExisitingCircleId(requestArgument.CircleId);
+                Circle circle = await Ensure.ExisitingCircleIdAsync(requestArgument.CircleId);
                 if(!await IsCircleMember(circle))throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 return await this.OnValidToken(requestArgument.ValidationToken,async () =>
                 {
@@ -114,7 +114,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-                Circle circle = await Ensure.ExisitingCircleId(circleId);
+                Circle circle = await Ensure.ExisitingCircleIdAsync(circleId);
                 var uploaderEntitiesStatus = DbSession.Entry(circle).Collection(a => a.UploadedEntities);
                 if (!uploaderEntitiesStatus.IsLoaded) await uploaderEntitiesStatus.LoadAsync();
                 List<UploaderListEntity> entities=new List<UploaderListEntity>();

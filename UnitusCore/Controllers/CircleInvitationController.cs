@@ -25,7 +25,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken("",async () =>
             {
-                Circle targetCircle = await Ensure.ExisitingCircleId(req.CircleId);
+                Circle targetCircle = await Ensure.ExisitingCircleIdAsync(req.CircleId);
                 await CurrentUser.LoadAdministrationCircles(DbSession);
                 CurrentUser.AdministrationCircle.Add(targetCircle);
                 DbSession.SaveChanges();
@@ -50,7 +50,7 @@ namespace UnitusCore.Controllers
         {
             return await this.OnValidToken(validationToken, async () =>
             {
-                Circle circle = await Ensure.ExisitingCircleId(CircleId);
+                Circle circle = await Ensure.ExisitingCircleIdAsync(CircleId);
                 await circle.LoadMemberInvitations(DbSession);
                 List<CurrentInvitationEntity> invitations=new List<CurrentInvitationEntity>();
                 foreach (CircleMemberInvitation invitation in circle.MemberInvitations)

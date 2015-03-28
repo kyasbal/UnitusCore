@@ -37,7 +37,7 @@ namespace UnitusCore.Controllers
         [Route("Achivements")]
         public async Task<IHttpActionResult> GetAchivementListForUser(string validationToken,string userName,string achivementCategory="All")
         {
-            ApplicationUser user = await Ensure.ExistingUserFromEmail(userName);
+            ApplicationUser user = await Ensure.ExistingUserFromEmailAsync(userName);
             return await AchivementListResult(validationToken,DbSession, user,achivementCategory);
         }
 

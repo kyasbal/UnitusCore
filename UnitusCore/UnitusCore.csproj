@@ -269,7 +269,6 @@
     <Compile Include="Controllers\Misc\CronErrorLog.cs" />
     <Compile Include="Controllers\Misc\ControllerEnsure.cs" />
     <Compile Include="Controllers\Misc\ICircleInfoContainer.cs" />
-    <Compile Include="Controllers\Misc\IPersonInfoContainer.cs" />
     <Compile Include="Controllers\Base\IUnitusController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\TutorialController.cs" />
