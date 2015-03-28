@@ -11,6 +11,9 @@ namespace UnitusCore.Controllers.Misc
 {
     public static class MapperHelper
     {
+        /// <summary>
+        /// Mapを用いてデータを移す際のクラスの関係をここで初期化しておきます。
+        /// </summary>
         public static void Initialize()
         {
             Mapper.CreateMap(typeof (Circle), typeof (CircleController.AddCircleRequest));

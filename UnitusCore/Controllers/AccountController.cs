@@ -25,18 +25,31 @@ using UnitusCore.Util;
 
 namespace UnitusCore.Controllers
 {
+    /// <summary>
+    /// アカウント関係のビュー処理用コントローラー
+    /// Dashboardがいのアカウント処理などを担当します。
+    /// </summary>
     public class AccountController : UnitusController
     {
+        /// <summary>
+        /// GET:Account/Login
+        /// </summary>
+        /// <param name="ReturnUrl"></param>
+        /// <returns></returns>
         [RequireHttps]  
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpGet]
-        // GET: Account
         public ActionResult Login(string ReturnUrl=null)
         {
             Session["ReturnUrl"] = ReturnUrl;
             return View();
         }
 
+        /// <summary>
+        /// POST:Account/Login
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
@@ -64,33 +77,11 @@ namespace UnitusCore.Controllers
             }
         }
 
-        [System.Web.Mvc.AllowAnonymous]
-        [System.Web.Mvc.HttpPost]
-        public async Task<ActionResult> LoginWithAdmin(LoginRequest request)
-        {
-            if(request.UserName!="LimeStreem@gmail.com")throw new HttpResponseException(HttpStatusCode.BadRequest);
-            if (ModelState.IsValid)
-            {
-                ApplicationUser user = null;
-                if ((user = UserManager.Find(request.UserName, request.Password)) != null)
-                {
-                    var loginIdentity =
-                        await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-                    AuthenticationContext.SignIn(new AuthenticationProperties() { IsPersistent = true }, loginIdentity);
-                    if (Session["ReturnUrl"] != null) return Redirect((string)Session["ReturnUrl"]);
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    return loginFailedResult("ユーザー名またはパスワードが間違っています。");
-                }
-            }
-            else
-            {
-                return loginFailedResult("不正なログイン情報が渡されました。");
-            }
-        }
-
+        /// <summary>
+        /// GET:Account/AddAccount
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         [System.Web.Mvc.Authorize]
         [RoleRestrict("Administrator")]
         [System.Web.Mvc.HttpGet]
@@ -99,6 +90,11 @@ namespace UnitusCore.Controllers
             return View(response);
         }
 
+        /// <summary>
+        /// POST:Account/AddAccount
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [System.Web.Mvc.Authorize]
         [System.Web.Mvc.HttpPost]
         [RoleRestrict("Administrator")]
@@ -117,6 +113,7 @@ namespace UnitusCore.Controllers
             }
         }
 
+        
         internal ActionResult CreateUnitusAccount(AddAccountRequest request)
         {
             var state = UserManager.CreateUser(DbSession,request.UserName, request.Password);
@@ -182,6 +179,12 @@ namespace UnitusCore.Controllers
             }
         }
 
+        /// <summary>
+        /// GET:Account/MailConfirm
+        /// ログイン登録時に送るメールから検証する際のアドレス
+        /// </summary>
+        /// <param name="confirmId"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> MailConfirm(string confirmId)
@@ -197,7 +200,12 @@ namespace UnitusCore.Controllers
 
             }
         }
-
+        /// <summary>
+        /// GET:Account/ForgotPassword
+        /// パスワードを忘れた際のビュー
+        /// </summary>
+        /// <param name="errorMsg"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> ForgotPassword(string errorMsg=null)
@@ -205,6 +213,12 @@ namespace UnitusCore.Controllers
             return View("ForgotPassword",new PasswordForgotResponse() {ErrorMessage = errorMsg});
         }
 
+        /// <summary>
+        /// POST:Account/ForgotPassword
+        /// パスワードを忘れた際のビューから送られるフォーム内容を処理するアクション
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
@@ -220,14 +234,23 @@ namespace UnitusCore.Controllers
                 return await ForgotPassword(result.ErrorMessage);
             }
         }
-
+        /// <summary>
+        /// GET:Account/ForgotPasswordConfirm
+        /// パスワードを忘れた際に送られるメールからのリンクでの検証
+        /// </summary>
+        /// <param name="confirmId"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> ForgotPasswordConfirm(string confirmId)
         {
             return await ForgotPasswordConfirm(new PasswordInputRequest() {confirmId = confirmId});
         }
-
+        /// <summary>
+        /// POST:Account/ForgotPasswordConfirm
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpPost]
         public async Task<ActionResult> ForgotPasswordConfirm(PasswordInputRequest req)
@@ -242,7 +265,10 @@ namespace UnitusCore.Controllers
                 return await ForgotPassword("パスワードリセットトークンの認証に失敗しました。<br>"+result.ErrorMessage);
             }
         }
-
+        /// <summary>
+        /// GET:Account/Logout
+        /// </summary>
+        /// <returns></returns>
         [System.Web.Mvc.Authorize]
         [System.Web.Mvc.HttpGet]
         public async Task<ActionResult> Logout()
@@ -251,7 +277,11 @@ namespace UnitusCore.Controllers
             return Redirect("/Account/Login");
         }
 
-
+        /// <summary>
+        /// GET:Account/ForgotPasswordConfirmSave
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [System.Web.Mvc.AllowAnonymous]
         [System.Web.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
